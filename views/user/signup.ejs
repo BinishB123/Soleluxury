@@ -11,7 +11,7 @@
     />
     <link rel="stylesheet" href="/public/style.css" >
 
-    <title>Register</title>
+    <title>Sign up</title>
   </head>
   <body  >
     <div class="col-sm-12">
@@ -68,7 +68,7 @@
               />
             </div>
             <div class="col-md-4">
-              <button type="button" class="btn otp"  id="sendOtp">Send OTP</button>
+              <button type="button" class="btn otp"   id="sendOtp">Send OTP</button>
             </div>
           </div>
         
@@ -167,6 +167,7 @@ $(document).ready(function() {
 
     const emailInput = document.getElementById("typeEmailX");
     const email = emailInput.value;
+    
 
     // Assuming you have an input field with the user's email
     if (validateEmail(email)) {
@@ -184,6 +185,7 @@ $(document).ready(function() {
           setTimeout(function() {
             messageDisplay.innerHTML = '';
           }, 6000);
+          document.querySelector(".otp").disabled=true
 
           startTimer();
           console.log(response.message); // Output: "OTP Send To Your Email"
@@ -229,8 +231,9 @@ $(document).ready(function() {
                 if (response.status) {
                 const verifyButton = document.getElementById("verify");
                 verifyButton.innerHTML = "Verified";
-                clearInterval( intervalId)
+                 clearInterval( intervalId)
                  timerDisplay.style.display = 'none'
+                 document.querySelector(".otp").disabled= false
                
                console.log(response.message);
                 } else {
@@ -238,6 +241,7 @@ $(document).ready(function() {
                  verifyButton.innerHTML = "Failed";
                  clearInterval( intervalId)
                  timerDisplay.style.display = 'none'
+                 document.querySelector(".otp").disabled= false
                  
                 console.log(response.message);
                 }
@@ -274,6 +278,7 @@ function startTimer() {
 
 function resetTimer() {
   const timerDisplay = document.getElementById('timerDisplay');
+  document.querySelector(".otp").disabled= false
   timerDisplay.textContent = '';
 }
 

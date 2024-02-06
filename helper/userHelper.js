@@ -72,7 +72,7 @@ const doSignUp = (userData, verify) => {
       if (userData.password === userData.confirmPassword) {
         console.log("password matched");
         console.log(verify);
-        if (verify) {
+        if (verify) {  //otp verification
           console.log("verfied");
           try {
             const password = await bcrypt.hash(userData.password, 10);

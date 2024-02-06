@@ -2,10 +2,11 @@ const userModel = require("../model/userModel");
 const userHelper = require("../helper/userHelper");
 const nodemailer = require("nodemailer");
 const { response } = require("express");
+const productModel = require("../model/productModel")
 
 //loginuser start//
 const loginload = function (req, res) {
-  console.log("Request come to userloginLoad");
+  console.log("Request come to userloginLoad");  
   if (req.session.user) {
     res.redirect("/home");
   } else {
@@ -23,88 +24,89 @@ const loadSignUp = function (req, res) {
   }
 };
 
-function generateSixDigitNumber() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
+// function generateSixDigitNumber() {
+//   return Math.floor(100000 + Math.random() * 900000).toString();
+// }
 
-const transporter = nodemailer.createTransport({
-  service: "gmail", // Replace with your email service
-  auth: {
-    user: "binishb2018@gmail.com", // Replace with your email address
-    pass: "hygn octr fjti bawk", // Replace with your email password
-  },
-});
+// const transporter = nodemailer.createTransport({
+//   service: "gmail", // Replace with your email service
+//   auth: {
+//     user: "binishb2018@gmail.com", // Replace with your email address
+//     pass: "hygn octr fjti bawk", // Replace with your email password
+//   },
+// });
 
-const sendOtp = async (req, res) => {
-  console.log("Request came to send the OTP");
+// const sendOtp = async (req, res) => {
+//   console.log("Request came to send the OTP");
 
-  try {
-    console.log("Request came to send the OTP");
+//   try {
+//     console.log("Request came to send the OTP");
 
-    const otp = generateSixDigitNumber();
-    req.session.otpExpiry = Date.now()+30*1000
+//     const otp = generateSixDigitNumber();
+//     req.session.otpExpiry = Date.now()+30*1000
     
-    console.log(otp, "OTP generated");
-    const userEmail = req.body.email;
-    console.log(userEmail+" otp sending to this email");
+//     console.log(otp, "OTP generated");
+//     const userEmail = req.body.email;
+   
 
-    if (!userEmail) {
-      return res
-        .status(400)
-        .json({ error: "Invalid or missing email address" });
-    }
+//     if (!userEmail) {
+//       return res
+//         .status(400)
+//         .json({ error: "Invalid or missing email address" });
+//     }
 
-    const mailOptions = {
-      from: "binishb2018@gmail.com",
-      to: userEmail,
-      subject: "Your OTP Verification code",
-      text: `Your OTP is ${otp}`,
-    };
+//     const mailOptions = {
+//       from: "binishb2018@gmail.com",
+//       to: userEmail,
+//       subject: "Your OTP Verification code",
+//       text: `Your OTP is ${otp}`,
+//     };
 
-    // Send email asynchronously without waiting for it to complete
+//     // Send email asynchronously without waiting for it to complete
     
-    transporter.sendMail(mailOptions, (error) => {
-      console.log("1st")
-      if (error) {
-        console.log(error);
-        return res.status(500).json({ error: "Error sending OTP email" }); 
-      }
-      console.log("otp sended to the user email");
-    });
-      console.log("2")
-    req.session.otp = otp;
-    res.json({ message: "OTP Sent To Your Email ! Check it " });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
+//     transporter.sendMail(mailOptions, (error) => {
+//       console.log("1st")
+//       if (error) {
+//         console.log(error);
+//         return res.status(500).json({ error: "Error sending OTP email" }); 
+//       }
+//       console.log("otp sended to the user email");  
+//     });
+//       console.log("2")
+//     req.session.otp = otp;
+//    console.log(otp)
+//     res.json({ message: "OTP Sent To Your Email ! Check it " });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
 
-const verify =  (req, res) => {
+// const verify =  (req, res) => {
   
-    const sendedOtp = req.session.otp;
-    const verifyOtp = req.body.otp;
-    console.log(sendedOtp);
-    console.log(verifyOtp);    
-    console.log("started checking");
+//     const sendedOtp = req.session.otp;
+//     const verifyOtp = req.body.otp;
+//     console.log(sendedOtp);
+//     console.log(verifyOtp);    
+//     console.log("started checking");
 
-    if (sendedOtp === verifyOtp) {
-      if(Date.now() < req.session.otpExpiry){
-        console.log("otp Entered before time expires")
-      req.session.otpmatched = true;
-      res.json({ status: true, message: "otp verified" });
-      }else{
-        console.log("failed otp verification")
-        req.session.otpmatched = false;
-        res.json({ status: false, message: "failed" });
-      }
+//     if (sendedOtp === verifyOtp) {
+//       if(Date.now() < req.session.otpExpiry){
+//         console.log("otp Entered before time expires")
+//       req.session.otpmatched = true;
+//       res.json({ status: true, message: "otp verified" });
+//       }else{
+//         console.log("failed otp verification")
+//         req.session.otpmatched = false;
+//         res.json({ status: false, message: "failed" });
+//       }
     
-    } else {
-      console.log("verification fails")
-      req.session.otpmatched = false;
-      res.json({ status: false, message: "failed" });
-    }
-  };
+//     } else {
+//       console.log("verification fails")
+//       req.session.otpmatched = false;
+//       res.json({ status: false, message: "failed" });
+//     }
+//   };
 
 const insertUser = async (req, res) => {
   try {
@@ -131,20 +133,23 @@ const loginHome = async (req, res) => {
     
     if (response.login) {
       req.session.user = response.user;
-      console.log('User logged in successfully:', response.user);
+      //console.log('User logged in successfully:', response.user,);
+      
       res.redirect("/home");
     } else {
-      console.log('Login failed:', response.loginMessage);
+      //console.log('Login failed:', response.loginMessage);
       res.render("login", { errorMessage: response.loginMessage });
     }
   } catch (error) {
-    console.error('Error in loginHome:', error);
+    //console.error('Error in loginHome:', error);
       res.status(500).send('Internal Server Error');
   }
 };
 const userHome = async(req,res)=>{
   if (req.session.user) {
-    res.render("home")
+    const product= await productModel.find()
+    console.log(product)
+    res.render("home",{data:product})
   }else{
     res.redirect('/')
   }
@@ -160,15 +165,58 @@ const logout = (req,res)=>{
   }
 }
 
+
+const productView =  async(req,res)=>{
+  try {
+    const id = req.params.id
+    console.log(id)
+    const product = await productModel.findOne({_id:id})
+    console.log(product)
+    res.render("productview",{data:product})
+    
+  } catch (error) {
+     console.log(error.message)
+  }
+}
+
+
+const displaySize =async(req,res)=>{
+  try {
+    //console.log("req in display message")
+        const id = req.params.id;
+       // console.log(id)
+        const size = req.params.size
+        //console.log(size)
+         const product = await productModel.findOne({_id:id})
+         //console.log(product)
+         const small = product.size.s.quantity
+         const medium = product.size.m.quantity
+         const large =product.size.l.quantity
+         if (size==='s') {
+          res.json({message:small})
+         }else if (size ==='m') {
+          res.json({message:medium})
+          
+         }else if (size==='l') {
+            res.json({message:large})
+         }
+  } catch (error) {
+    console.log(error.message)
+    
+  }
+}
+
 const userController = { 
   loginload,
   loadSignUp,
-  sendOtp,
-  verify,
+ // sendOtp,
+ // verify,
   insertUser,
   loginHome,
   userHome,
-  logout
+  productView,
+  logout,
+  displaySize
 };
 
 module.exports = userController;

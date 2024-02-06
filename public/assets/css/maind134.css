@@ -279,7 +279,7 @@ input[type=number]:focus,
 }
 
 .text-brand {
-  color: #088178 !important;
+  color: #000000 !important;
 }
 
 .text-primary {
@@ -6446,8 +6446,8 @@ h6.post-title {
 
 .header-style-1 .header-top-ptb-1 {
   padding: 13px 0;
-  border-bottom: 3px solid #39b4ac;
-  background-color: #d8f4e2;
+  border-bottom: 3px solid ;
+  background-color: black;
   background-image: none;
 }
 

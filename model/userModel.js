@@ -13,8 +13,8 @@ const userSchema = new mongoose.Schema({
     isVerfied:{
         type:Boolean,
         default:true,
-    },
-    mobile:{
+    },     
+    mobile:{ 
         type:Number,
         required:true
     },

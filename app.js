@@ -40,8 +40,8 @@ const noCache = require("nocache")
 
 
   
-  const port = 3008;
+  const port = 3009;
 
 app.listen(port, () => {
-  console.log(`http://localhost:${port}`);
+  console.log(`http://localhost:${port}`,`http://localhost:${port}/admin`);   
 });
