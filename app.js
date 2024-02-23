@@ -1,15 +1,18 @@
 const express = require("express")
 const path = require("path")
+const dotenv =require("dotenv")
+dotenv.config({path:"./setUp.env"})
 const app = express()
 const session = require("express-session")
 const mongoose = require("mongoose")
 const bodyParser = require('body-parser');
 const flash=require("express-flash");
 const noCache = require("nocache")
+const methodOverride = require("method-override")//in form used by input fields
  
+   
 
-
- mongoose.connect("mongodb://127.0.0.1:27017/Soleluxry")
+ mongoose.connect(process.env.dbId)
  const useFeatRoute = require("./router.js/userFeat")
  const adminRoute = require("./router.js/adminRoute")
 
@@ -24,11 +27,12 @@ const noCache = require("nocache")
     saveUninitialized:true
  }))
 
+ app.use(methodOverride("_method"))
  //Flash middleware
  app.use(flash());
  app.use((req,res,next)=>{
   res.locals.message=req.session.message;
-  delete req.session.message;
+  delete req.session.message; 
   next(); 
  });
  app.use(noCache());

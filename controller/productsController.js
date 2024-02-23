@@ -12,9 +12,15 @@ const productsLoad =async (req,res)=>{
     
 
     try {
-        const products = await productModel.find().sort({createdOn:-1}) 
+        const products = await productModel.aggregate([{$lookup:{
+            from:"categories",
+            localField:"category",
+            foreignField:"_id",
+            as:"category"
+        }}])
         const message = req.flash("message")
-        res.render('adminproducts',{data:products,message:message})
+        const errormessage = req.flash("errormessage")
+        res.render('adminproducts',{data:products,message:message,errormessage:errormessage})
         
     } catch (error) {
         console.log("error is in productsLoad : "+error)
@@ -23,10 +29,16 @@ const productsLoad =async (req,res)=>{
 
 const createProductPage = async(req,res)=>{
     try {
-        
-        const category = await categoryModel.find({islisted:true})
-        const brand = await brandModel.find({isBlocked:false})
-        res.render('addproducts',{cat:category,brand:brand})
+        if (req.session.admin) {
+            const category = await categoryModel.find({islisted:true})
+            const brand = await brandModel.find({isBlocked:false})
+            const errormessage = req.flash("errormessage")
+            res.render('addproducts',{cat:category,brand:brand,errormessage:errormessage})
+            
+        }else{
+            res.redirect("/admin/login")
+        }
+      
         
     } catch (error) {
       console.log("erro in add products "+error)  
@@ -36,26 +48,36 @@ const createProductPage = async(req,res)=>{
 
 const addproducts = async (req, res) => {
     try {
-        console.log("admin request in addproducts");
-
+      
         const product = req.body;
-        console.log(product);
+        
 
        
         const productExist = await productModel.findOne({ productName: product.productName });
-        console.log("productExist", productExist);
+      
 
         if (!productExist) {
             console.log("product does not exist");
-
+        
             const images = [];
-
+        
             if (req.files && req.files.length > 0) {
+                // Image validation
                 for (let i = 0; i < req.files.length; i++) {
-                    images.push(req.files[i].filename); 
+                    const file = req.files[i];
+                    // Check if the file is an image
+                    if (!file.mimetype.startsWith('image/')) {
+                        console.log("File MIME Type:", file.mimetype);
+
+                        const errormessage ="Cannot Add product please upload images only";
+                        return res.json({ success: false, fileerrormessage:errormessage }); // Terminate function execution
+
+                    }
+                    // Add filename to the images array
+                    images.push(file.filename);
                 }
             }
-
+        
             const productAdding = {
                 id: Date.now(),
                 brand: product.brand,
@@ -63,7 +85,6 @@ const addproducts = async (req, res) => {
                 productName: product.productName,
                 description: product.description,
                 category: product.category,
-                totalQuantity: product.quantity,
                 size: {
                     s: { quantity: product.smallsize },
                     m: { quantity: product.mediumsize },
@@ -72,17 +93,19 @@ const addproducts = async (req, res) => {
                 regularPrice: product.regularPrice,
                 salePrice: product.salePrice,
                 color: product.color,
-                createdOn:Date.now()
+                createdOn: Date.now()
             };
-
-           
-             await productModel.create(productAdding);
-            req.flash("message","product added successfully")
-            res.redirect("/admin/products")
+        
+            await productModel.create(productAdding);
+            
+            const message="product added successfully";
+            return res.json({success:true,message:message}) // Terminate function execution
         } else {
             // Product already exists
-            res.redirect("/admin/products");
+            const errormessage ="Cannot Add product Already exist";
+             return res.json({ success: false, errormessage:errormessage }); // 
         }
+        
     } catch (error) {
         console.log("error happened in addproducts:", error);
         res.status(500).json({ error: error.message });
@@ -90,57 +113,51 @@ const addproducts = async (req, res) => {
 };
 
 
-const list =async(req,res)=>{
+const  blockOrUnblockproduct= async (req, res) => {
     try {
+        const id = req.query.id;
+        const product = await productModel.findOne({ _id: id });
 
-        const id = req.query.id
-
-        if(!id){
-            return res.status(400)
+        if (!id || !product) {
+            return res.status(400).json({ success: false, message: 'Invalid product ID' });
         }
-        await productModel.updateOne({_id:id},{$set:{ isBlocked:true}})
-        res.redirect('/admin/products')
-        
-    } catch (error) {
-        console.log(error.message)
-    }
-}
 
-const unList =async(req,res)=>{
-    try {
-
-        const id = req.query.id
-
-        if(!id){
-            return res.status(400)
+        if (product.isBlocked === false) {
+            await productModel.updateOne({ _id: id }, { $set: { isBlocked: true } });
+            return res.json({ success: true, flag: 1 });
+        } else { 
+            await productModel.updateOne({ _id: id }, { $set: { isBlocked: false } });
+            return res.json({ success: true, flag: 0 });
         }
-        await productModel.updateOne({_id:id},{$set:{ isBlocked:false}})
-        res.redirect('/admin/products')
-        
     } catch (error) {
-        console.log(error.message)
+        console.error(error.message);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
     }
-}
+};
+
+
+
 
 
 
 const getEditProduct = async(req,res)=>{
     try {
-        console.log("admin req now in geteditProduct")
+       
         const id = req.query.id
-        console.log(id)
+   
         const findProduct = await productModel.findOne({id:id})
-        console.log(findProduct)
+    
         const category = await categoryModel.find({});
-        console.log(category)
+    
         const  findBrand = await brandModel.find({})
-        console.log(findBrand)
+    
         const message = req.flash("message")
-        res.render("editproduct",{product:findProduct,cat:category,brand:findBrand,message:message})
+        
+        res.render("editproduct",{product:findProduct,cat:category,brand:findBrand,message:message,})
 
         
     } catch (error) {
-        console.log("error found in geteditproduct : "+error.message)
+        consol.log("error found in geteditproduct : "+error.message)
         
     }
 }
@@ -148,12 +165,12 @@ const getEditProduct = async(req,res)=>{
 
 const deleteImage = async(req,res)=>{
     try {
-        console.log("//////////")
+       // console.log("//////////") 
         console.log(" req in deleting image of edit product")
         const productId = req.body.productId;
-        console.log(" productid : "+productId)
+        //console.log(" productid : "+productId)
         const productImage =req.body.productImage;
-        console.log("productimage : "+productImage)
+       // console.log("productimage : "+productImage)
         const deleted = await productModel.findByIdAndUpdate(productId,{$pull:{productImage:productImage}})
         const imagePath = path.join("public","photos","productImages",productImage)
 
@@ -181,8 +198,10 @@ const productUpdate = async (req, res) => {
     try {
         console.log("req now in productUpdate ");
         const id = req.params.id;
+        console.log(id)
         const data = req.body;
         const images = [];
+        console.log(data.productName)
 
         if (req.files && req.files.length > 0) {
             for (let i = 0; i < req.files.length; i++) {
@@ -192,12 +211,15 @@ const productUpdate = async (req, res) => {
 
         // Check if a product with the same name exists
         const duplicate = await productModel.findOne({ productName: data.productName });
-        console.log(duplicate._id + ":::::::" + id);
-
+       
             if (req.files.length>0) {
-                await productModel.findByIdAndUpdate(id,{
-                    productImage:images
-                })
+                // await productModel.findByIdAndUpdate(id,{
+                //     productImage:images
+                // })
+                const prodata = await productModel.findById({_id:id})
+                prodata.productImage.push(...images)
+                prodata.save()
+                console.log(prodata.productImage);
             }
 
 
@@ -207,7 +229,7 @@ const productUpdate = async (req, res) => {
         if (!duplicate || duplicate._id.toString() === id) {
              
             // Allow updating if it's the same product or the name doesn't exist
-            console.log("Yes, product name available or it's the same product.");
+            console.log("Yes product name available or it's the same product.");
 
             // Update product data
             await productModel.findByIdAndUpdate(
@@ -219,7 +241,6 @@ const productUpdate = async (req, res) => {
                     category: data.category,
                     regularPrice: data.regularPrice,
                     salePrice: data.salePrice,
-                    totalQuantity: data.quantity,
                     size: {
                         s: { quantity: data.ssize },
                         m: { quantity: data.msize },
@@ -248,8 +269,7 @@ const productsController = {
     productsLoad,
     createProductPage,
     addproducts,
-    list,
-    unList,
+    blockOrUnblockproduct,
     getEditProduct,
     deleteImage,
     productUpdate

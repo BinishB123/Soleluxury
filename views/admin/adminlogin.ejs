@@ -27,7 +27,7 @@
        </div>
     <div class="d-flex justify-content-center mt-5 pb-5 " id="full">
       <div
-        class="card  p-3 mb-5 bg-white rounded" style="border-radius:10px;">
+        class="cards  p-3 mb-5 bg-white rounded" style="border-radius:10px;">
         <div class="card-body">
         </div>
         <p id="messageDisplay" class="text-center d-flex justify-content-center"></p>
@@ -51,42 +51,25 @@
             <% } %>
             
 
-            <div class="form-group mt-2 row">
-              <div class="col-md-8">
+            <div class="form-group mt-2 ">
+              
                 <input
                   type="email"
                   name="email"
                   placeholder="Enter your email"
-                  class="form-control w-70"
+                  class="form-control"
                   id="typeEmailX"
                   required
                 />
-              </div>
-              <div class="col-md-4">
-                <button type="button" class="btn otp"  onclick="handleButtonClick()">Send OTP</button>
-              </div>
+              
+              
             </div>
           
             
          
           <p><span id="error2" style="display: none;color: red; "></span></p>
   
-          <div class="form-group mt-2 row ">
-              <div class="col-6">
-                <input
-                  type="number"
-                  name="otp"
-                  placeholder="Enter OTP"
-                  class="form-control "
-                  id="otpverify"
-                  required
-                />
-              </div>
-  
-              <div class="col-6">
-                <button type="button" class="btn btn-primary" id="verify">Verify</button>
-                <span id="timerDisplay" class="ms-2"></span>
-              </div> 
+               
             
             <div class="form-group mt-2">
               <input
@@ -144,120 +127,7 @@
 
 
 
-
-   function handleButtonClick() {
-      const emailInput = document.getElementById("typeEmailX");
-       const email = emailInput.value;
-        console.log("button clicked for send otop")
-        console.log(email)
-
-         if (validateEmail(email)) {
-          console.log("otp send")
-           $.ajax({
-            url: `/admin/Otp`,
-            type: 'POST',
-           data: JSON.stringify({ email: email }),
-            contentType: 'application/json',
-             success: function(response) {
-        const messageDisplay = document.getElementById("messageDisplay");
-        messageDisplay.innerHTML = response.message;
-        messageDisplay.style.color = 'green';
-
-        setTimeout(function() {
-          messageDisplay.innerHTML = '';
-        }, 6000);
-
-        startTimer();
-        console.log(response.message);
-      },
-      error: function(error) {
-        console.error('Error sending OTP:', error.responseJSON.error);
-      }
-    });
-  } else {
-    console.error('Invalid email');
-  }
-}
-
-
-function validateEmail(email) {
-  const emailPattern = /^([a-zA-Z0-9._-]+)@([a-zA-Z.-]+).([a-zA-z]{2,4})$/;
-  return emailPattern.test(email);
-}
-
-
-
-
-
-
-$(document).ready(function() {
-   document.getElementById('timerDisplay')
    
-    $('#verify').click(function() {
-        const otpverify = document.getElementById("otpverify");
-        const otpnumber = otpverify.value; // Assuming you have an input field with the user's email
-        console.log(otpnumber, "this is the otp number");
-
-        // Make an AJAX request to your server
-        $.ajax({
-            url: "/admin/verify", // Update with the correct endpoint
-            type: "POST",
-            data: JSON.stringify({ otp: otpnumber }), // Corrected variable name to otpnumber
-            contentType: "application/json",
-            success: function(response) {
-                // Handle the success response from the server
-                
-                if (response.status) {
-                const verifyButton = document.getElementById("verify");
-                verifyButton.innerHTML = "Verified";
-                clearInterval( intervalId)
-                 timerDisplay.style.display = 'none'
-               
-               console.log(response.message);
-                } else {
-               const verifyButton = document.getElementById("verify");
-                 verifyButton.innerHTML = "Failed";
-                 clearInterval( intervalId)
-                 timerDisplay.style.display = 'none'
-                 
-                console.log(response.message);
-                }
-   
-
-
-
-                // Output: "OTP Send To Your Email"
-                // Display a success message to the user or handle accordingly
-            },
-            error: function(error) {
-                // Handle the error response from the server
-                console.error('Error verifying OTP:', error.responseJSON.error);
-                // Display an error message to the user or handle accordingly
-            }
-        });
-    });
-});
-
-function startTimer() {
-  let timer = 30;
-  const timerDisplay = document.getElementById('timerDisplay');
-
-   intervalId = setInterval(function() {
-    timerDisplay.textContent = timer + " Sec Left";
-    timer--;
-
-    if (timer < 0) {
-      clearInterval(intervalId);
-      resetTimer();
-    }
-  }, 1000);
-}
-
-function resetTimer() {
-  const timerDisplay = document.getElementById('timerDisplay');
-  timerDisplay.textContent = '';
-}
-
 
 </script>
   </body>

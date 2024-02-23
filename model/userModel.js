@@ -19,10 +19,19 @@ const userSchema = new mongoose.Schema({
         required:true
     },
     password:{
-        type:String,
+        type:String, 
         required:true
     },
-   
+    address:[{
+       name:{type:String},
+       mobile:{type:Number},
+       housName:{type:String},
+       pincode:{type:Number},
+       CityOrTown:{type:String},
+       district:{type:String},
+       state:{type:String},
+       country:{type:String}
+    }],
     isActive:{
         type:Boolean,
         default:true

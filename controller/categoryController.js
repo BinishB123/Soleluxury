@@ -23,7 +23,8 @@ const categoryEditPage = async(req,res)=>{
 
       const id = req.query.id
       const category = await categoryModel.findOne({_id:id})
-      res.render("editcategory",{category:category})
+      const message = req.flash("message")
+      res.render("editcategory",{category:category,message:message})
     
   } catch (error) {
     console.log(error.message)
@@ -109,13 +110,13 @@ const unlistorlist = async (req, res) => {
           await categoryModel.findByIdAndUpdate(id, {
               islisted: false
           });
-          res.json({success:true})
+          res.json({success:true,flag:0})
       }else{
         await categoryModel.findByIdAndUpdate(id, {
           islisted: true
         
       });
-      res.json({success:true})
+      res.json({success:true,flag:1})
       }
 
       

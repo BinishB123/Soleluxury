@@ -32,6 +32,7 @@ const blockUser = async (req, res) => {
             return res.status(400).json({ error: "Invalid user ID" });
         }
         await userModel.updateOne({ _id: id }, { $set: { isActive: false } });
+        delete req.session.user
         res.redirect('/admin/customerlist');
     } catch (error) {
         console.error("Error blocking user:", error);

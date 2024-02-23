@@ -23,7 +23,7 @@
          </div>
 
 <div class="d-flex justify-content-center mt-5 pb-5"  >
-  <div class="card">
+  <div class="cards">
     <div class="card-body">
       <div style="text-align: center;">
         <h2 class="card-title">Sign up</h2>
@@ -54,7 +54,7 @@
             </div>
           </div>
         </div>
-        <p><div id="error1" style="display: none;" class="alert alert-danger err"></div></p>
+        <p><span id="error1" style="display: none; color: red;" ></span></p>
       
         <div class="form-group mt-2 row">
             <div class="col-md-8">
@@ -167,27 +167,22 @@ $(document).ready(function() {
 
     const emailInput = document.getElementById("typeEmailX");
     const email = emailInput.value;
-    
 
-    // Assuming you have an input field with the user's email
     if (validateEmail(email)) {
-      // Email is valid, proceed with sending OTP
       $.ajax({
         url: `/sendotp`,
         type: 'POST',
         data: JSON.stringify({ email: email }),
         contentType: 'application/json',
         success: function(response) {
+          startTimer();
           const messageDisplay = document.getElementById("messageDisplay");
           messageDisplay.innerHTML = response.message;
           messageDisplay.style.color = 'green';
-         
           setTimeout(function() {
             messageDisplay.innerHTML = '';
           }, 6000);
-          document.querySelector(".otp").disabled=true
-
-          startTimer();
+          document.querySelector(".otp").disabled=true;
           console.log(response.message); // Output: "OTP Send To Your Email"
         },
         error: function(error) {
@@ -195,7 +190,6 @@ $(document).ready(function() {
         }
       });
     } else {
-      // Email is not valid, display an error message or handle it as needed
       console.error('Invalid email');
     }
   });
@@ -206,88 +200,62 @@ function validateEmail(email) {
   return emailPattern.test(email);
 }
 
-
-
-
-
-
 $(document).ready(function() {
-   document.getElementById('timerDisplay')
-   
-    $('#verify').click(function() {
-        const otpverify = document.getElementById("otpverify");
-        const otpnumber = otpverify.value; // Assuming you have an input field with the user's email
-        console.log(otpnumber, "this is the otp number");
+  $('#verify').click(function() {
+    const otpverify = document.getElementById("otpverify");
+    const otpnumber = otpverify.value;
 
-        // Make an AJAX request to your server
-        $.ajax({
-            url: "/verify", // Update with the correct endpoint
-            type: "POST",
-            data: JSON.stringify({ otp: otpnumber }), // Corrected variable name to otpnumber
-            contentType: "application/json",
-            success: function(response) {
-                // Handle the success response from the server
-                
-                if (response.status) {
-                const verifyButton = document.getElementById("verify");
-                verifyButton.innerHTML = "Verified";
-                 clearInterval( intervalId)
-                 timerDisplay.style.display = 'none'
-                 document.querySelector(".otp").disabled= false
-               
-               console.log(response.message);
-                } else {
-               const verifyButton = document.getElementById("verify");
-                 verifyButton.innerHTML = "Failed";
-                 clearInterval( intervalId)
-                 timerDisplay.style.display = 'none'
-                 document.querySelector(".otp").disabled= false
-                 
-                console.log(response.message);
-                }
-   
-
-
-
-                // Output: "OTP Send To Your Email"
-                // Display a success message to the user or handle accordingly
-            },
-            error: function(error) {
-                // Handle the error response from the server
-                console.error('Error verifying OTP:', error.responseJSON.error);
-                // Display an error message to the user or handle accordingly
-            }
-        });
+    $.ajax({
+      url: "/verify",
+      type: "POST",
+      data: JSON.stringify({ otp: otpnumber }),
+      contentType: "application/json",
+      success: function(response) {
+        const verifyButton = document.getElementById("verify");
+        if (response.status) {
+          verifyButton.innerHTML = "Verified";
+          clearInterval(intervalId);
+          document.getElementById('timerDisplay').style.display = 'none';
+          document.querySelector(".otp").disabled = false;
+        } else {
+          verifyButton.innerHTML = "Failed";
+          clearInterval(intervalId);
+          resetTimer();
+        }
+      },
+      error: function(error) {
+        console.error('Error verifying OTP:', error.responseJSON.error);
+      }
     });
+  });
 });
 
 function startTimer() {
   let timer = 30;
   const timerDisplay = document.getElementById('timerDisplay');
 
-   intervalId = setInterval(function() {
+  intervalId = setInterval(function() {
     timerDisplay.textContent = timer + " Sec Left";
     timer--;
 
     if (timer < 0) {
       clearInterval(intervalId);
       resetTimer();
+      document.querySelector(".otp").disabled=true;
     }
   }, 1000);
 }
 
 function resetTimer() {
   const timerDisplay = document.getElementById('timerDisplay');
-  document.querySelector(".otp").disabled= false
+  document.querySelector(".otp").disabled= false;
   timerDisplay.textContent = '';
 }
 
-  setTimeout(()=>{
-     
-    const insertmessage = document.getElementById("insertmessage")
-    insertmessage.style.display= 'none'
-  },6000)
-
+setTimeout(() => {
+  const insertmessage = document.getElementById("insertmessage");
+  insertmessage.style.display = 'none';
+}, 6000);
 
 </script>
 

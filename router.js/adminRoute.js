@@ -3,6 +3,7 @@ const adminMiddleware = require('../middleware/adminAuth')
 const customerController = require('../controller/customerController')
 const productsController = require("../controller/productsController")
 const categoryController = require('../controller/categoryController')
+const adminOrderController = require("../controller/adminOrder")
 const upload = require('../middleware/multer')
 const otpHelper = require('../helper/otphelper')
 const express = require("express");
@@ -10,9 +11,7 @@ const userRoute = require("./userFeat");
 const  adminRoute = express.Router()
      
 
-//otp 
-adminRoute.post('/Otp',otpHelper.sendOtp)
-adminRoute.post('/verify',otpHelper.verify)
+
 
 
 
@@ -42,11 +41,10 @@ adminRoute.get('/unblockuser', adminMiddleware.adminLogged, customerController.U
 adminRoute.get('/products', adminMiddleware.adminLogged , productsController.productsLoad)
 adminRoute.get('/addproducts',adminMiddleware.adminLogged,productsController.createProductPage)
 adminRoute.post('/addproducts',upload.array("images",5),productsController.addproducts)
-adminRoute.get('/blockproduct',adminMiddleware.adminLogged,productsController.list)
-adminRoute.get('/unblockproduct',adminMiddleware.adminLogged,productsController.unList)
+adminRoute.patch('/blockOrUnblockproduct',adminMiddleware.adminLogged,productsController.blockOrUnblockproduct)
 adminRoute.get('/editproduct',adminMiddleware.adminLogged,productsController.getEditProduct)
 adminRoute.post('/deleteimage',adminMiddleware.adminLogged,productsController.deleteImage)
-adminRoute.post('/editProduct/:id',upload.array("images",5),productsController.productUpdate)
+adminRoute.post('/editProduct/:id',upload.array("images",5),productsController.productUpdate)  
 
 
 
@@ -57,21 +55,13 @@ adminRoute.get('/editCategory',adminMiddleware.adminLogged,categoryController.ca
 adminRoute.post("/editCategory/:id",adminMiddleware.adminLogged,categoryController.updateCategory)
 adminRoute.get("/addcategory",adminMiddleware.adminLogged,categoryController.categoryAddPage)
 adminRoute.post("/categoryadd",adminMiddleware.adminLogged,categoryController.addToCategory)
-adminRoute.put("/unlist",categoryController.unlistorlist)
+adminRoute.patch("/unlist",categoryController.unlistorlist)
     
 
-
-
-
-
-
-
-
-
-// console.log("request come send otp route")
-// adminRoute.post('/sendotp',otpHelper.sendOtp)
-// adminRoute.post('/verify',otpHelper.verify)
-
+//Adminside ORDER
+adminRoute.get("/orders",adminMiddleware.adminLogged,adminOrderController.orderList)
+adminRoute.get("/adminOrderDetail",adminMiddleware.adminLogged,adminOrderController.individualOrderDetail)
+adminRoute.patch("/changestatus",adminMiddleware.adminLogged,adminOrderController.statusUpdating)
 
 
 

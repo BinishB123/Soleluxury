@@ -17,6 +17,7 @@
     <!-- <link rel="shortcut icon" type="image/x-icon" href="/public/assets/imgs/theme/favicon.svg"> -->
     <!-- Template CSS -->
     <link rel="stylesheet" href="/public/assets/css/maind134.css?v=3.4">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 </head>
 
@@ -166,25 +167,13 @@
             <div class="container">
                 <div class="header-wrap">
                     <div class="logo logo-width-1">
-                        <a href="index.html"><img src="/public/assets/my/logo3.png" alt="logo"></a>
+                        <a href="/profile"><img src="/public/assets/my/logo3.png" alt="logo"></a>
                     </div>
                     <div class="header-right">
                         <div class="search-style-2">
-                            <form action="#">
-                                <select class="select-active">
-                                    <option>All Categories</option>
-                                    <option>Women's</option>
-                                    <option>Men's</option>
-                                    <option>Cellphones</option>
-                                    <option>Computer</option>
-                                    <option>Electronics</option>
-                                    <option> Accessories</option>
-                                    <option>Home & Garden</option>
-                                    <option>Luggage</option>
-                                    <option>Shoes</option>
-                                    <option>Mother & Kids</option>
-                                </select>
-                                <input type="text" placeholder="Search for items...">
+                            <form action="/search">
+                                
+                                <input type="text" name="search" placeholder="Search for items...">
                             </form>
                         </div>
                         <div class="header-action-right">
@@ -194,49 +183,31 @@
                                         <img class="svgInject" alt="Evara" src="/public/assets/imgs/theme/icons/icon-heart.svg">
                                     </a>
                                 </div>
+                                
                                 <div class="header-action-icon-2">
-                                    <a class="mini-cart-icon" href="shop-cart.html">
+                                    <a class="mini-cart-icon" href="/cart">
                                         <img alt="Evara" src="/public/assets/imgs/theme/icons/icon-cart.svg">
                                        
                                     </a>
-                                    <div class="cart-dropdown-wrap cart-dropdown-hm2">
-                                        <ul>
-                                            <li>
-                                                <div class="shopping-cart-img">
-                                                    <a href="shop-product-right.html"><img alt="Evara" src="/public/assets/imgs/shop/thumbnail-3.jpg"></a>
-                                                </div>
-                                                <div class="shopping-cart-title">
-                                                    <h4><a href="shop-product-right.html">Daisy Casual Bag</a></h4>
-                                                    <h4><span>1 × </span>$800.00</h4>
-                                                </div>
-                                                <div class="shopping-cart-delete">
-                                                    <a href="#"><i class="fi-rs-cross-small"></i></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="shopping-cart-img">
-                                                    <a href="shop-product-right.html"><img alt="Evara" src="/public/assets/imgs/shop/thumbnail-2.jpg"></a>
-                                                </div>
-                                                <div class="shopping-cart-title">
-                                                    <h4><a href="shop-product-right.html">Corduroy Shirts</a></h4>
-                                                    <h4><span>1 × </span>$3200.00</h4>
-                                                </div>
-                                                <div class="shopping-cart-delete">
-                                                    <a href="#"><i class="fi-rs-cross-small"></i></a>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                        <div class="shopping-cart-footer">
-                                            <div class="shopping-cart-total">
-                                                <h4>Total <span>$4000.00</span></h4>
-                                            </div>
-                                            <div class="shopping-cart-button">
-                                                <a href="shop-cart.html" class="outline">View cart</a>
-                                                <a href="shop-checkout.html">Checkout</a>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    
                                 </div>
+                                    <div class="dropdown">
+                                        <a class="menu-link dropdown-toggle" href="/profile" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-person-circle" style="font-size: 30px; color: black;"></i>
+                                        </a>
+                                        <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+                                            <% if (locals.user) { %>
+                                                <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                                                <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                                            <% } else { %>
+                                                <li><a class="dropdown-item" href="/login">Login</a></li>
+                                            <% } %>
+                                        </ul>
+                                        
+                                    </div>
+                                    
+                                    
+                             </div>
                             </div>
                         </div>
                     </div>
@@ -247,7 +218,7 @@
             <div class="container">
                 <div class="header-wrap header-space-between position-relative">
                     <div class="logo logo-width-1 d-block d-lg-none">
-                        <a href="index.html"><img src="/public/assets/imgs/theme/logo.svg" alt="logo"></a>
+                        <a href="/home"><img src="/public/admin-assets/mysole/logo3.png" alt="logo"></a>
                     </div>
                     <div class="header-nav d-none d-lg-flex">
                         <div class="main-categori-wrap d-none d-lg-block">
@@ -431,60 +402,32 @@
                         <div class="main-menu main-menu-padding-1 main-menu-lh-2 d-none d-lg-block">
                             <nav>
                                 <ul>
-                                    <li><a class="active" href="index.html">Home <i class="fi-rs-angle-down"></i></a>
+                                    <li><a class="active" href="/home">Home</i></a>
                                         <ul class="sub-menu">
-                                            <li><a href="index.html">Home 1</a></li>
+                                            <!-- <li><a href="index.html">Home 1</a></li>
                                             <li><a href="index-2.html">Home 2</a></li>
                                             <li><a href="index-3.html">Home 3</a></li>
-                                            <li><a href="index-4.html">Home 4</a></li>
+                                            <li><a href="index-4.html">Home 4</a></li> -->
                                         </ul>
                                     </li>
                                     <li>
-                                        <a href="page-about.html">About</a>
+                                        <a href="/nav?clicked=Mens">Mens</a>
                                     </li>
-                                    <li><a href="shop-grid-right.html">Shop <i class="fi-rs-angle-down"></i></a>
-                                        <ul class="sub-menu">
-                                            <li><a href="shop-grid-right.html">Shop Grid – Right Sidebar</a></li>
-                                            <li><a href="shop-grid-left.html">Shop Grid – Left Sidebar</a></li>
-                                            <li><a href="shop-list-right.html">Shop List – Right Sidebar</a></li>
-                                            <li><a href="shop-list-left.html">Shop List – Left Sidebar</a></li>
-                                            <li><a href="shop-fullwidth.html">Shop - Wide</a></li>
-                                            <li><a href="#">Single Product <i class="fi-rs-angle-right"></i></a>
-                                                <ul class="level-menu">
-                                                    <li><a href="shop-product-right.html">Product – Right Sidebar</a></li>
-                                                    <li><a href="shop-product-left.html">Product – Left Sidebar</a></li>
-                                                    <li><a href="shop-product-full.html">Product – No sidebar</a></li>
-                                                </ul>
-                                            </li>
-                                            <li><a href="shop-filter.html">Shop – Filter</a></li>
-                                            <li><a href="shop-wishlist.html">Shop – Wishlist</a></li>
-                                            <li><a href="shop-cart.html">Shop – Cart</a></li>
-                                            <li><a href="shop-checkout.html">Shop – Checkout</a></li>
-                                            <li><a href="shop-compare.html">Shop – Compare</a></li>
-                                        </ul>
+                                    <li><a href="/nav?clicked=Womens">Womens </a>
+                                       
                                     </li>
-                                    <li class="position-static"><a href="#">Mega menu <i class="fi-rs-angle-down"></i></a>
-                                        <ul class="mega-menu">
+                                    <li class="position-static"><a href="/nav?clicked=kids">Kids</i></a>
+                                        <!-- <ul class="mega-menu">
                                             <li class="sub-mega-menu sub-mega-menu-width-22">
                                                 <a class="menu-title" href="#">Women's Fashion</a>
                                                 <ul>
-                                                    <li><a href="shop-product-right.html">Dresses</a></li>
-                                                    <li><a href="shop-product-right.html">Blouses & Shirts</a></li>
-                                                    <li><a href="shop-product-right.html">Hoodies & Sweatshirts</a></li>
-                                                    <li><a href="shop-product-right.html">Wedding Dresses</a></li>
-                                                    <li><a href="shop-product-right.html">Prom Dresses</a></li>
-                                                    <li><a href="shop-product-right.html">Cosplay Costumes</a></li>
+                                                    
                                                 </ul>
                                             </li>
                                             <li class="sub-mega-menu sub-mega-menu-width-22">
                                                 <a class="menu-title" href="#">Men's Fashion</a>
                                                 <ul>
-                                                    <li><a href="shop-product-right.html">Jackets</a></li>
-                                                    <li><a href="shop-product-right.html">Casual Faux Leather</a></li>
-                                                    <li><a href="shop-product-right.html">Genuine Leather</a></li>
-                                                    <li><a href="shop-product-right.html">Casual Pants</a></li>
-                                                    <li><a href="shop-product-right.html">Sweatpants</a></li>
-                                                    <li><a href="shop-product-right.html">Harem Pants</a></li>
+                                                   
                                                 </ul>
                                             </li>
                                             <li class="sub-mega-menu sub-mega-menu-width-22">
@@ -518,9 +461,9 @@
                                                     </div>
                                                 </div>
                                             </li>
-                                        </ul>
+                                        </ul> -->
                                     </li>
-                                    <li><a href="blog-category-grid.html">Blog <i class="fi-rs-angle-down"></i></a>
+                                    <li><a href="/profile">Profile </i></a>
                                         <ul class="sub-menu">
                                             <li><a href="blog-category-grid.html">Blog Category Grid</a></li>
                                             <li><a href="blog-category-list.html">Blog Category List</a></li>
@@ -535,7 +478,7 @@
                                             </li>
                                         </ul>
                                     </li>
-                                    <li><a href="#">Pages <i class="fi-rs-angle-down"></i></a>
+                                    <li><a href="#"></i></a>
                                         <ul class="sub-menu">
                                             <li><a href="page-about.html">About Us</a></li>
                                             <li><a href="page-contact.html">Contact</a></li>
@@ -548,7 +491,7 @@
                                         </ul>
                                     </li>
                                     <li>
-                                        <a href="page-contact.html">Contact</a>
+                                        <a href="page-contact.html"></a>
                                     </li>
                                 </ul>
                             </nav>
@@ -624,7 +567,8 @@
         <div class="mobile-header-wrapper-inner">
             <div class="mobile-header-top">
                 <div class="mobile-header-logo">
-                    <a href="index.html"><img src="/public/assets/imgs/theme/logo.svg" alt="logo"></a>
+                    <a href="/home"><img src="/public/admin-assets/mysole/logo3.png" alt="logo"></a>
+                    <!-- <a href="index.html"><img src="/public/admin-assets/mysole/logo3.png" alt="logo"></a> -->
                 </div>
                 <div class="mobile-menu-close close-style-wrap close-style-position-inherit">
                     <button class="close-style search-close">
@@ -635,7 +579,7 @@
             </div>
             <div class="mobile-header-content-area">
                 <div class="mobile-search search-style-3 mobile-header-border">
-                    <form action="#">
+                    <form action="/search">
                         <input type="text" placeholder="Search for items…">
                         <button type="submit"><i class="fi-rs-search"></i></button>
                     </form>
@@ -643,10 +587,10 @@
                 <div class="mobile-menu-wrap mobile-header-border">
                     <div class="main-categori-wrap mobile-header-border">
                         <a class="categori-button-active-2" href="#">
-                            <span class="fi-rs-apps"></span> Browse Categories
+                            <!-- <span class="fi-rs-apps"></span> Browse Categories -->
                         </a>
                         <div class="categori-dropdown-wrap categori-dropdown-active-small">
-                            <ul>
+                            <!-- <ul>
                                 <li><a href="shop-grid-right.html"><i class="evara-font-dress"></i>Women's Clothing</a></li>
                                 <li><a href="shop-grid-right.html"><i class="evara-font-tshirt"></i>Men's Clothing</a></li>
                                 <li> <a href="shop-grid-right.html"><i class="evara-font-smartphone"></i> Cellphones</a></li>
@@ -656,22 +600,22 @@
                                 <li><a href="shop-grid-right.html"><i class="evara-font-high-heels"></i>Shoes</a></li>
                                 <li><a href="shop-grid-right.html"><i class="evara-font-teddy-bear"></i>Mother & Kids</a></li>
                                 <li><a href="shop-grid-right.html"><i class="evara-font-kite"></i>Outdoor fun</a></li>
-                            </ul>
+                            </ul> -->
                         </div>
                     </div>
                     <!-- mobile menu start -->
                     <nav>
                         <ul class="mobile-menu">
-                            <li class="menu-item-has-children"><span class="menu-expand"></span><a href="index.html">Home</a>
-                                <ul class="dropdown">
+                            <li class="menu-item-has-children"><span class="menu-expand"></span><a href="/home">Home</a>
+                                <!-- <ul class="dropdown">
                                     <li><a href="index.html">Home 1</a></li>
                                     <li><a href="index-2.html">Home 2</a></li>
                                     <li><a href="index-3.html">Home 3</a></li>
                                     <li><a href="index-4.html">Home 4</a></li>
-                                </ul>
+                                </ul> -->
                             </li>
-                            <li class="menu-item-has-children"><span class="menu-expand"></span><a href="shop-grid-right.html">shop</a>
-                                <ul class="dropdown">
+                            <li class="menu-item-has-children"><span class="menu-expand"></span><a href="/nav?clicked=Womens">Womens</a>
+                                <!-- <ul class="dropdown">
                                     <li><a href="shop-grid-right.html">Shop Grid – Right Sidebar</a></li>
                                     <li><a href="shop-grid-left.html">Shop Grid – Left Sidebar</a></li>
                                     <li><a href="shop-list-right.html">Shop List – Right Sidebar</a></li>
@@ -689,10 +633,10 @@
                                     <li><a href="shop-cart.html">Shop – Cart</a></li>
                                     <li><a href="shop-checkout.html">Shop – Checkout</a></li>
                                     <li><a href="shop-compare.html">Shop – Compare</a></li>
-                                </ul>
+                                </ul> -->
                             </li>
-                            <li class="menu-item-has-children"><span class="menu-expand"></span><a href="#">Mega menu</a>
-                                <ul class="dropdown">
+                            <li class="menu-item-has-children"><span class="menu-expand"></span><a href="/nav?clicked=Mens">mens</a>
+                                <!-- <ul class="dropdown">
                                     <li class="menu-item-has-children"><span class="menu-expand"></span><a href="#">Women's Fashion</a>
                                         <ul class="dropdown">
                                             <li><a href="shop-product-right.html">Dresses</a></li>
@@ -717,10 +661,10 @@
                                             <li><a href="shop-product-right.html">Tablet Accessories</a></li>
                                         </ul>
                                     </li>
-                                </ul>
+                                </ul> -->
                             </li>
-                            <li class="menu-item-has-children"><span class="menu-expand"></span><a href="blog-category-fullwidth.html">Blog</a>
-                                <ul class="dropdown">
+                            <li class="menu-item-has-children"><span class="menu-expand"></span><a href="/nav?clicked=kids">Kids</a>
+                                <!-- <ul class="dropdown">
                                     <li><a href="blog-category-grid.html">Blog Category Grid</a></li>
                                     <li><a href="blog-category-list.html">Blog Category List</a></li>
                                     <li><a href="blog-category-big.html">Blog Category Big</a></li>
@@ -732,10 +676,10 @@
                                             <li><a href="blog-post-fullwidth.html">No Sidebar</a></li>
                                         </ul>
                                     </li>
-                                </ul>
+                                </ul> -->
                             </li>
-                            <li class="menu-item-has-children"><span class="menu-expand"></span><a href="#">Pages</a>
-                                <ul class="dropdown">
+                            <li class="menu-item-has-children"><span class="menu-expand"></span><a href="/profile">Profile</a>
+                                <!-- <ul class="dropdown">
                                     <li><a href="page-about.html">About Us</a></li>
                                     <li><a href="page-contact.html">Contact</a></li>
                                     <li><a href="page-account.html">My Account</a></li>
@@ -744,15 +688,15 @@
                                     <li><a href="page-privacy-policy.html">Privacy Policy</a></li>
                                     <li><a href="page-terms.html">Terms of Service</a></li>
                                     <li><a href="page-404.html">404 Page</a></li>
-                                </ul>
+                                </ul> -->
                             </li>
-                            <li class="menu-item-has-children"><span class="menu-expand"></span><a href="#">Language</a>
-                                <ul class="dropdown">
+                            <li class="menu-item-has-children"><span class="menu-expand"></span><a href="#"></a>
+                                <!-- <ul class="dropdown">
                                     <li><a href="#">English</a></li>
                                     <li><a href="#">French</a></li>
                                     <li><a href="#">German</a></li>
                                     <li><a href="#">Spanish</a></li>
-                                </ul>
+                                </ul> -->
                             </li>
                         </ul>
                     </nav>
@@ -760,22 +704,22 @@
                 </div>
                 <div class="mobile-header-info-wrap mobile-header-border">
                     <div class="single-mobile-header-info mt-30">
-                        <a  href="page-contact.html"> Our location </a>
+                        <!-- <a  href="page-contact.html"> Our location </a> -->
                     </div>
                     <div class="single-mobile-header-info">
-                        <a href="page-login-register.html">Log In / Sign Up </a>
+                        <!-- <a href="page-login-register.html">Log In / Sign Up </a> -->
                     </div>
                     <div class="single-mobile-header-info">
-                        <a href="#">(+01) - 2345 - 6789 </a>
+                        <!-- <a href="#">(+01) - 2345 - 6789 </a> -->
                     </div>
                 </div>
                 <div class="mobile-social-icon">
-                    <h5 class="mb-15 text-grey-4">Follow Us</h5>
-                    <a href="#"><img src="/public/assets/imgs/theme/icons/icon-facebook.svg" alt=""></a>
-                    <a href="#"><img src="/public/assets/imgs/theme/icons/icon-twitter.svg" alt=""></a>
-                    <a href="#"><img src="/public/assets/imgs/theme/icons/icon-instagram.svg" alt=""></a>
-                    <a href="#"><img src="/public/assets/imgs/theme/icons/icon-pinterest.svg" alt=""></a>
-                    <a href="#"><img src="/public/assets/imgs/theme/icons/icon-youtube.svg" alt=""></a>
+                    <!-- <h5 class="mb-15 text-grey-4">Follow Us</h5> -->
+                    <!-- <a href="#"><img src="/public/assets/imgs/theme/icons/icon-facebook.svg" alt=""></a> -->
+                    <!-- <a href="#"><img src="/public/assets/imgs/theme/icons/icon-twitter.svg" alt=""></a> -->
+                    <!-- <a href="#"><img src="/public/assets/imgs/theme/icons/icon-instagram.svg" alt=""></a> -->
+                    <!-- <a href="#"><img src="/public/assets/imgs/theme/icons/icon-pinterest.svg" alt=""></a> -->
+                    <!-- <a href="#"><img src="/public/assets/imgs/theme/icons/icon-youtube.svg" alt=""></a> -->
                 </div>
             </div>
         </div>
@@ -853,23 +797,34 @@
             <div class="container">
                 <div class="tab-header">
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="nav-tab-one" data-bs-toggle="tab" data-bs-target="#tab-one" type="button" role="tab" aria-controls="tab-one" aria-selected="true" style="color: black;">Featured</button>
+                            <a class="nav-link active" id="nav-tab-one"  href="/filtered?brand=Nike" role="tab" aria-controls="tab-one"  style="color: black;">Nike</a>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="nav-tab-two" data-bs-toggle="tab" data-bs-target="#tab-two" type="button" role="tab" aria-controls="tab-two" aria-selected="false" style="color: black;">Popular</button>
+                            <a class="nav-link" id="nav-tab-two"  href="/filtered?brand=Fila" role="tab" aria-controls="tab-two"  style="color: black;">Fila</a>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="nav-tab-three" data-bs-toggle="tab" data-bs-target="#tab-three" type="button" role="tab" aria-controls="tab-three" aria-selected="false" style="color: black;">New added</button>
+                            <a class="nav-link" id="nav-tab-three"  href="" role="tab" aria-controls="tab-three" aria-selected="false" style="color: black;">Sports</a>
                         </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="nav-tab-two"  href="/filtered?latest=latest" role="tab" aria-controls="tab-two"  style="color: black;">Latest</a>
+                        </li>
+                       <li class="nav-item" role="presentation">
+                           <a class="btn btn-sm" href="/pricefiltered?clicked=lth" style="background-color: white; color: black;">Price: Low to High</a>
+                       </li>
+                       <li class="nav-item" role="presentation" style="margin-left: 10px;">
+                           <a class="btn btn-sm" href="/pricefiltered?clicked=htl" style="background-color: white; color: black;">Price: High to Low</a>
+                       </li>
+                       
                     </ul>
-                    <a href="#" class="view-more d-none d-md-flex" style="color: black;">View More<i class="fi-rs-angle-double-small-right"></i></a>
+                    <!-- <a href="#" class="view-more d-none d-md-flex" style="color: black;">View More<i class="fi-rs-angle-double-small-right"></i></a> -->
                 </div>
                 <!--End nav-tabs-->
                 <div class="tab-content wow fadeIn animated" id="myTabContent">
                     <div class="tab-pane fade show active" id="tab-one" role="tabpanel" aria-labelledby="tab-one">
                         <div class="row product-grid-4">
-                            <% for(let i = 0;i<data.length ;i++ ) {%>
+                     <% for(let i = 0;i<data.length ;i++ ) {%>
                             <div class="col-lg-3 col-md-4 col-12 col-sm-6">
                                 <div class="product-cart-wrap mb-30">
                                     <div class="product-img-action-wrap">
@@ -1175,7 +1130,7 @@
                         <!--End product-grid-4-->
                     </div>
                     <!--En tab one (Featured)-->
-                    <div class="tab-pane fade" id="tab-two" role="tabpanel" aria-labelledby="tab-two">
+                    <!-- <div class="tab-pane fade" id="tab-two" role="tabpanel" aria-labelledby="tab-two">
                         <div class="row product-grid-4">
                             <div class="col-lg-3 col-md-4 col-12 col-sm-6">
                                 <div class="product-cart-wrap mb-30">
@@ -1478,10 +1433,10 @@
                                 </div>
                             </div>
                         </div>
-                        <!--End product-grid-4-->
-                    </div>
+                        -End product-grid-4
+                    </div>-->
                     <!--En tab two (Popular)-->
-                    <div class="tab-pane fade" id="tab-three" role="tabpanel" aria-labelledby="tab-three">
+                    <!-- <div class="tab-pane fade" id="tab-three" role="tabpanel" aria-labelledby="tab-three">
                         <div class="row product-grid-4">
                             <div class="col-lg-3 col-md-4 col-12 col-sm-6">
                                 <div class="product-cart-wrap mb-30">
@@ -1784,8 +1739,8 @@
                                 </div>
                             </div>
                         </div>
-                        <!--End product-grid-4-->
-                    </div>
+                        <End product-grid-4
+                    </div> -->
                     <!--En tab three (New added)-->
                 </div>
                 <!--End tab-content-->
@@ -1812,9 +1767,9 @@
                         <% for(let i =0;i<data.length;i++){ %>
                         <div class="card-1">
                             <figure class=" img-hover-scale overflow-hidden">
-                                <a href="shop-grid-right.html"><img src="public/photos/productImages/<%=data[i].productImage[0]%>" alt=""></a>
+                                <a href="/productview/<%=data[i]._id %>"><img src="public/photos/productImages/<%=data[i].productImage[0]%>" alt=""></a>
                             </figure>
-                            <h5><a href="shop-grid-right.html"><%=data[i].productName%></a></h5>
+                            <h5><a href="/productview/<%=data[i]._id %>"><%=data[i].productName%></a></h5>
                         </div>
                         <% } %>
                        
@@ -1870,7 +1825,7 @@
                         <div class="product-cart-wrap small hover-up">
                             <div class="product-img-action-wrap">
                                 <div class="product-img product-img-zoom">
-                                    <a href="shop-product-right.html">
+                                    <a href="/productview/<%=data[i]._id %>">
                                         <img class="default-img" src="/public/photos/productImages/<%=data[i].productImage[1]%>" alt="">
                                         <!-- <img class="hover-img" src="/public/assets/imgs/shop/product-2-2.jpg" alt=""> -->
                                     </a>
@@ -1909,8 +1864,8 @@
             </div>
         </section>
         
-        <section class="bg-grey-9 section-padding">
-            <div class="container pt-25 pb-25">
+        <section class=" section-padding" style="background-color: white;">
+            <!-- <div class="container pt-25 pb-25">
                 <div class="heading-tab d-flex">
                     <div class="heading-tab-left wow fadeIn animated">
                         <h3 class="section-title mb-20"><span>Monthly</span> Best Sell</h3>
@@ -1932,10 +1887,10 @@
                 <div class="row">
                     <div class="col-lg-3 d-none d-lg-flex">
                         <div class="banner-img style-2 wow fadeIn animated">
-                            <img src="/public/assets/imgs/banner/banner-9.jpg" alt="">
+                            <img src="/public/photos/brandImages/photo-1606107557195-0e29a4b5b4aa.avif" alt="">
                             <div class="banner-text">
                                 <span>Woman Area</span>
-                                <h4 class="mt-5">Save 17% on <br>Clothing</h4>
+                                <h4 class="mt-5">Save 17%  </h4>
                                 <a href="shop-grid-right.html" class="text-white">Shop Now <i class="fi-rs-arrow-right"></i></a>
                             </div>
                         </div>
@@ -2134,7 +2089,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!--End tab-pane-->
+                               End tab-pane-->
                             <div class="tab-pane fade" id="tab-two-1" role="tabpanel" aria-labelledby="tab-two-1">
                                 <div class="carausel-4-columns-cover arrow-center position-relative">
                                     <div class="slider-arrow slider-arrow-2 carausel-4-columns-arrow" id="carausel-4-columns-2-arrows"></div>
@@ -2524,14 +2479,14 @@
                     </div>
                     <!--End Col-lg-9-->
                 </div>
-            </div>
+            </div> -->
         </section>
 
       
 
     </main>
     <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-danger" href="/logout"><i class="material-icons md-exit_to_app"></i>Logout</a>
+                          
                         </div>
  
     <footer class="main">
