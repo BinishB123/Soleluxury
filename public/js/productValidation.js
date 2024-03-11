@@ -58,6 +58,16 @@ function submitFormData() {
                                        location.reload()
                                     }, 2000);
             }
+                   if (response.status===false) {
+                    Toastify({
+                        text: response.message,
+                         backgroundColor: "red",
+                     duration: 5000,
+                     position: "center" 
+                 }).showToast();
+                    
+                   }
+
             
             
         },
@@ -92,7 +102,7 @@ function validateForm() {
     const description = document.getElementById("descriptionX").value.trim();
     const color = document.getElementById("colorX").value.trim();
     const regularPrice = parseFloat(document.getElementById("regularPriceX").value);
-    const salePrice = parseFloat(document.getElementById("salePriceX").value);
+    const discount = parseFloat(document.getElementById("discountX").value);
     const ssizeq = document.getElementById("ssizeq").value.trim();
     const msizeq = document.getElementById("msizeq").value.trim();
     const lsizeq = document.getElementById("lsizeq").value.trim();
@@ -124,14 +134,14 @@ function validateForm() {
         isValid = false;
     }
 
-    if (  regularPrice < salePrice) {
-        displayErrorMessage("salePrice-error", "Sale price must be lessthan regularPrice");
+     if (isNaN(discount) ) {
+        displayErrorMessage("discount-error", "discount must be in numbers");
         isValid = false;
-    }else if (isNaN(salePrice) ) {
-        displayErrorMessage("salePrice-error", "Sale price must be in numbers");
+    }else if (discount <= 0 ) {
+        displayErrorMessage("discount-error", "discount must be a valid positive number");
         isValid = false;
-    }else if (salePrice <= 0 ) {
-        displayErrorMessage("salePrice-error", "Sale price must be a valid positive number");
+    }else if(discount >=100){
+        displayErrorMessage("discount-error", "discount must be lessthan 100 ");
         isValid = false;
     }
 

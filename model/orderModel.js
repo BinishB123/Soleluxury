@@ -61,8 +61,15 @@ const orderSchema = new mongoose.Schema({
     },
     totalAmount:{
         type:Number
+    },
+    coupon:{
+        type:mongoose.Types.ObjectId,
+            ref:"coupons"
     }
 })
+
+
+
 
 const order = mongoose.model("orders",orderSchema)
 module.exports = order

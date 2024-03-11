@@ -2,6 +2,7 @@ const { response } = require("express")
 const cartModel = require("../model/cartModel")
 const productModel = require("../model/productModel")
 const cartHelper = require("../helper/cartHelper")
+const offerHelper = require("../helper/offerHelper")
 const {ObjectId} = require('mongodb')
 
 const addToCart = async (req, res) => {
@@ -16,10 +17,9 @@ const addToCart = async (req, res) => {
             
             const cartItems = {
                 productId: productId,
-                price: product.salePrice,
                 size:size
             };
-
+ 
             const userAlreadyHaveCart = await cartModel.findOne({userId:userId})
             const productAlreadyInTheCart = await cartModel.findOne({
                 userId: userId,
@@ -29,7 +29,12 @@ const addToCart = async (req, res) => {
                         size: size 
                     }
                 }
-            });
+            });  
+
+            if (productAlreadyInTheCart) {
+                res.json({response:false,errorMessage:"product already in cart"})
+                return
+            }
             
             
               
@@ -146,15 +151,24 @@ const quantityIncrementOrDecrement = async (req, res) => {
                         products.push(finalProduct);
                     }
                 }
+                // for (let i = 0; i < products.length; i++) {
+                    
+                //     products[i].salePrice = Math.round(
+                //       products[i].regularPrice -
+                //         (products[i].regularPrice * products[i].discount) / 100
+                //     );
+                //   }
+
+                  products = await offerHelper.findOffer(products)
                  const newQuantityprice = await cartHelper.subtotal(products,userId)
                  
 
                if (quantityUpdated) {
                 res.json({ success: true, newquatityPrice: newQuantityprice ,quantity:quantityUpdated,productid:productId,prosize:size});
                }else{
-                const oldqty = await cartModel.aggregate([{$match:{userId:new ObjectId(userId)}},{$unwind:'$items'},{$match:{'items.productId':new ObjectId(productId),'items.size':size}},{$project:{'items.quantity':1,_id:0}}])
-                console.log(oldqty[0].items.quantity)
-                res.json({success:false ,newquatityPrice:newQuantityprice ,quantity:oldqty[0].items.quantity,productid:productId,prosize:size})
+                const oldqty = await productModel.aggregate([{$match:{_id:new ObjectId(productId)}}])
+                const carqtychange = await cartModel.findOneAndUpdate({userId:userId,'items.productId':productId,'items.size':size},{$set:{'items.$.quantity':oldqty[0].size[size].quantity}})
+                res.json({success:false ,newquatityPrice:newQuantityprice ,quantity:oldqty[0].size[size].quantity,productid:productId,prosize:size})
                }
                 
             

@@ -72,10 +72,10 @@ const addToCategory = async(req,res)=>{
     console.log("now at add to category")
       const name = req.body.categoryName;
       const description = req.body.description
-      console.log(name+" "+description)
+      
 
        const categoryExist = await categoryModel.findOne({name:name})
-       console.log("////"+categoryExist+"//////")
+       
        if (!categoryExist) {
             const categoryadded = {
               name:name,

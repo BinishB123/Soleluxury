@@ -36,7 +36,7 @@ function otpSend() {
 
     if (isValidEmail) {
         console.log("otp sending")
-        
+       
         $.ajax({
             url: `/sendotp`,
             type: 'POST',

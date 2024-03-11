@@ -17,7 +17,10 @@ const productFiltered = () => {
                         "category.islisted": true,
                         "isBlocked": false
                     }
-                }
+                },{
+                    $unwind:"$category"
+                },
+                {$limit:4}
                 
             ]);
            

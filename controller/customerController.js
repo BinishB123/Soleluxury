@@ -10,8 +10,14 @@ const customerList = async (req, res) => {
     
 
         if (userData) {
+            const itemsPerPage =5
+            let currentPage = parseInt(req.query.page) || 1
+            let startIndex = (currentPage-1)* itemsPerPage
+            let endIndex = startIndex +itemsPerPage
+            let totalPages = Math.ceil(userData.length/itemsPerPage)
+            const users = userData.slice(startIndex,endIndex)
             
-         res.render("customerlist", { users: userData });
+         res.render("customerlist", { users: users ,totalPages:totalPages,currentPage:currentPage});
         } else { 
            
             res.status(403).send("Access denied");

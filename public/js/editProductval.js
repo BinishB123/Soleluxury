@@ -1,7 +1,7 @@
 const productnameid = document.getElementById("productnameX");
 const descriptionid = document.getElementById("descriptionX");
 const regularPriceid = document.getElementById("regularPriceX");
-const salePriceid = document.getElementById("salePriceX");
+const discount = document.getElementById("discountX");
 const smallsize_quantityid = document.getElementById("ssizeq");
 const mediumsize_quantityid = document.getElementById("msizeq");
 const largesize_quantityid = document.getElementById("lsizeq");
@@ -10,7 +10,7 @@ const imageid = document.getElementById("imageInput");
 const productNameError = document.getElementById("productName-error");
 const descriptionError = document.getElementById("description-error");
 const regularPriceError = document.getElementById("regularPrice-error");
-const salePriceError = document.getElementById("salePrice-error");
+const discounterror = document.getElementById("discount-error");
 const smallError = document.getElementById("s-error");
 const mediumError = document.getElementById("m-error");
 const largeError = document.getElementById("l-error");
@@ -59,18 +59,22 @@ function validateRegularPrice() {
   }
 }
 
-function validateSalePrice() {
-  const regularPrice = parseFloat(regularPriceid.value);
-  const salePrice = parseFloat(salePriceid.value);
-  if (isNaN(salePrice) || salePrice <= 0 || regularPrice < salePrice) {
-    salePriceError.style.display = "block";
-    salePriceError.innerHTML =
-      "Sale price must be a valid positive number less than Regular price";
-    salePriceError.style.color = "red";
-  } else {
-    salePriceError.style.display = "none";
-    salePriceError.innerHTML = "";
-  }
+function validateDiscount() {
+  const discounts = parseInt(discount.value)
+  if (isNaN(discounts) ) {
+    discounterror.style.display="block"
+    discounterror.innerHTML ="discount must be a number"
+    discounterror.style.color="red"
+}else if (discounts <= 0 ) {
+  discounterror.style.display="block"
+  discounterror.innerHTML ="discount must be a positive number"
+  discounterror.style.color="red"
+}else if(discount >=100){
+  discounterror.style.display="none"
+  discounterror.innerHTML =""
+  
+    
+}
 }
 
 function validateSmallSizeQuantity() {
@@ -143,7 +147,7 @@ function validateImageCount() {
 productnameid.addEventListener("blur", validateProductName);
 descriptionid.addEventListener("blur", validateDescription);
 regularPriceid.addEventListener("blur", validateRegularPrice);
-salePriceid.addEventListener("blur", validateSalePrice);
+discount.addEventListener("blur", validateDiscount);
 smallsize_quantityid.addEventListener("blur", validateSmallSizeQuantity);
 mediumsize_quantityid.addEventListener("blur", validateMediumSizeQuantity);
 largesize_quantityid.addEventListener("blur", validateLargeSizeQuantity);

@@ -1,0 +1,217 @@
+<%- include("../partials/adminHeader") %>
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Coupons Edit </h2>
+            <% if(errorMessage) { %>
+                <span class="text-center" style="color: red;"><%= errorMessage %></span>
+            <% } %>
+            
+        </div>
+        
+
+    </div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6"> <!-- Adjust col-md-6 to suit your layout -->
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post" action="/admin/updateCoupon?id=<%=coupon._id  %>" id="couponform">
+                            <div class="mb-4">
+                                <label for="coupon-name" class="form-label">Coupon Name</label>
+                                <input type="text" id="coupon-name" name="couponName" class="form-control" value="<%= coupon.name %>" />
+                                <div id="error-coupon-name" class="error-message"></div>
+                            </div>
+                            <div>
+                                <label for="startingDate" class="form-label">Start Date</label>
+                                <input type="date" name="startDate" class="form-control" required="true" id="startDate" value="<%=createdOn %>" />
+                                <div id="errorstartdate" class="error-message"></div>
+                            </div>
+                            <div>
+                                <label for="expiringDate" class="form-label">End Date</label>
+                                <input type="date" name="endDate" class="form-control" id="endDate" required="true" value="<%= expireOn %>" />
+                                <div id="errorenddate" class="error-message"></div>
+                            </div>
+                            
+                            
+                            <div class="input-group">
+                                <label for="discount" class="form-label d-block">Discount</label>
+                                <div class="d-flex flex-row align-items-center">
+                                    <input type="text" name="Discount"  class="form-control text-start" id="discount" placeholder="1-100%" class="form-control" style="margin-top: 20px;" value="<%=coupon.discount  %>" />
+                                    <span class="input-group-text"  style="margin-top: 20px;">%</span>
+                                </div>
+                                <div id="discounterror" class="error-message"></div>
+                            </div>
+                            
+                            
+                            
+                            <div class="d-grid">
+                                <button class="btn btn-primary mt-20" type="submit" style="color:white;background-color: rgb(1, 9, 17);">update</button>
+                            </div>
+                            <!-- Container for global error messages -->
+                            <div id="errmsg" class="error-message"></div>
+                        </form>
+                    </div> <!-- card body .// -->
+                </div> <!-- card .// -->
+            </div> <!-- .col-md-6 // -->
+        </div> <!-- .row // -->
+    </div> <!-- .container // -->
+    
+</section> <!-- content-main end// -->
+        <footer class="main-footer font-xs">
+            <div class="row pb-30 pt-15">
+                <div class="col-sm-6">
+                    <script>
+                    document.write(new Date().getFullYear())
+                    </script> ©, Evara - HTML Ecommerce Template .
+                </div>
+                <div class="col-sm-6">
+                    <div class="text-sm-end">
+                        All rights reserved
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+    <script src="/public/admin-assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="/public/admin-assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="/public/admin-assets/js/vendors/select2.min.js"></script>
+    <script src="/public/admin-assets/js/vendors/perfect-scrollbar.js"></script>
+    <script src="/public/admin-assets/js/vendors/jquery.fullscreen.min.js"></script>
+   
+    <!-- Main Script -->
+    <script src="/public/admin-assets/js/main.js" type="text/javascript"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script>
+// Define variables
+const couponName = document.getElementById("coupon-name");
+const endDateInput = document.getElementById("endDate");
+const startDateInput = document.getElementById("startDate");
+const discount = document.getElementById("discount");
+const namerror = document.getElementById("error-coupon-name");
+const discounterror = document.getElementById("discounterror");
+const endDateError = document.getElementById("errorenddate");
+const startDateError = document.getElementById("errorstartdate");
+const couponform = document.getElementById("couponform");
+
+// Function to validate coupon name
+function valName() {
+  const coupon_name = couponName.value.trim();
+  const nameRegex = /^[a-zA-Z\s]+$/;
+  
+  if (coupon_name === "") {
+    namerror.style.display = "block";
+    namerror.innerHTML = "Name is required";
+    namerror.style.color = "red"; 
+  } else if (!coupon_name.match(nameRegex)) {
+    namerror.style.display = "block";
+    namerror.innerHTML = "Invalid name";
+    namerror.style.color = "red"; 
+  } else {
+    namerror.style.display = "none";
+    namerror.innerHTML = ""; 
+  }
+}
+
+// Function to validate discount
+function discountVal() {
+    const discountValue = discount.value.trim();
+    const numberRegex = /^[0-9]+$/;
+    
+    if (discountValue === "") {
+        discounterror.style.display = "block";
+        discounterror.innerHTML = "Discount is required";
+        discounterror.style.color = "red"; 
+    } else if (!discountValue.match(numberRegex)) {
+        discounterror.style.display = "block";
+        discounterror.innerHTML = "Discount must be a number";
+        discounterror.style.color = "red"; 
+    } else if (parseInt(discountValue) <= 0 || parseInt(discountValue) >= 100) {
+        discounterror.style.display = "block";
+        discounterror.innerHTML = "Discount must be between 0 and 100";
+        discounterror.style.color = "red"; 
+    } else {
+        discounterror.style.display = "none";
+        discounterror.innerHTML = ""; 
+    }
+}
+
+
+// Function to validate dates
+function validateDates() {
+    const startDateParts = startDateInput.value.split('-');
+    const endDateParts = endDateInput.value.split('-');
+    console.log("Start Date Parts:", startDateParts);
+    console.log("End Date Parts:", endDateParts);
+    
+    // Construct Date objects for start and end dates
+    const startDateValue = new Date(startDateParts[0], startDateParts[1] - 1, startDateParts[2]);
+    const endDateValue = new Date(endDateParts[0], endDateParts[1] - 1, endDateParts[2]);
+    
+    // Get the current date
+    const currentDate = new Date(); 
+    
+    console.log("Start Date Value:", startDateValue);
+    console.log("End Date Value:", endDateValue);
+    
+    if (isNaN(startDateValue.getTime()) || isNaN(endDateValue.getTime())) {
+        // Display error messages for invalid date format
+        startDateError.style.display = "block";
+        startDateError.innerHTML = "Invalid date format";
+        startDateError.style.color = "red";
+        endDateError.style.display = "block";
+        endDateError.innerHTML = "Invalid date format";
+        endDateError.style.color = "red";
+    } else if (startDateValue < currentDate) {
+        // Display error message if start date is in the past
+        startDateError.style.display = "block";
+        startDateError.innerHTML = "Start date must be greater than or equal to today's date.";
+        startDateError.style.color = "red";
+        endDateError.style.display = "none";
+        endDateError.innerHTML = "";
+    } else if (startDateValue >= endDateValue) {
+        // Display error message if start date is greater than or equal to end date
+        startDateError.style.display = "block";
+        startDateError.innerHTML = "Start date should be less than end date.";
+        startDateError.style.color = "red";
+        endDateError.style.display = "block";
+        endDateError.innerHTML = "End date should be greater than start date.";
+        endDateError.style.color = "red";
+    } else {
+        // Hide error messages if all validations pass
+        startDateError.style.display = "none";
+        startDateError.innerHTML = "";
+        endDateError.style.display = "none";
+        endDateError.innerHTML = "";
+    }
+}
+
+// Event listeners  
+couponName.addEventListener("blur", valName);
+discount.addEventListener("blur", discountVal);
+startDateInput.addEventListener("blur", validateDates);
+endDateInput.addEventListener("blur", validateDates);
+
+couponform.addEventListener("submit", function (event) {
+    event.preventDefault(); // Prevent form submission
+
+    // Perform validation
+    valName();
+    discountVal();
+    validateDates();
+
+    // Log errors, if any
+    if (namerror.innerHTML || discounterror.innerHTML || startDateError.innerHTML || endDateError.innerHTML) {
+        console.log("Validation failed");
+    } else {
+        console.log("Validation passed");
+        couponform.submit(); 
+    }
+});
+
+    </script>
+</body>
+
+
+<!-- Mirrored from wp.alithemes.com/html/evara/evara-backend/page-products-list.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:33:12 GMT -->
+</html>

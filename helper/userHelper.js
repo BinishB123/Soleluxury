@@ -1,7 +1,12 @@
+const order = require("../model/orderModel");
 const user = require("../model/userModel");
 const userModel = require("../model/userModel");
 const bcrypt = require("bcrypt");
-
+const Razorpay = require("razorpay")
+var instance = new Razorpay({
+  key_id: 'rzp_test_EEotY5tKE8Vqxh',
+  key_secret: 'p82tQtMSPH6JUUjE7vwvh4HQ',
+});
 
 
 const loginHome = (userData)=>{
@@ -15,8 +20,8 @@ const loginHome = (userData)=>{
                 
                  if(user){
                   
-                   console.log('The user is now at loginhome and and finded the user')
-                   console.log(user.isActive)
+                   //console.log('The user is now at loginhome and and finded the user')
+                  // console.log(user.isActive)
                    if (user.isActive) {
                        bcrypt.compare(userData.password,user.password).then((result)=>{
                         if(result){
@@ -135,12 +140,46 @@ const checkingUserBlockedOrNot = async (req, res, next) => {
 };
 
 
-
+const generateRazorpay = (userId,totalAmount)=>{
+  return new Promise(async(resolve,reject)=>{
+    try {
+      // console.log("orderid at generate razorpay",orderId)
+      // console.log("totalAmount ",totalAmount)
+      instance.orders.create({
+        amount: totalAmount*100,
+        currency: "INR",
+        receipt: userId,
+        notes: {
+            key1: "value3",
+            key2: "value2"
+        }
+    }, function(err, order) {
+        if (err) {
+            console.error(err);
+            return;
+        }else{
+          const response = {
+            success:true,
+            order:order
+          }
+           //console.log("order in generateRazorpay",order)
+          resolve(response)
+        }
+        
+    });
+    
+      
+    } catch (error) {
+      console.log(error.message)
+    }
+  })
+}
 
 
 
 module.exports = {
   doSignUp,
   loginHome,
-  checkingUserBlockedOrNot
+  checkingUserBlockedOrNot,
+  generateRazorpay
 };

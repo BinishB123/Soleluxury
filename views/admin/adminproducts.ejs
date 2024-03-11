@@ -58,7 +58,7 @@
                                     <th>Name</th>
                                     <th>Category</th>
                                     <th>regular Price</th>
-                                    <th>Sale Price</th>
+                                    <th>Discount</th>
                                     <th>Quantity</th>
                                     <th>Edit</th>
                                     <th>List/Unlist</th>
@@ -93,7 +93,7 @@
                                             </span>
                                     </td>
                                     <td>
-                                        <span class="">₹ <%= data[i].salePrice %>
+                                        <span class=""> <%= data[i].discount %>%
                                             </span>
                                     </td>
                                     <td>
@@ -119,6 +119,25 @@
                                 <% } %>
                             </tbody>
                         </table>
+                        <% if (totalPages){ %>
+                        <nav aria-label="Page navigation example" >
+                            <ul class="pagination justify-content-center">
+                            <% if (currentPage > 1) { %>
+                              <li class="page-item ">
+                                <a class="page-link" href="/admin/products?page=<%=currentPage-1%>" >Previous</a>
+                              </li>
+                              <% } %>
+                             
+                              <li class="page-item"><a class="btn btn-sm active" ><%=currentPage%></a></li>
+                            
+                              <% if (currentPage < totalPages) { %>
+                              <li class="page-item">
+                                <a class="page-link" href="/admin/products?page=<%=currentPage+1%>">Next</a>
+                              </li>
+                              <% } %>
+                            </ul>
+                          </nav>
+                          <% } %>
                         </div>
                     </div>
                     

@@ -135,20 +135,27 @@
                                             <td>
                                                 <div
                                                     class="text-center">
-                                                    <select class="form-select d-inline-block" name="status" id="<%= element.product._id%>">
-                                                        <option>Change status</option>
-                                                        <option value="pending">pending</option>
-                                                        <option value="shipped">Shipped</option>
-                                                        <option value="processing">Processing</option>
-                                                        <option value="confirmed">Confirmed</option>
-                                                        <option value="outForDelivery">OutForDelivery</option>
-                                                        <option value="delivered">Delivered</option>
-                                                        <option value="return pending">Return Pending</option>
-                                                        <option value="Returned">Returned</option>
-
-                                                        
-                                                    </select>
-                                                   
+                                                    <% if (element.products.status !== "cancelled" && element.products.status !== "Returned") { %>
+                                                        <select class="form-select d-inline-block" name="status" id="<%= element.product._id %>">
+                                                            <% if (element.products.status === "return Pending") { %>
+                                                                <option value="Returned">Returned</option>
+                                                            <% } else { %>
+                                                                <option>Change status</option>
+                                                                <option value="pending">pending</option>
+                                                                <option value="shipped">Shipped</option>
+                                                                <option value="processing">Processing</option>
+                                                                <option value="confirmed">Confirmed</option>
+                                                                <option value="outForDelivery">OutForDelivery</option>
+                                                                <option value="delivered">Delivered</option>
+                                                                <option value="return pending">Return Pending</option>
+                                                                <option value="Returned">Returned</option>
+                                                            <% } %>
+                                                        </select>
+                                                    <% } %>
+                                                    
+                                                    
+                                                    
+                                                    
                                                    
                                                 </div>
                                             </td>

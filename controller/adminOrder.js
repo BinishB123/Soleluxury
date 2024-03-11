@@ -16,7 +16,13 @@ const orderList = async (req, res) => {
       },
       { $unwind: "$user" },
     ]);
-    res.render("adminorderslist", { order: usersWhoOrdered });
+    let itemsPerPage = 5
+        let currentPage = parseInt(req.query.page) || 1
+        let startIndex = (currentPage-1)* itemsPerPage
+        let endIndex = startIndex +itemsPerPage
+        let totalPages = Math.ceil(usersWhoOrdered.length/itemsPerPage)
+        const currentusers = usersWhoOrdered.slice(startIndex,endIndex)
+    res.render("adminorderslist", { order: currentusers,totalPages:totalPages,currentPage:currentPage });
   } catch (error) {
     console.log(error.message);
   }

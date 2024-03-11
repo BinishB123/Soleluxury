@@ -12,15 +12,26 @@ const productsLoad =async (req,res)=>{
     
 
     try {
-        const products = await productModel.aggregate([{$lookup:{
-            from:"categories",
-            localField:"category",
-            foreignField:"_id",
-            as:"category"
-        }}])
+        
+        const noOfProduct =  await productModel.find({isBlocked:false}).count()
+        const products = await productModel.aggregate([
+            {$lookup:{
+                from:"categories",
+                localField:"category",
+                foreignField:"_id",
+                as:"category"
+            }},
+           
+        ])
+        let itemsPerPage = 10
+        let currentPage = parseInt(req.query.page) || 1
+        let startIndex = (currentPage-1)* itemsPerPage
+        let endIndex = startIndex +itemsPerPage
+        let totalPages = Math.ceil(products.length/itemsPerPage)
+        const currentProduct = products.slice(startIndex,endIndex)
         const message = req.flash("message")
         const errormessage = req.flash("errormessage")
-        res.render('adminproducts',{data:products,message:message,errormessage:errormessage})
+        res.render('adminproducts',{data:currentProduct,message:message,errormessage:errormessage,totalPages:totalPages,currentPage:currentPage})
         
     } catch (error) {
         console.log("error is in productsLoad : "+error)
@@ -40,7 +51,7 @@ const createProductPage = async(req,res)=>{
         }
       
         
-    } catch (error) {
+    } catch (error) { 
       console.log("erro in add products "+error)  
     }
 }
@@ -50,10 +61,17 @@ const addproducts = async (req, res) => {
     try {
       
         const product = req.body;
+        let productName = req.body.productName
+         productName = productName.trim()
         
 
        
-        const productExist = await productModel.findOne({ productName: product.productName });
+        const productExist = await productModel.findOne({ productName: productName });
+       
+        if (productExist) {
+            const message="cannot add duplicate product , product  exist with same name ";
+            return res.json({status:false,message:message})
+        }
       
 
         if (!productExist) {
@@ -70,7 +88,7 @@ const addproducts = async (req, res) => {
                         console.log("File MIME Type:", file.mimetype);
 
                         const errormessage ="Cannot Add product please upload images only";
-                        return res.json({ success: false, fileerrormessage:errormessage }); // Terminate function execution
+                        return res.json({ success: false, fileerrormessage:errormessage }); 
 
                     }
                     // Add filename to the images array
@@ -82,7 +100,7 @@ const addproducts = async (req, res) => {
                 id: Date.now(),
                 brand: product.brand,
                 productImage: images,
-                productName: product.productName,
+                productName: productName,
                 description: product.description,
                 category: product.category,
                 size: {
@@ -91,7 +109,7 @@ const addproducts = async (req, res) => {
                     l: { quantity: product.largesize }
                 },
                 regularPrice: product.regularPrice,
-                salePrice: product.salePrice,
+                discount: product.discount,
                 color: product.color,
                 createdOn: Date.now()
             };
@@ -210,12 +228,10 @@ const productUpdate = async (req, res) => {
         }
 
         // Check if a product with the same name exists
-        const duplicate = await productModel.findOne({ productName: data.productName });
+        const duplicate = await productModel.findOne({ productName: data.productName,_id:{$ne:id} });
        
             if (req.files.length>0) {
-                // await productModel.findByIdAndUpdate(id,{
-                //     productImage:images
-                // })
+                
                 const prodata = await productModel.findById({_id:id})
                 prodata.productImage.push(...images)
                 prodata.save()
@@ -240,7 +256,7 @@ const productUpdate = async (req, res) => {
                     brand: data.brand,
                     category: data.category,
                     regularPrice: data.regularPrice,
-                    salePrice: data.salePrice,
+                    discount: data.discount,
                     size: {
                         s: { quantity: data.ssize },
                         m: { quantity: data.msize },
@@ -265,6 +281,10 @@ const productUpdate = async (req, res) => {
 };
 
 
+
+
+
+
 const productsController = {
     productsLoad,
     createProductPage,
@@ -272,7 +292,8 @@ const productsController = {
     blockOrUnblockproduct,
     getEditProduct,
     deleteImage,
-    productUpdate
+    productUpdate,
+
 }
 
 module.exports = productsController

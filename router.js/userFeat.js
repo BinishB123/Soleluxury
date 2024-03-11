@@ -3,6 +3,9 @@ const cartController = require("../controller/cartController")
 const profileController = require("../controller/profileController")
 const checkoutController =  require("../controller/checkoutController")
 const orderController = require("../controller/orderController")
+const wishlistController = require("../controller/wishlistController")
+const couponController = require("../controller/couponController")
+const walletContoller = require("../controller/walletController")
 const express = require("express")
 const user = require("../model/userModel")
 const otpHelper=  require('../helper/otphelper')
@@ -27,9 +30,10 @@ userRoute.post('/home',userController.loginHome);
 userRoute.get("/search",userController.search);
 userRoute.get("/nav",userController.nav)
 userRoute.get("/filtered",userController.filteredBrand)
-userRoute.get("/pricefiltered",userController.pricefiltered)
+userRoute.post("/pricefiltered",userController.pricefiltered)
+userRoute.post("/categoryFilter",userController.categoryFilter)
 
-   
+
 
 
 //product views
@@ -73,6 +77,21 @@ userRoute.get('/prodcutwithsizecartcheck',cartController.sizeproductChecker)
  userRoute.get("/orderdetails",orderController.orderDetails)
  userRoute.patch("/cancelOrder",orderController.cancelIndividualproductOrder)
  userRoute.patch("/returnOrder",orderController.returnOrder)
+ userRoute.post("/verify-payment",orderController.verifyPayment)
+
+
+ //USER COUPON
+ userRoute.post("/use-coupon",couponController.couponUse)
+
+
+ //wishlist 
+ userRoute.get("/wishlist",wishlistController.whistlistPage)
+ userRoute.post("/addtowishlist",wishlistController.addToWishlist)
+ userRoute.patch("/removefromwishlist",wishlistController.removeWishlist)
+
+
+ //wallet 
+ userRoute.get("/wallet",walletContoller.wallet)
 
 
 

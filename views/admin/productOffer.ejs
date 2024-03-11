@@ -1,0 +1,602 @@
+<%- include("../partials/adminHeader") %>
+    <section class="content-main">
+    <div class="content-header">
+      <h2 class="content-title">Product-Offer Management</h2>
+      <div>
+
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCoupon"
+          data-bs-whatever="@getbootstrap" style="background-color: black;">Add Offer +</button>
+
+      </div>
+
+    </div>
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="table-responsive">
+          <% if (locals.message) { %>
+            <input type="text" id="message" value="<%= message %>" hidden>
+            <% } %>
+
+              <% if (!offers.length) { %>
+
+                <h1>No Offers Are Added Yet</h1>
+
+                <% }else{ %>
+
+                  <table class="table table-hover" id="productOfferTable">
+                    <thead>
+                      <tr class="text-left">
+                        <th class="text-center">No</th>
+                        <th class="text-center">Offer Name</th>
+                        <th class="text-center">Product</th>
+                        <th class="text-center">Discount</th>
+                        <th class="text-center">Starting date</th>
+                        <th class="text-center">Ending date</th>
+
+                        <th class="text-center">Edit</th>
+                        <th class="text-center">Delete</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% for( let i=0; i < offers.length; i++ ) { %>
+
+
+                        <tr class="text-left" id="divtodelete<%=offers[i]._id%>">
+                          <td class="text-center" width="10%">
+                            <%= i+1 %>
+                          </td>
+                          <td class="text-center" width="20%">
+                            <%= offers[i].name%>
+                          </td>
+                          <td class="text-center" width="15%">
+                            <%= offers[i].productOffer.product.productName %>
+                          </td>
+                          <td class="text-center" width="15%">
+                            <%= offers[i].productOffer.discount %>
+                          </td>
+                          <td class="text-center" width="20%">
+                            <%= offers[i].startingDate.toLocaleDateString() %>
+                          </td>
+                          <td class="text-center" width="10%">
+                            <%= offers[i].endingDate.toLocaleDateString()%>
+                          </td>
+
+                          <td class="text-center" width="10%"><a onclick="editOffer('<%= offers[i]._id %>')"
+                              class="btn btn-sm btn-dark rounded font-sm mt-15" type="button" data-bs-toggle="modal"
+                              data-bs-target="#editCoupon" data-bs-whatever="@getbootstrap">Edit</a></td>
+                          <td class="text-center" width="20%">
+                            <% if (offers[i].status) { %>
+                              <button id="delete-productOffer<%= offers[i]._id %>"
+                                class="btn btn-sm btn-success rounded font-sm mt-15"
+                                onclick="deleteProductOffer('<%= offers[i]._id %>')">
+                                Delete
+                              </button>
+                              <% } else { %>
+                                <button id="delete-productOffer<%= offers[i]._id %>"
+                                  class="btn btn-sm btn-danger rounded font-sm mt-15"
+                                  onclick="deleteProductOffer('<%= offers[i]._id %>')">
+                                  Delete
+                                </button>
+                                <% } %>
+                          </td>
+                        </tr>
+
+                        <% } %>
+                    </tbody>
+                  </table> <!-- table-responsive.// -->
+                  <% } %>
+
+        </div>
+      </div> <!-- card-body end// -->
+    </div> <!-- card end// -->
+
+  </section> <!-- content-main end// -->
+
+
+  <!-- Modal Add Coupon -->
+
+
+  <div class="modal fade" id="addCoupon" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add Offer </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="/admin/Add-productOffer" method="post" id="addProductOffer">
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Offer Name</label>
+              <input type="text" class="form-control" name="offerName" id="offername">
+              <div style="color: red;" id="error-name"></div>
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Product</label>
+              <select name="productName" id="" class="form-select">
+                <% for( let i=0; i < products.length; i++ ) { %>
+                  <option class="form-option" value="<%= products[i]._id %>">
+                    <%= products[i].productName %>
+                  </option>
+                  <% } %>
+              </select>
+              <!-- <input type="text" class="form-control" name="couponName" id="couponName"> -->
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Discount Amount</label>
+              <input type="text" class="form-control" name="discountAmount" id="discount">
+              <div id="discounterror"></div>
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Starting date</label>
+              <input type="date" class="form-control" name="startDate" id="startDate" placeholder="DD/MM/YYYY">
+              <div id="errorstartdate"></div>
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Ending date</label>
+              <input type="date" class="form-control" name="endDate" id="endDate" placeholder="DD/MM/YYYY">
+              <div id="errorenddate"></div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary" style="background-color: black;">Create Offer</button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!--End Modal  Add Coupon-->
+
+
+  <!-- Modal Edit Coupon -->
+
+
+  <div class="modal fade" id="editproductoff" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit Offer </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="/admin/productEditOffer" method="post" id="editoffer">
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Offer Name</label>
+              <input type="text" class="form-control" name="editofferName" id="editofferName" value="">
+              <div id="editnameerror"></div>
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Product</label>
+              <select name="productName" id="productName" class="form-select">
+                <% for( let i=0; i < products.length; i++ ) { %>
+                  <option class="form-option" value="<%= products[i]._id %>">
+                    <%= products[i].productName %>
+                  </option>
+                  <% } %>
+              </select>
+
+            </div>
+            <!-- <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label">Coupon Code</label>
+                        <input type="text" class="form-control" name="couponCode" id="couponCode">
+                    </div> -->
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Discount Amount</label>
+              <input type="text" class="form-control" name="discountAmount" id="editdiscount">
+              <div id="editdiscounterror"></div>
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Starting Date (YYYY/MM/DD)</label>
+              <input type="date" class="form-control" name="startDate" id="editstartDate" value="">
+              <div id="editstartdateerror"></div>
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Ending Date (YYYY/MM/DD)</label>
+              <input type="date" class="form-control" name="editendDate" id="end" value="">
+              <div id="editenddate"></div>
+            </div>
+            <div class="mb-3">
+              <input type="hidden" class="form-control" id="offerId" name="offerId" />
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary" style="background-color: black;">Update Offer</button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+        <footer class="main-footer font-xs">
+            <div class="row pb-30 pt-15">
+                <div class="col-sm-6">
+                    <script>
+                        document.write(new Date().getFullYear())
+                    </script> ©, Evara - HTML Ecommerce Template .
+                </div>
+                <div class="col-sm-6">
+                    <div class="text-sm-end">
+                        All rights reserved
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+    <script src="/public/admin-assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="/public/admin-assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="/public/admin-assets/js/vendors/select2.min.js"></script>
+    <script src="/public/admin-assets/js/vendors/perfect-scrollbar.js"></script>
+    <script src="/public/admin-assets/js/vendors/jquery.fullscreen.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <!-- Main Script -->
+    <script src="/public/admin-assets/js/main.js" type="text/javascript"></script>
+    <!-- <script src="/public/js/prodEditOff.js"></script>
+    <script src="/public/js/productOfferVal.js"></script> -->
+    
+    
+    <script>
+   function deleteProductOffer(offerid){
+     
+    console.log(offerid)
+
+    let confirmationMessage 
+       
+           confirmationMessage = "Are you sure you want to Delete the offer"
+            
+    swal({
+        text: confirmationMessage ,
+        buttons: ["cancel", true],
+    }).then((result) => {
+        if (result) {
+            $.ajax({
+                url: `/admin/deleteoffer?id=${offerid}`,
+                method: 'DELETE',
+                contentType: 'application/json',
+                success: function(data) {
+                    if (data.success===true) {
+                        const divToDelete = document.getElementById(`divtodelete${offerid}`)
+                        if (data.success) {
+                           divToDelete.remove() 
+                        }
+                 
+                     swal("offer Deleted!", {
+                        icon: "success",
+                    })
+            } else {
+                console.error('Unlisting failed');
+            }
+        },
+                error: function(error) {
+                    
+                    swal("Oops!", "Failed to unlist the category. Please try again.", "error");
+                    console.error('AJAX error:', error);
+                }
+            });
+        } else {
+            // If the user cancels, do nothing
+            // Optionally, you can display a message here 
+        }
+    });
+
+
+
+
+   }
+
+
+
+
+
+
+
+
+
+
+
+
+   function editOffer(id){
+         console.log("click cheythu")
+    $.ajax({
+        url:`/admin/productEditOffer/${id}`,
+        method:"GET",
+        success:function(res){
+             document.getElementById("productName").value = res.productOffer.product
+             console.log(document.getElementById("productName").value)
+            document.getElementById('editofferName').value = res.name; // Corrected ID to 'editofferName'
+            console.log(document.getElementById('editofferName').value) // Corrected ID to 'editofferName'
+            document.getElementById('editdiscount').value = res.productOffer.discount; // Corrected ID to 'editdiscount'
+            console.log(document.getElementById('editdiscount').value) // Corrected ID to 'editdiscount'
+             document.getElementById('editstartDate').value = res.formattedStartingDate // Corrected ID to 'editstartDate'
+             console.log(document.getElementById('editstartDate').value) // Corrected ID to 'editstartDate'
+           document.getElementById("end").value = res.formattedEndingDate // Corrected ID to 'end'
+           console.log(document.getElementById("end").value) // Corrected ID to 'end'
+           document.getElementById('offerId').value = res._id;
+           
+           console.log(document.getElementById("editproductoff"))
+              $("#editproductoff").modal("show");
+        },
+        error:function(error){
+            console.log(error)
+        }
+    });
+}
+
+
+const couponNameInput = document.getElementById("offername");
+const endDateInput = document.getElementById("endDate");
+const startDateInput = document.getElementById("startDate");
+const discountInput = document.getElementById("discount");
+const nameError = document.getElementById("error-name");
+const discountError = document.getElementById("discounterror");
+const endDateError = document.getElementById("errorenddate");
+const startDateError = document.getElementById("errorstartdate");
+const couponForm = document.getElementById("addProductOffer");
+
+// Function to validate coupon name
+function validateCouponName() {
+    console.log("Validating coupon name");
+    const couponNameValue = couponNameInput.value.trim();
+    const nameRegex = /^[a-zA-Z\s]+$/;
+  
+    if (couponNameValue === "") {
+        nameError.style.display = "block";
+        nameError.innerHTML = "Name is required";
+        nameError.style.color = "red"; 
+    } else if (!couponNameValue.match(nameRegex)) {
+        nameError.style.display = "block";
+        nameError.innerHTML = "Invalid name";
+        nameError.style.color = "red"; 
+    } else {
+        nameError.style.display = "none";
+        nameError.innerHTML = ""; 
+    }
+}
+
+// Function to validate discount
+function validateDiscount() {
+    console.log("Validating discount");
+    const discountValue = discountInput.value.trim();
+    const numberRegex = /^[0-9]+$/;
+    
+    if (discountValue === "") {
+        discountError.style.display = "block";
+        discountError.innerHTML = "Discount is required";
+        discountError.style.color = "red"; 
+    } else if (!discountValue.match(numberRegex)) {
+        discountError.style.display = "block";
+        discountError.innerHTML = "Discount must be a number";
+        discountError.style.color = "red"; 
+    } else if (parseInt(discountValue) <= 0 || parseInt(discountValue) >= 100) {
+        discountError.style.display = "block";
+        discountError.innerHTML = "Discount must be between 0 and 100";
+        discountError.style.color = "red"; 
+    } else {
+        discountError.style.display = "none";
+        discountError.innerHTML = ""; 
+    }
+}
+
+
+// Function to validate dates
+function validateDates() {
+    console.log("Validating dates");
+    const startDateParts = startDateInput.value.split('-');
+    const endDateParts = endDateInput.value.split('-');
+    console.log("Start Date Parts:", startDateParts);
+    console.log("End Date Parts:", endDateParts);
+    
+    // Construct Date objects for start and end dates
+    const startDateValue = new Date(startDateParts[0], startDateParts[1] - 1, startDateParts[2]);
+    const endDateValue = new Date(endDateParts[0], endDateParts[1] - 1, endDateParts[2]);
+    
+    // Get the current date
+    const currentDate = new Date(); 
+    
+    console.log("Start Date Value:", startDateValue);
+    console.log("End Date Value:", endDateValue);
+    
+    if (isNaN(startDateValue.getTime()) || isNaN(endDateValue.getTime())) {
+        // Display error messages for invalid date format
+        startDateError.style.display = "block";
+        startDateError.innerHTML = "Invalid date format";
+        startDateError.style.color = "red";
+        endDateError.style.display = "block";
+        endDateError.innerHTML = "Invalid date format";
+        endDateError.style.color = "red";
+    // } else if (startDateValue < currentDate) {
+    //     // Display error message if start date is in the past
+    //     startDateError.style.display = "block";
+    //     startDateError.innerHTML = "Start date must be greater than or equal to today's date.";
+    //     startDateError.style.color = "red";
+    //     endDateError.style.display = "none";
+    //     endDateError.innerHTML = "";
+    // } else if (startDateValue >= endDateValue) {
+    //     // Display error message if start date is greater than or equal to end date
+    //     startDateError.style.display = "block";
+    //     startDateError.innerHTML = "Start date should be less than end date.";
+    //     startDateError.style.color = "red";
+    //     endDateError.style.display = "block";
+    //     endDateError.innerHTML = "End date should be greater than start date.";
+    //     endDateError.style.color = "red";
+    } else {
+        // Hide error messages if all validations pass
+        startDateError.style.display = "none";
+        startDateError.innerHTML = "";
+        endDateError.style.display = "none";
+        endDateError.innerHTML = "";
+    }
+}
+
+// Event listeners  
+couponNameInput.addEventListener("blur", validateCouponName);
+discountInput.addEventListener("blur", validateDiscount);
+startDateInput.addEventListener("blur", validateDates);
+endDateInput.addEventListener("blur", validateDates);
+
+couponForm.addEventListener("submit", function (event) {
+    event.preventDefault(); // Prevent form submission
+
+    // Perform validation
+    validateCouponName();
+    validateDiscount();
+    validateDates();
+
+    // Log errors, if any
+    if (nameError.innerHTML || discountError.innerHTML || startDateError.innerHTML || endDateError.innerHTML) {
+        console.log("Validation failed");
+    } else {
+        console.log("Validation passed");
+        couponForm.submit(); 
+    }
+});
+
+
+
+
+const editOfferNameInput = document.getElementById("editofferName");
+const endDate = document.getElementById("end");
+const startDateInputEdit = document.getElementById("editstartDate");
+const discountInputEdit = document.getElementById("editdiscount");
+const nameErrorEdit = document.getElementById("editnameerror");
+const discountErrorEdit = document.getElementById("editdiscounterror");
+const endDateErrorEdit = document.getElementById("editenddate");
+const startDateErrorEdit = document.getElementById("editstartdateerror");
+const editOfferForm = document.getElementById("editoffer");
+
+// Function to validate offer name
+function validateOfferNameEdit() {
+    console.log("Validating offer name");
+    const offerNameEdit = editOfferNameInput.value.trim();
+    const nameRegex = /^[a-zA-Z\s]+$/;
+  
+    if (offerNameEdit === "") {
+        nameErrorEdit.style.display = "block";
+        nameErrorEdit.textContent = "Name is required";
+        nameErrorEdit.style.color = "red"; 
+    } else if (!offerNameEdit.match(nameRegex)) {
+        nameErrorEdit.style.display = "block";
+        nameErrorEdit.textContent = "Invalid name";
+        nameErrorEdit.style.color = "red"; 
+    } else {
+        nameErrorEdit.style.display = "none";
+        nameErrorEdit.textContent = ""; 
+    }
+}
+
+// Function to validate discount
+function validateDiscountEdit() {
+    const discountValueEdit = discountInputEdit.value.trim();
+    const numberRegex = /^[0-9]+$/;
+    
+    if (discountValueEdit === "") {
+        discountErrorEdit.style.display = "block";
+        discountErrorEdit.textContent = "Discount is required";
+        discountErrorEdit.style.color = "red"; 
+    } else if (!discountValueEdit.match(numberRegex)) {
+        discountErrorEdit.style.display = "block";
+        discountErrorEdit.textContent = "Discount must be a number";
+        discountErrorEdit.style.color = "red"; 
+    } else if (parseInt(discountValueEdit) <= 0 || parseInt(discountValueEdit) >= 100) {
+        discountErrorEdit.style.display = "block";
+        discountErrorEdit.textContent = "Discount must be between 0 and 100";
+        discountErrorEdit.style.color = "red"; 
+    } else {
+        discountErrorEdit.style.display = "none";
+        discountErrorEdit.textContent = ""; 
+    }
+}
+
+// Function to validate dates
+function validateDatesEdit() {
+    const startDatePartsEdit = startDateInputEdit.value.split('-');
+    const endDatePartsEdit = endDate.value.split('-');
+    
+    // Construct Date objects for start and end dates
+    const startDateValueEdit = new Date(startDatePartsEdit[0], startDatePartsEdit[1] - 1, startDatePartsEdit[2]);
+    const endDateValueEdit = new Date(endDatePartsEdit[0], endDatePartsEdit[1] - 1, endDatePartsEdit[2]);
+    
+    // Get the current date
+    const currentDateEdit = new Date(); 
+    
+    if (isNaN(startDateValueEdit.getTime()) || isNaN(endDateValueEdit.getTime())) {
+        // Display error messages for invalid date format
+        startDateErrorEdit.style.display = "block";
+        startDateErrorEdit.textContent = "Invalid date format";
+        startDateErrorEdit.style.color = "red";
+        endDateErrorEdit.style.display = "block";
+        endDateErrorEdit.textContent = "Invalid date format";
+        endDateErrorEdit.style.color = "red";
+    // } else if (startDateValueEdit < currentDateEdit) {
+    //     // Display error message if start date is in the past
+    //     startDateErrorEdit.style.display = "block";
+    //     startDateErrorEdit.textContent = "Start date must be greater than or equal to today's date.";
+    //     startDateErrorEdit.style.color = "red";
+    //     endDateErrorEdit.style.display = "none";
+    //     endDateErrorEdit.textContent = "";
+    // } else if (startDateValueEdit >= endDateValueEdit) {
+    //     // Display error message if start date is greater than or equal to end date
+    //     startDateErrorEdit.style.display = "block";
+    //     startDateErrorEdit.textContent = "Start date should be less than end date.";
+    //     startDateErrorEdit.style.color = "red";
+    //     endDateErrorEdit.style.display = "block";
+    //     endDateErrorEdit.textContent = "End date should be greater than start date.";
+    //     endDateErrorEdit.style.color = "red";
+    } else {
+        // Hide error messages if all validations pass
+        startDateErrorEdit.style.display = "none";
+        startDateErrorEdit.textContent = "";
+        endDateErrorEdit.style.display = "none";
+        endDateErrorEdit.textContent = "";
+    }
+}
+
+// Event listeners  
+editOfferNameInput.addEventListener("blur", validateOfferNameEdit);
+discountInputEdit.addEventListener("blur", validateDiscountEdit);
+startDateInputEdit.addEventListener("blur", validateDatesEdit);
+endDate.addEventListener("blur", validateDatesEdit);
+
+editOfferForm.addEventListener("submit", function (event) {
+    event.preventDefault(); // Prevent form submission
+
+    // Perform validation
+    validateOfferNameEdit();
+    validateDiscountEdit();
+    validateDatesEdit();
+
+    // Log errors, if any
+    if (nameErrorEdit.textContent || discountErrorEdit.textContent || startDateErrorEdit.textContent || endDateErrorEdit.textContent) {
+        console.log("Validation failed");
+    } else {
+        console.log("Validation passed");
+        editOfferForm.submit(); 
+    }
+});
+
+
+
+
+
+
+
+    </script>
+    
+    
+ 
+    
+        
+</body>
+
+
+
+
+</html>

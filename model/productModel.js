@@ -26,7 +26,7 @@ const productSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
-  salePrice: {
+  discount: {
     type: Number,
     required: true,
   },
