@@ -161,7 +161,7 @@
                                             </td>
                                             <td>
                                               <a class="btn btn-primary" id="changeStatus" style="background-color: black;"
-                                              onclick="changeStatus('<%= order[0]._id %>','<%= element.product._id%>')">Save</a>
+                                              onclick="changeStatus('<%= order[0]._id %>','<%= element.product._id%>','<%= element.products._id%>')">Save</a>
                                             </td>
                                         </tr>
                                         <% }) %>
@@ -209,8 +209,8 @@
 
     <script>
 
-   function  changeStatus(orderid,productid){
-
+   function  changeStatus(orderid,productid,productDocId){
+         
             const statustaking = document.getElementById(productid)
             const status = statustaking.value
               
@@ -225,7 +225,7 @@
               }
             
     $.ajax({
-        url: `/admin/changestatus?status=${status}&orderid=${orderid}&productid=${productid}`,
+        url: `/admin/changestatus?status=${status}&orderid=${orderid}&productid=${productid}&productDocId=${productDocId}`,
         method: 'PATCH',
         contentType: 'application/json',
         success: function(data) {

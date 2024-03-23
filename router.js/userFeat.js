@@ -13,7 +13,7 @@ const userHelper = require('../helper/userHelper')
 const userRoute = express.Router()
 
 
-
+ 
 //landing and authentication
 userRoute.get("/",userController.guestUser)
 userRoute.get('/login', userController.loginload)
@@ -37,61 +37,64 @@ userRoute.post("/categoryFilter",userController.categoryFilter)
 
 
 //product views
-userRoute.get('/productview/:id',userController.productView)
+userRoute.get('/productview/:id',userHelper.checkingUserBlockedOrNot,userController.productView)
 userRoute.post("/size/:id/:size",userHelper.checkingUserBlockedOrNot,userController.displaySize)
-userRoute.get('/prodcutwithsizecartcheck',cartController.sizeproductChecker)
+userRoute.get('/prodcutwithsizecartcheck',userHelper.checkingUserBlockedOrNot,cartController.sizeproductChecker)
 
    
  //cart views
- userRoute.get("/cart",userController.viewCart) 
- userRoute.post("/addtocart",cartController.addToCart) 
- userRoute.patch("/removeProductfromthecart",cartController.removeProductFromTheCart)
- userRoute.patch("/inOrDec",cartController.quantityIncrementOrDecrement)
+ userRoute.get("/cart",userHelper.checkingUserBlockedOrNot,userController.viewCart) 
+ userRoute.post("/addtocart",userHelper.checkingUserBlockedOrNot,cartController.addToCart) 
+ userRoute.patch("/removeProductfromthecart",userHelper.checkingUserBlockedOrNot,cartController.removeProductFromTheCart)
+ userRoute.patch("/inOrDec",userHelper.checkingUserBlockedOrNot,cartController.quantityIncrementOrDecrement)
 
 
 
  //user profile
- userRoute.get("/profile",userController.profile)
- userRoute.get("/addaddress",profileController.addAddressPage)
- userRoute.post('/addaddress',profileController.addAddress)
- userRoute.get("/editaddress",profileController.editAddresspage)
- userRoute.put("/editedAddress",profileController.editaddress)
- userRoute.post("/editprofile",userController.editUserProfile)
- userRoute.post("/changepassword",profileController.changePassword)
- userRoute.patch("/deleteaddress",profileController.deleteAddress)
- userRoute.patch("/changeEmailId", profileController.changeEmailid);
+ userRoute.get("/profile",userHelper.checkingUserBlockedOrNot,userController.profile)
+ userRoute.get("/addaddress",userHelper.checkingUserBlockedOrNot,profileController.addAddressPage)
+ userRoute.post('/addaddress',userHelper.checkingUserBlockedOrNot,profileController.addAddress)
+ userRoute.get("/editaddress",userHelper.checkingUserBlockedOrNot,profileController.editAddresspage)
+ userRoute.put("/editedAddress",userHelper.checkingUserBlockedOrNot,profileController.editaddress)
+ userRoute.post("/editprofile",userHelper.checkingUserBlockedOrNot,userController.editUserProfile)
+ userRoute.post("/changepassword",userHelper.checkingUserBlockedOrNot,profileController.changePassword)
+ userRoute.patch("/deleteaddress",userHelper.checkingUserBlockedOrNot,profileController.deleteAddress)
+ userRoute.patch("/changeEmailId",userHelper.checkingUserBlockedOrNot, profileController.changeEmailid);
 
 
 
 
 
  //checkout
- userRoute.get("/checkout",checkoutController.checkoutPage)
+ userRoute.get("/checkout",userHelper.checkingUserBlockedOrNot,checkoutController.checkoutPage)
 
 
 
 
  //user_order
- userRoute.post("/placeorder",orderController.placeOrder)
- userRoute.get("/orderplaced",orderController.orderPlacedCnfrm)
- userRoute.get("/orderdetails",orderController.orderDetails)
- userRoute.patch("/cancelOrder",orderController.cancelIndividualproductOrder)
- userRoute.patch("/returnOrder",orderController.returnOrder)
- userRoute.post("/verify-payment",orderController.verifyPayment)
+ userRoute.post("/placeorder",userHelper.checkingUserBlockedOrNot,orderController.placeOrder)
+ userRoute.get("/orderplaced",userHelper.checkingUserBlockedOrNot,orderController.orderPlacedCnfrm)
+ userRoute.get("/orderdetails",userHelper.checkingUserBlockedOrNot,orderController.orderDetails)
+ userRoute.post("/invoicedownload",userHelper.checkingUserBlockedOrNot,orderController.invoiceDownload)
+ userRoute.patch("/cancelOrder",userHelper.checkingUserBlockedOrNot,orderController.cancelIndividualproductOrder)
+ userRoute.patch("/returnOrder",userHelper.checkingUserBlockedOrNot,orderController.returnOrder)
+ userRoute.post("/verify-payment",userHelper.checkingUserBlockedOrNot,orderController.verifyPayment)
 
 
  //USER COUPON
- userRoute.post("/use-coupon",couponController.couponUse)
+ userRoute.post("/use-coupon",userHelper.checkingUserBlockedOrNot,couponController.couponUse)
 
 
  //wishlist 
- userRoute.get("/wishlist",wishlistController.whistlistPage)
- userRoute.post("/addtowishlist",wishlistController.addToWishlist)
- userRoute.patch("/removefromwishlist",wishlistController.removeWishlist)
+ userRoute.get("/wishlist",userHelper.checkingUserBlockedOrNot,wishlistController.whistlistPage)
+ userRoute.post("/addtowishlist",userHelper.checkingUserBlockedOrNot,wishlistController.addToWishlist)
+ userRoute.patch("/removefromwishlist",userHelper.checkingUserBlockedOrNot,wishlistController.removeWishlist)
 
 
  //wallet 
- userRoute.get("/wallet",walletContoller.wallet)
+ userRoute.get("/wallet",userHelper.checkingUserBlockedOrNot,walletContoller.wallet)
+ userRoute.post("/add-money-to-wallet",userHelper.checkingUserBlockedOrNot,walletContoller.addMoneyWallet)
+ userRoute.post('/wallet-verifypayment',userHelper.checkingUserBlockedOrNot,walletContoller.verifyPayment)
 
 
 

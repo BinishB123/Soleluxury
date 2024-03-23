@@ -21,7 +21,9 @@ const addCoupon = async (req, res) => {
     const endDate = req.body.endDate;
     const Discount = req.body.Discount;
     couponName = couponName.trim();
-    const sameName = await couponModel.find({ name: couponName });
+    const sameName = await couponModel.findOne({ name: couponName });
+    console.log("same name",sameName)
+
     if (sameName) {
       req.flash("error", "coupon exist with same name");
       res.redirect("/admin/coupon");
@@ -33,6 +35,7 @@ const addCoupon = async (req, res) => {
         discount: Discount,
       };
       await couponModel.create(couponAdd);
+      res.redirect("/admin/coupon");
     }
   } catch (error) {
     console.log(error.message);
@@ -77,6 +80,7 @@ const updatecoupon = async (req, res) => {
       name: couponName,
       _id: { $ne: req.query.id },
     });
+    console.log("same name",sameName)
 
     if (sameName) {
       req.flash("error", "Coupon exists with the same name");
@@ -109,7 +113,7 @@ const couponUse = async (req, res) => {
       cart.totalPrice - (cart.totalPrice * coupon.discount) / 100); 
      const couponApplied =  await cart.save()
      if (couponApplied) {
-      res.json({success:true ,newPrice:cart.totalPrice})
+      res.json({success:true ,newPrice:cart.totalPrice,coupon:coupon})
      }else{
       res.json({success:false})
      }

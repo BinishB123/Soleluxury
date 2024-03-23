@@ -43,23 +43,62 @@ const loadSignUp = function (req, res) {
 const insertUser = async (req, res) => {
   try {
     console.log("Request Entered to insertUser");
-    console.log(req.body.confirmPassword)
+    console.log(req.body.confirmPassword);
     const response = await userHelper.doSignUp(
       req.body,
       req.session.otpmatched,
       req.session.userEmail
     );
-    if (!response.status) {
-      const message = response.message;           
-      req.flash("message", message);
-      res.redirect("/signup");
-    } else {
-       req.flash("message",response.message)
-      res.redirect("/login");
-    }
-  } catch (err) {}
-};
 
+    if (!response.status) {
+      const message = response.message;
+      req.flash("message", message);
+      return res.redirect("/signup");
+    } else {
+      if (response.user) {
+        // Assuming userHaveWallet variable is defined somewhere
+        const userHaveWallet = await walletModel.findOne({ userid: response.user._id });
+
+        if (userHaveWallet) {
+          const updating = await walletModel.updateOne(
+            { userid: response.user._id },
+            {
+              $push: {
+                walletDatas: {
+                  amount: 100,
+                  date: new Date(),
+                  paymentMethod: "referral Offer",
+                },
+              },
+              $inc: { balance: 100 },
+            }
+          );
+          console.log("updating in if ", updating); 
+        } else {
+          const creating = await walletModel.create({
+            userid: response.user._id,
+            balance: 100,
+            walletDatas: [
+              {
+                amount: 100,
+                date: new Date(),
+                paymentMethod: "referral Offer",
+              },
+            ],
+          });
+          console.log("creating in else", creating);
+        }
+      }
+    }
+
+    req.flash("message", response.message);
+    res.redirect("/login");
+  } catch (err) {
+    console.error("Error in insertUser:", err);
+    req.flash("message", "An error occurred during user registration.");
+    res.redirect("/signup");
+  }
+};
 
 
 
@@ -317,6 +356,7 @@ const search = async(req,res)=>{
         ]);
         
       const product = await offerHelper.findOffer(searchedThings)
+      
          res.render("searchedProducts",{product:product})
           
   } catch (error) {
@@ -362,7 +402,17 @@ const nav = async(req,res)=>{
   ]);
 const products = await offerHelper.findOffer(product)
     // console.log("nav",products)
-    res.render("searchedProducts",{product:products})
+    let itemsPerPage = 6
+    let currentPage = parseInt(req.query.page) || 1
+    let startIndex = (currentPage-1)* itemsPerPage
+    let endIndex = startIndex +itemsPerPage
+    let totalPages = Math.ceil(products.length/itemsPerPage)
+    const currentProduct = products.slice(startIndex,endIndex)
+    let additionalQueryParameter = undefined;
+    const sortPage = false
+
+  
+    res.render("searchedProducts",{product:currentProduct,totalPages:totalPages,currentPage,baseRoute:"/nav",additionalQueryParameter,allPrdoucts:products,sortPage:sortPage})
     
     
   } catch (error) {
@@ -373,16 +423,18 @@ const products = await offerHelper.findOffer(product)
 
 const filteredBrand = async(req,res)=>{
   try {
+   
     const clicked = req.query.brand
     const latest = req.query.latest
        if(latest==="latest"){
         const productsWithCategories = await productModel.aggregate([
+          {$match:{isBlocked:false}},
           {
-            $lookup: {
+            $lookup: { 
               from: 'categories',
               localField: 'category',
               foreignField: '_id',
-              as: 'category'
+              as: 'category' 
             }
           },
           {
@@ -390,9 +442,17 @@ const filteredBrand = async(req,res)=>{
           },
           {$unwind:"$category"}
         ]);
+         const products =  await offerHelper.findOffer(productsWithCategories)
+         let itemsPerPage = 6
+         let currentPage = parseInt(req.query.page) || 1
+
         
-        const products =  await offerHelper.findOffer(product)
-        res.render("searchedProducts",{product:products})
+         let startIndex = (currentPage-1)* itemsPerPage
+         let endIndex = startIndex +itemsPerPage
+         let totalPages = Math.ceil(products.length/itemsPerPage)
+         const currentProduct = products.slice(startIndex,endIndex)
+         let additionalQueryParameter = latest ? "latest=latest" : "";
+        res.render("searchedProducts",{product:currentProduct,totalPages:totalPages,currentPage,baseRoute:"/filtered",additionalQueryParameter,allPrdoucts:products})
         return
        }
       const product = await productModel.aggregate([
@@ -408,10 +468,18 @@ const filteredBrand = async(req,res)=>{
         {$unwind:"$category"}
       ])
       const products =  await offerHelper.findOffer(product)
+      let itemsPerPage = 6
+         let currentPage = parseInt(req.query.page) || 1
+         let startIndex = (currentPage-1)* itemsPerPage
+         let endIndex = startIndex +itemsPerPage
+         let totalPages = Math.ceil(products.length/itemsPerPage)
+         const currentProduct = products.slice(startIndex,endIndex)
+         console.log("currentProduct",currentProduct.length)
+         let additionalQueryParameter = undefined;
+        res.render("searchedProducts",{product:currentProduct,totalPages:totalPages,currentPage,baseRoute:"/filtered",additionalQueryParameter,allPrdoucts:products})
+        return
+    
       
-    
-      res.render("searchedProducts",{product:products})
-    
   } catch (error) {
     console.log(error.message)
   }
@@ -419,24 +487,43 @@ const filteredBrand = async(req,res)=>{
 
 const pricefiltered = async (req, res) => {
   const clicked = req.query.clicked;
-  let productData = req.body.productData;
+  let productData = req.body.allPrdoucts;
+  const sortPage = true
   
   try {
       productData = JSON.parse(productData);
-      // console.log(productData)
+      
       productData = await offerHelper.findOffer(productData)
-      // console.log("productDate",productData)
+      
       if (clicked==='lth') {
         const product = productData.sort((a,b)=>{
            return a.salePrice - b.salePrice
         })
 
-        res.render("searchedProducts",{product:product})
+        let itemsPerPage = 6
+        let currentPage = parseInt(req.query.page) || 1
+        let startIndex = (currentPage-1)* itemsPerPage
+        let endIndex = startIndex +itemsPerPage
+        let totalPages = Math.ceil(product.length/itemsPerPage)
+        const currentProduct = product.slice(startIndex,endIndex)
+        console.log("currentProduct",currentProduct.length)
+        let additionalQueryParameter = clicked ? `clicked=${clicked}` : "";
+        res.render("searchedProducts",{product:currentProduct,totalPages:totalPages,currentPage,baseRoute:"/pricefiltered",additionalQueryParameter,allPrdoucts:product,sortPage})
+       return
         
       }else{
         const product = productData.sort((a,b)=>{
          return b.salePrice - a.salePrice})
-          res.render("searchedProducts",{product:product})
+         let itemsPerPage = 6
+        let currentPage = parseInt(req.query.page) || 1
+        let startIndex = (currentPage-1)* itemsPerPage
+        let endIndex = startIndex +itemsPerPage
+        let totalPages = Math.ceil(product.length/itemsPerPage)
+        const currentProduct = product.slice(startIndex,endIndex)
+        console.log("currentProduct",currentProduct.length)
+        let additionalQueryParameter = clicked ? `clicked=${clicked}` : "";
+        res.render("searchedProducts",{product:currentProduct,totalPages:totalPages,currentPage,baseRoute:"/pricefiltered",additionalQueryParameter,allPrdoucts:product,sortPage})
+
 
       }
      
@@ -451,29 +538,56 @@ const pricefiltered = async (req, res) => {
 const categoryFilter = async(req,res)=>{
   try {
     const clicked = req.query.clicked
-    const productWithcategory = JSON.parse(req.body.category)
-    //  console.log(productWithcategory)
+    const productWithcategory = JSON.parse(req.body.allPrdoucts)
+    const sortPage = true
    
     if (clicked === "mens") {
       
       const matchedMenscat = productWithcategory.filter(product=>product.category.name=="Mens")
       // console.log("mens",matchedMenscat)
          const product= await offerHelper.findOffer(matchedMenscat)
-      res.render("searchedProducts",{product:product})
+         const itemsPerPage = 6
+         let currentPage = parseInt(req.query.page) || 1
+         let startIndex = (currentPage-1)* itemsPerPage
+         let endIndex = startIndex +itemsPerPage
+         let totalPages = Math.ceil(product.length/itemsPerPage)
+         const currentProduct = product.slice(startIndex,endIndex)
+         console.log("currentProduct",currentProduct.length)
+         let additionalQueryParameter = clicked ? `clicked=${clicked}` : "";
+         res.render("searchedProducts",{product:currentProduct,totalPages:totalPages,currentPage,baseRoute:"/categoryFilter",additionalQueryParameter,allPrdoucts:product,sortPage:sortPage})
+ 
     
      }else if(clicked === "kids"){
       const matchedMenscat = productWithcategory.filter(product=>product.category.name=="kids")
       const product= await offerHelper.findOffer(matchedMenscat)
-      res.render("searchedProducts",{product:product})
+      const itemsPerPage = 6
+      let currentPage = parseInt(req.query.page) || 1
+        let startIndex = (currentPage-1)* itemsPerPage
+        let endIndex = startIndex +itemsPerPage
+        let totalPages = Math.ceil(product.length/itemsPerPage)
+        const currentProduct = product.slice(startIndex,endIndex)
+        console.log("currentProduct",currentProduct.length)
+        let additionalQueryParameter = clicked ? `clicked=${clicked}` : "";
+        res.render("searchedProducts",{product:currentProduct,totalPages:totalPages,currentPage,baseRoute:"/categoryFilter",additionalQueryParameter,allPrdoucts:product,sortPage:sortPage})
+
 
      }else if(clicked === "womens"){
       const matchedMenscat = productWithcategory.filter(product=>product.category.name=="Womens")
       const product= await offerHelper.findOffer(matchedMenscat)
-      res.render("searchedProducts",{product:product})
+      const itemsPerPage = 6
+      let currentPage = parseInt(req.query.page) || 1
+        let startIndex = (currentPage-1)* itemsPerPage
+        let endIndex = startIndex +itemsPerPage
+        let totalPages = Math.ceil(product.length/itemsPerPage)
+        const currentProduct = product.slice(startIndex,endIndex)
+        console.log("currentProduct",currentProduct.length)
+        let additionalQueryParameter = clicked ? `clicked=${clicked}` : "";
+        res.render("searchedProducts",{product:currentProduct,totalPages:totalPages,currentPage,baseRoute:"/categoryFilter",additionalQueryParameter,allPrdoucts:product,sortPage:sortPage})
+
 
      }
   } catch (error) {
-    
+    console.log(error.message)
   }
 }
  

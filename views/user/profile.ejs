@@ -822,6 +822,8 @@
                                                     <li>Manage your <a href="#" style="color: black;">shipping and billing addresses</a>.</li>
                                                     <li>Edit your <a href="#" style="color: black;">password and account details</a>.</li>
                                                     <li>Customized feature:  Explore exclusive offers and promotions!</li>
+                                                    <br>
+                                                    <i class="bi bi-share-fill" onclick="refferalShare('<%=user.referalCode%>')"> click , share and reffer someOne,And get 100 rs</i>
                                                 </ul>
                                             </div>
                                         </div>
@@ -921,6 +923,8 @@
 
                                     <div class="tab-pane fade" id="Wallet" role="tabpanel" aria-labelledby="Wallet-tab">
                                         <h5>Wallet</h5>
+                                            <a  class="btn btn-fill-out " style="background-color:black;"  data-toggle="modal" onclick="openSizeModal()">Add Money</a>
+                                        
                                         <table class="table table-responsive">
                                             <thead>
                                                 <tr>
@@ -929,6 +933,7 @@
                                                     <th>Amount</th>
                                                 </tr>
                                             </thead>
+                                            <% if(locals.wallet) {%>
                                             <% for(let i=0;i<wallet.walletDatas.length;i++) { %>
                                                 <% console.log(wallet.walletDatas[i]) %>
                                                 <% } %>
@@ -946,6 +951,7 @@
                                                         <td colspan="3">No wallet data available</td>
                                                     </tr>
                                                 <% } %>
+                                                <% } %>
                                             </tbody>
                                             
                                             
@@ -960,8 +966,29 @@
                                                 <% } %>
                                             </div>
                                             
-                                        </div><br><br>                                          
-                                </div>
+                                        </div><br><br>
+                                        <div class="modal fade" id="sizeModal" tabindex="-1" role="dialog" aria-labelledby="sizeModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="sizeModalLabel">Add Money</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body text-center">
+                                                        <p>Enter Amount to Add</p>
+                                                        <input type="text" name="" id="moneyToAdd" placeholder=" " style="width: 100px;">
+                                                    </div>
+                                                    
+                                                    <div class="text-center mt-3">
+                                                        <div class="d-inline-block">
+                                                            <button class="btn btn-sm btn-primary" style="width: 70px; margin-bottom: 30px; background-color: black;" onclick="generateRazorpay()">Add</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>
+                                        
 
 
                                     <div class="tab-pane fade" id="manageAdress" role="tabpanel" aria-labelledby="address-tab">
@@ -1287,7 +1314,168 @@
     <script src="public/assets/js/maind134.js?v=3.4"></script>
     <script src="/public/js/addressValidation.js"></script>
     <script src="/public/js/otpVerifyValidation.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
     <script>
+
+function generateRazorpay() {
+    const amount =  document.getElementById('moneyToAdd').value
+    console.log(amount)
+    
+    $.ajax({
+        url: '/add-money-to-wallet',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({amount:amount}), // Convert data object to JSON string
+        success: function(response) {
+           
+        
+           
+           
+           
+            if (response.status===true) {
+               console.log("true")
+            const order = response.order
+            closeSizeMode()
+    
+             razorPayment(order)
+     
+           }else{
+            Toastify({
+                text: "payment process failed",
+                 backgroundColor: "red",
+             duration: 6000,
+             position: "center" 
+         }).showToast();
+           }
+           
+
+
+
+        },
+        error: function(error) {
+            // Redirect to login page if there's an error
+            window.location.href = '/login';
+        }
+    });
+}
+
+
+
+function razorPayment(order){
+    console.log("razorpayment")
+    var options = {
+    "key": "rzp_test_EEotY5tKE8Vqxh", // Enter the Key ID generated from the Dashboard
+    "amount": 100000, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    "currency": "INR",
+    "name": "Soleluxury", //your business name
+    "description": "Test Transaction",
+    "image": "https://example.com/your_logo",
+    "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    "handler": function (response){
+        verifyPayment(response,order)
+    },
+    "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
+        "name": "Gaurav Kumar", //your customer's name
+        "email": "gaurav.kumar@example.com", 
+        "contact": "9000090000"  //Provide the customer's phone number for better conversion rates 
+    },
+    "notes": {
+        "address": "Razorpay Corporate Office"
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+var rzp1 = new Razorpay(options);
+rzp1.open();
+   }
+
+
+   function verifyPayment( payment,order){
+    const amount =  document.getElementById('moneyToAdd').value
+    console.log(amount)
+      console.log("at verify payment")
+    $.ajax({
+        url: '/wallet-verifypayment',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ payment: payment,  order: order ,amount:amount}),
+        success: function(response) {
+        //     console.log(response)
+        //    if (response.success) {
+        //     window.location.href = response.url;
+        //    }else{
+        //     Toastify({
+        //         text: response.message,
+        //          backgroundColor: "red",
+        //      duration: 6000,
+        //      position: "center" 
+        //  }).showToast();
+
+        //    }
+
+
+        },
+        error: function(error) {
+            
+            window.location.href = '/login';
+        }
+    });
+      
+   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     function openSizeModal() {
+                 $(`#sizeModal`).modal('show');
+               }
+
+               function closeSizeMode() {
+                 $(`#sizeModal`).modal('hide');
+               }
+
+
+
+
+
+
+
+
+ async function refferalShare(userRefferalCode) {
+    console.log(userRefferalCode);
+
+    if (navigator.share) {
+        
+        const shareData = {
+            title: 'Soleluxury',
+            text: `Use my referral code ${userRefferalCode} to sign up and explore `,
+            
+        };
+
+        
+        try {
+            await navigator.share(shareData);
+            console.log('Shared successfully');
+        } catch (error) {
+            console.error('Error sharing:', error);
+        }
+    } else {
+        console.log('Web Share API is not supported in this browser');
+    }
+}
+
 
 
      function deleteAdress(addressId) {

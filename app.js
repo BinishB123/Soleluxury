@@ -1,7 +1,6 @@
 const express = require("express")
 const path = require("path")
-const dotenv =require("dotenv")
-dotenv.config({path:"./setUp.env"})
+require("dotenv").config()
 const app = express()
 const session = require("express-session")
 const mongoose = require("mongoose")
@@ -20,7 +19,7 @@ const methodOverride = require("method-override")//in form used by input fields
  app.use(express.urlencoded({extended:true}))
  app.use('/public',express.static(path.join(__dirname,"public")))
  app.set("view engine",'ejs')
- app.set("views",[path.join(__dirname,'views/user'),path.join(__dirname,'views/admin')])
+ app.set("views",[path.join(__dirname,'views/user') ,  path.join(__dirname,'views/admin')])
  app.use(session({
     secret:"y1r13t1t3rt77t7g8y3e67",
     resave:false,

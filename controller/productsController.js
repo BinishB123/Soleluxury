@@ -63,7 +63,7 @@ const addproducts = async (req, res) => {
         const product = req.body;
         let productName = req.body.productName
          productName = productName.trim()
-        
+        console.log(product)
 
        
         const productExist = await productModel.findOne({ productName: productName });

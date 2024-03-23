@@ -1,189 +1,221 @@
 const orderModel = require("../model/orderModel");
-const couponModel = require("../model/couponModel")
+const couponModel = require("../model/couponModel");
 
 const salesReportPage = async (req, res) => {
   try {
-    const day = req.query.day; // Assuming day is in the format "YYYY-MM-DD"
-    const customDate = new Date(day)
-console.log("custom date", customDate)
-    if(day!=undefined){
-     
+    const day = req.query.day;
+    const customDate = day ? new Date(day) : null;
 
-const ordersWithCustomerInfo = await orderModel.aggregate([
-  {
-    $lookup: {
-      from: "users",
-      localField: "user",
-      foreignField: "_id",
-      as: "user",
-    },
-  },
-  { $unwind: "$user" },
-  { $sort: { orderedOn: -1 } }, // Default sorting by orderedOn
-  { 
-    $match: { 
-      orderedOn: { 
-        $gte: customDate, // Filter orders with orderedOn >= customDate
-        $lt: new Date(customDate.getTime() + 24 * 60 * 60 * 1000) // Until the end of the day
-      } 
-    } 
-  },
-  { $unwind: "$products" },
-  {
-    $lookup: {
-      from: "products",
-      localField: "products.product",
-      foreignField: "_id",
-      as: "product",
-    },
-  },
-  { $unwind: "$product" },
-  
-]);
-for (const order of ordersWithCustomerInfo) {
-  
-  if (order.coupon) {
-   
-    const couponValue = order.coupon;
-    const couponDocument = await couponModel.findOne({
-      _id:couponValue,
+    let ordersWithCustomerInfo;
+    if (customDate) {
+      ordersWithCustomerInfo = await fetchOrdersForDay(customDate);
+    } else {
+      ordersWithCustomerInfo = await fetchOrdersWithoutDay();
+    }
+
+    // Sorting orders by month
+    ordersWithCustomerInfo.sort((a, b) => {
+      const monthA = new Date(a.orderedOn).getMonth();
+      const monthB = new Date(b.orderedOn).getMonth();
+      return monthA - monthB;
     });
 
-    if (couponDocument) {
-      const couponDiscount = couponDocument.discount;
-      order.couponDiscount = couponDiscount;
-      
-    } else {
-      order.couponDiscount = "no coupon";
-    }
-  }
-}
-
-
-      const filteredInfos = ordersWithCustomerInfo.filter((order)=>{
-          return order.products.status==="delivered"
-      })
-      console.log(filteredInfos)
-      let itemsPerPage = 10;
-      let currentPage = parseInt(req.query.page) || 1;
-      let startIndex = (currentPage - 1) * itemsPerPage;
-      let endIndex = startIndex + itemsPerPage;
-      let totalPages = Math.ceil(filteredInfos.length / itemsPerPage);
-      const currentdata = filteredInfos.slice(startIndex, endIndex);
-      let totalAmount = 0;
-      for (let i = 0; i < filteredInfos.length; i++) {
-        totalAmount += filteredInfos[i].products. productPrice;
-      }
-      //console.log("ppppppppppppppp",ordersWithCustomerInfo,")))))))))))))))))))")
-  
-      res.render("salesReport", {
-        data: currentdata,
-        totalPages: totalPages,
-        currentPage: currentPage,
-        totalAmount: totalAmount,
-        salesMonthly:true,
-        date:day
-      });
-
-    }else{
-    const ordersWithCustomerInfo = await orderModel.aggregate([
-      {
-        $lookup: {
-          from: "users", 
-          localField: "user", // Replace with the field from the input documents
-          foreignField: "_id", // Replace with the field from the documents of the "from" collection
-          as: "user", // Replace with the output array field
-        },
-      },
-      { $unwind: "$user" },
-      { $sort: { orderedOn: -1 } },
-      {$unwind:"$products"},
-     {
-       $lookup: {
-         from: "products", 
-         localField: "products.product", // Replace with the field from the input documents
-         foreignField: "_id", // Replace with the field from the documents of the "from" collection
-         as: "product", // Replace with the output array field
-       },
-     },
-      {$unwind:"$product"},
-      
-    ]);
     for (const order of ordersWithCustomerInfo) {
-  
       if (order.coupon) {
-       
         const couponValue = order.coupon;
         const couponDocument = await couponModel.findOne({
-          _id:couponValue,
+          _id: couponValue,
         });
-    
         if (couponDocument) {
           const couponDiscount = couponDocument.discount;
           order.couponDiscount = couponDiscount;
-          
         } else {
           order.couponDiscount = "no coupon";
         }
       }
     }
-    
-    
-    const filteredInfos = ordersWithCustomerInfo.filter((order)=>{
-        return order.products.status==="delivered"
-    })
-    console.log(filteredInfos)
-    let itemsPerPage = 10;
-    let currentPage = parseInt(req.query.page) || 1;
-    let startIndex = (currentPage - 1) * itemsPerPage;
-    let endIndex = startIndex + itemsPerPage;
-    let totalPages = Math.ceil(filteredInfos.length / itemsPerPage);
-    const currentdata = filteredInfos.slice(startIndex, endIndex);
-    let totalAmount = 0;
-    // for (let i = 0; i < filteredInfos.length; i++) {
-    //   totalAmount += filteredInfos[i].products. productPrice;
-    // }
+
+    const filteredInfos = filterOrders(ordersWithCustomerInfo);
+    const paginatedData = paginateData(filteredInfos, req.query.page);
+    const totalAmount = calculateTotalAmount(filteredInfos);
 
     res.render("salesReport", {
-      data: currentdata,
-      totalPages: totalPages,
-      currentPage: currentPage,
-      salesMonthly:true
+      data: paginatedData.data,
+      totalPages: paginatedData.totalPages,
+      currentPage: paginatedData.currentPage,
+      totalAmount: totalAmount,
+      salesMonthly: true,
+      date: customDate ? day : null, 
     });
-  }
   } catch (error) {
-    console.log(error.message);
+    console.error("Error in sales report page:", error.message);
+    res.status(500).send("Internal Server Error");
   }
 };
 
+const monthlySalesReport = async (req, res) => {
+  try {
+    const targetMonth = parseInt(req.query.monthly);
+    // const customDate = day ? new Date(day) : null;
 
+    const targetDate = new Date("2024-03-31T18:30:00.000Z"); // Example timestamp
 
+    const startOfMonth = new Date(targetDate.getFullYear(), targetMonth - 1, 1); // First day of the target month
+    const endOfMonth = new Date(targetDate.getFullYear(), targetMonth, 0); // Last day of the target month
 
+    let ordersWithCustomerInfo;
+    if (targetMonth) {
+      ordersWithCustomerInfo = await fetchOrdersForMonth(
+        startOfMonth,
+        endOfMonth
+      );
+    } else {
+      ordersWithCustomerInfo = await fetchOrdersWithoutDay();
+    }
+    for (const order of ordersWithCustomerInfo) {
+      if (order.coupon) {
+        const couponValue = order.coupon;
+        const couponDocument = await couponModel.findOne({
+          _id: couponValue,
+        });
+        if (couponDocument) {
+          const couponDiscount = couponDocument.discount;
+          order.couponDiscount = couponDiscount;
+        } else {
+          order.couponDiscount = "no coupon";
+        }
+      }
+    }
+                     
+    const filteredInfos = filterOrders(ordersWithCustomerInfo);
+    const paginatedData = paginateData(filteredInfos, req.query.page);
+    const totalAmount = calculateTotalAmount(filteredInfos);
+                                                  
+    res.render("salesReport", {       
+      data: paginatedData.data,
+      totalPages: paginatedData.totalPages,
+      currentPage: paginatedData.currentPage,
+      totalAmount: totalAmount,
+      salesMonthly: true,
+    });
+  } catch (error) {
+    console.error("Error in sales report page:", error.message);
+    res.status(500).send("Internal Server Error");
+  }
+};
 
-// const salesWeekly= async(req,res)=>{
-//   try{
+async function fetchOrdersForMonth(startOfMonth, endOfMonth) {
+  return await orderModel.aggregate([
+    {
+      $lookup: {
+        from: "users",
+        localField: "user",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    { $unwind: "$user" },
+    { $sort: { orderedOn: -1 } },
+    { $match: { orderedOn: { $gt: startOfMonth, $lt: endOfMonth } } },
+    { $unwind: "$products" },
+    {
+      $lookup: {
+        from: "products",
+        localField: "products.product",
+        foreignField: "_id",
+        as: "product",
+      },
+    },
+    { $unwind: "$product" },
+  ]);
+}
 
-//     const day = 0
-//     let currentDate = new Date();
-//     const startOfTheWeek = new Date(
-//       currentDate.getFullYear(),
-//       currentDate.getMonth(),
-//       currentDate.getDate() - currentDate.getDay()
-//     );
+async function fetchOrdersForDay(customDate) {
+  return await orderModel.aggregate([
+    {
+      $lookup: {
+        from: "users",
+        localField: "user",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    { $unwind: "$user" },
+    { $sort: { orderedOn: -1 } },
+    {
+      $match: {
+        orderedOn: {
+          $gte: customDate,
+          $lt: new Date(customDate.getTime() + 24 * 60 * 60 * 1000),
+        },
+      },
+    },
+    { $unwind: "$products" },
+    {
+      $lookup: {
+        from: "products",
+        localField: "products.product",
+        foreignField: "_id",
+        as: "product",
+      },
+    },
+    { $unwind: "$product" },
+  ]);
+}
 
-//     const endOfTheWeek = new Date(
-//       currentDate.getFullYear(),
-//       currentDate.getMonth(),
-//       currentDate.getDate() + (6 - currentDate.getDay()),
-//       23,
-//       59,
-//       59,
-//       999
+async function fetchOrdersWithoutDay() {
+  return await orderModel.aggregate([
+    {
+      $lookup: {
+        from: "users",
+        localField: "user",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    { $unwind: "$user" },
+    { $sort: { orderedOn: -1 } },
+    { $unwind: "$products" },
+    {
+      $lookup: {
+        from: "products",
+        localField: "products.product",
+        foreignField: "_id",
+        as: "product",
+      },
+    },
+    { $unwind: "$product" },
+  ]);
+}
 
-//     )
+function filterOrders(orders) {
+  return orders.filter((order) => order.products.status === "delivered");
+}
 
+function paginateData(data, page) {
+  const itemsPerPage = 10;
+  const currentPage = parseInt(page) || 1;
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  return {
+    data: data.slice(startIndex, endIndex),
+    totalPages: totalPages,
+    currentPage: currentPage,
+  };
+}
 
+function calculateTotalAmount(filteredInfos) {
+  return filteredInfos.reduce(
+    (total, order) => total + order.products.productPrice,
+    0
+  );
+}
 
+// const fetchOrdersBetweenDates = async (req, res) => {
+//   try {
+//     const customStartDate = new Date(startingDate);
+//     const customEndDate = new Date(endingDate);
 
 //     const ordersWithCustomerInfo = await orderModel.aggregate([
 //       {
@@ -195,15 +227,8 @@ for (const order of ordersWithCustomerInfo) {
 //         },
 //       },
 //       { $unwind: "$user" },
-//       { $sort: { orderedOn: -1 } }, // Default sorting by orderedOn
-//       { 
-//         $match: { 
-//           orderedOn: { 
-//             $gte: startOfTheWeek, // Filter orders with orderedOn >= customDate
-//             $lt: endOfTheWeek // Until the end of the day
-//           } 
-//         } 
-//       },
+//       { $sort: { orderedOn: -1 } },
+//       { $match: { orderedOn: { $gte: customStartDate, $lt: customEndDate } } },
 //       { $unwind: "$products" },
 //       {
 //         $lookup: {
@@ -214,60 +239,94 @@ for (const order of ordersWithCustomerInfo) {
 //         },
 //       },
 //       { $unwind: "$product" },
-      
 //     ]);
-//     for (const order of ordersWithCustomerInfo) {
-      
-//       if (order.coupon) {
-       
-//         const couponValue = order.coupon;
-//         const couponDocument = await couponModel.findOne({
-//           _id:couponValue,
-//         });
-    
-//         if (couponDocument) {
-//           const couponDiscount = couponDocument.discount;
-//           order.couponDiscount = couponDiscount;
-          
-//         } else {
-//           order.couponDiscount = "no coupon";
-//         }
-//       }
-//     }
-    
-    
-//           const filteredInfos = ordersWithCustomerInfo.filter((order)=>{
-//               return order.products.status==="delivered"
-//           })
-//           console.log(filteredInfos)
-//           let itemsPerPage = 10;
-//           let currentPage = parseInt(req.query.page) || 1;
-//           let startIndex = (currentPage - 1) * itemsPerPage;
-//           let endIndex = startIndex + itemsPerPage;
-//           let totalPages = Math.ceil(filteredInfos.length / itemsPerPage);
-//           const currentdata = filteredInfos.slice(startIndex, endIndex);
-//           let totalAmount = 0;
-//           for (let i = 0; i < filteredInfos.length; i++) {
-//             totalAmount += filteredInfos[i].products. productPrice;
-//           }
-//           //console.log("ppppppppppppppp",ordersWithCustomerInfo,")))))))))))))))))))")
-      
-//           res.render("salesReport", {
-//             data: currentdata,
-//             totalPages: totalPages,
-//             currentPage: currentPage,
-//             totalAmount: totalAmount,
-//             salesMonthly:true,
-//             date:day
-//           });
-    
 
-//   }catch(err){
-//     console.log(err.message)
+//     return ordersWithCustomerInfo;
+//   } catch (error) {
+//     console.error("Error fetching orders:", error.message);
+//     throw error;
 //   }
-// }
+// };
+
+
+const salesreportaccordingtotwodates = async(req,res)=>{
+  try {
+    const customStartDate = new Date(req.query.startdate);
+const customEndDate = new Date(req.query.enddate);
+console.log(customEndDate)
+console.log(customStartDate)
+
+const ordersWithCustomerInfo = await orderModel.aggregate([
+  {
+    $lookup: {
+      from: "users",
+      localField: "user",
+      foreignField: "_id",
+      as: "user",
+    },
+  },
+  { $unwind: "$user" },
+  { $sort: { orderedOn: -1 } },
+  {
+    $match: {
+      orderedOn: {
+        $gte: customStartDate, // Greater than or equal to customStartDate
+        $lt: customEndDate     // Less than customEndDate
+      }
+    }
+  },
+  { $unwind: "$products" },
+  {
+    $lookup: {
+      from: "products",
+      localField: "products.product",
+      foreignField: "_id",
+      as: "product",
+    },
+  },
+  { $unwind: "$product" },
+]);
+    // console.log("ordersWithCustomerInfo",ordersWithCustomerInfo)
+
+
+    for (const order of ordersWithCustomerInfo) {
+      if (order.coupon) {
+        const couponValue = order.coupon;
+        const couponDocument = await couponModel.findOne({
+          _id: couponValue,
+        });
+        if (couponDocument) {
+          const couponDiscount = couponDocument.discount;
+          order.couponDiscount = couponDiscount;
+        } else {
+          order.couponDiscount = "no coupon";
+        }
+      }
+    }
+                     
+    const filteredInfos = filterOrders(ordersWithCustomerInfo);
+    const paginatedData = paginateData(filteredInfos, req.query.page);
+    const totalAmount = calculateTotalAmount(filteredInfos);
+    console.log("paginatedData",paginatedData)
+                                                  
+    res.render("salesReport", {       
+      data: paginatedData.data,
+      totalPages: paginatedData.totalPages,
+      currentPage: paginatedData.currentPage,
+      totalAmount: totalAmount,
+      salesMonthly: true,
+    });
+
+    
+  } catch (error) {
+    console.log(error.message)
+  }
+}
+
 const salesReportController = {
   salesReportPage,
+  monthlySalesReport,
+  salesreportaccordingtotwodates
 };
 
 module.exports = salesReportController;

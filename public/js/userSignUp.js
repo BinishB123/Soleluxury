@@ -6,6 +6,8 @@ const error1 = document.getElementById('error1');
 const error2 = document.getElementById('error2');
 const error3 = document.getElementById('error3');
 const error4 = document.getElementById('error4');
+const referalcodeX = document.getElementById('referalcodeX')
+const refferalCodeWarning = document.getElementById("refferalCodeWarning")
 const regform = document.getElementById('logform');
  console.log(emailid)
 function emailvalidate() {
@@ -63,7 +65,7 @@ function passvalidate() {
 }
 
 function namevalidate() {
-  const nameval = nameid.value;
+  const nameval = nameid.value.trim();
   if (nameval.trim() === '') {
     error1.style.display = 'block';
     error1.innerHTML = 'Please Enter a valid Name.';
@@ -73,10 +75,29 @@ function namevalidate() {
   }
 }
 
+
+function referalcode(){
+  const referalcodeXval = referalcodeX.value.trim()
+  console.log(referalcodeXval)
+  console.log(refferalCodeWarning)
+  if (referalcodeXval!=undefined && referalcodeXval!=null&&referalcodeXval!="") {
+    console.log(referalcodeXval.length)
+     if (referalcodeXval.length!=15) {
+      refferalCodeWarning.style.display ="none"
+      refferalCodeWarning.style.display ="block"
+      refferalCodeWarning.style.color ="red"
+      refferalCodeWarning.innerHTML = "referral only have 15 characters"
+     }else{
+      refferalCodeWarning.style.display="none"
+      refferalCodeWarning.innerHTML=""
+     }
+  }
+}
 emailid.addEventListener('blur', emailvalidate);
 passid.addEventListener('blur', passvalidate);
 mobileid.addEventListener('blur', mobvalidate);
 nameid.addEventListener('blur', namevalidate);
+referalcodeX.addEventListener("blur",referalcode)
 
 regform.addEventListener('submit', function (e) {
  
@@ -85,10 +106,11 @@ regform.addEventListener('submit', function (e) {
   mobvalidate();
   passvalidate();
   namevalidate();
+  referalcode();
 
   console.log('After validation');
 
-  if (error1.innerHTML || error2.innerHTML || error3.innerHTML || error4.innerHTML) {
+  if (error1.innerHTML || error2.innerHTML || error3.innerHTML || error4.innerHTML||refferalCodeWarning.innerHTML) {
     console.log('Validation failed');
     e.preventDefault();
   } else {

@@ -1,6 +1,7 @@
 const order = require("../model/orderModel");
 const user = require("../model/userModel");
 const userModel = require("../model/userModel");
+const walletModel = require("../model/walletModel")
 const bcrypt = require("bcrypt");
 const Razorpay = require("razorpay")
 var instance = new Razorpay({
@@ -64,64 +65,107 @@ const loginHome = (userData)=>{
 
 
 
-const doSignUp = (userData, verify,emailVerify) => {
+const doSignUp = (userData, verify, emailVerify) => {
   return new Promise(async (resolve, reject) => {
-    const userExist = await userModel.findOne({
-      $or: [{ email: userData.email }, { mobile: userData.mobile }],
-    });
-    const response={};
-    console.log("Hello");
-    if(emailVerify===userData.email){
-    if (!userExist) {
-      console.log("user not exist");
-      console.log(userData.password +" "+userData.confirmPassword)
-      if (userData.password === userData.confirmPassword) {
-        console.log("password matched");
-        console.log(verify);
-        if (verify) {  //otp verification
-          console.log("verfied");
-          try {
-            const password = await bcrypt.hash(userData.password, 10);
-            const userd = {
-              name: userData.name,
-              email: userData.email,
-              mobile: userData.mobile,
-              password: password,
-            };
-            userModel
-              .create(userd)
-              .then((data) => {
-                response.status=true;
-                response.message="Signed Up Successfully";
-                resolve(response);
-                console.log(data);
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-          } catch (error) {
-            console.log(error.message);
+    try {
+      const userExist = await userModel.findOne({
+        $or: [{ email: userData.email }, { mobile: userData.mobile }],
+      });
+
+      const response = {};
+
+      if (userData.referralcode) {
+        const userWithReferralcode = await userModel.findOne({ referalCode: userData.referralcode });
+
+        if (userWithReferralcode) {
+          const userHaveWallet = await walletModel.findOne({ userid: userWithReferralcode._id });
+
+          if (userHaveWallet) {
+            // Assuming checker object and userid are defined somewhere
+            const updating = await walletModel.updateOne(
+              { userid: userWithReferralcode._id },
+              {
+                $push: {
+                  walletDatas: {
+                    amount: 100,
+                    date: new Date(),
+                    paymentMethod: "referral Offer",
+                  },
+                },
+                $inc: { balance: 100 },
+              }
+            );
+            console.log("updating in if ", updating);
+          } else {
+            const creating = await walletModel.create({
+              userid: userWithReferralcode._id,
+              balance: 100,
+              walletDatas: [
+                {
+                  amount: 100,
+                  date: new Date(),
+                  paymentMethod: "referral Offer",
+                },
+              ],
+            });
+            console.log("creating in else", creating);
+          }
+        }
+      }
+
+      if (emailVerify === userData.email) {
+        if (!userExist) {
+          console.log("user not exist");
+
+          if (userData.password === userData.confirmPassword) {
+            console.log("password matched");
+            console.log(verify);
+
+            if (verify) {
+              console.log("verified");
+
+              const password = await bcrypt.hash(userData.password, 10);
+              const referalCode = await generateRandomString();
+
+              const newUser = {
+                name: userData.name,
+                email: userData.email,
+                mobile: userData.mobile,
+                password: password,
+                referalCode: referalCode,
+              };
+
+              const createdUser = await userModel.create(newUser);
+
+              console.log("User created:", createdUser);
+              response.user = createdUser
+              response.status = true;
+              response.message = "Signed Up Successfully";
+              resolve(response);
+            } else {
+              response.status = false;
+              response.message = "OTP Does not match";
+              resolve(response);
+            }
+          } else {
+            response.status = false;
+            response.message = "Password does not match";
+            resolve(response);
           }
         } else {
-          response.status =false,
-          response.message="OTP Doesnt match";
+          response.status = false;
+          response.message = "User already exists";
           resolve(response);
         }
-      }else{
+      } else {
         response.status = false;
-        response.message = "Password doesn't Match"
-        resolve(response)
+        response.message = "Email not matched";
+        resolve(response);
       }
-    } else {
-      response.status=false;
-      response.message="User already Exists";
-      resolve(response);
+    } catch (error) {
+      console.error("Error during sign up:", error);
+      reject(error);
     }
-  }else{
-    response.status =false;
-    response.message = "Email not matched"
-    resolve(response)
-  }
   });
 };
 
@@ -146,7 +190,7 @@ const generateRazorpay = (userId,totalAmount)=>{
       // console.log("orderid at generate razorpay",orderId)
       // console.log("totalAmount ",totalAmount)
       instance.orders.create({
-        amount: totalAmount*100,
+        amount: Math.round(totalAmount*100),
         currency: "INR",
         receipt: userId,
         notes: {
@@ -162,7 +206,7 @@ const generateRazorpay = (userId,totalAmount)=>{
             success:true,
             order:order
           }
-           //console.log("order in generateRazorpay",order)
+           console.log("order in generateRazorpay",order)
           resolve(response)
         }
         
@@ -173,6 +217,18 @@ const generateRazorpay = (userId,totalAmount)=>{
       console.log(error.message)
     }
   })
+}
+
+
+
+function generateRandomString() {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < 15; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      result += characters.charAt(randomIndex);
+  }
+  return result;
 }
 
 

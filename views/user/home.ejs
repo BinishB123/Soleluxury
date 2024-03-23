@@ -826,7 +826,7 @@
                                     <div class="product-img-action-wrap">
                                         <div class="product-img product-img-zoom">
                                             <a href="/productview/<%=data[i]._id %>">
-                                                <img class="default-img" src="/public/photos/productImages/<%=data[i].productImage[4]  %>" alt="">
+                                                <img class="default-img" src="/public/photos/productImages/<%=data[i].productImage[0]%>" alt="">
                                                 <!-- <img class="hover-img" src="/public/assets/imgs/shop/product-1-2.jpg" alt=""> -->
                                             </a>
                                         </div>
@@ -853,13 +853,17 @@
                                             <span style="color: black;">$<%=data[i].salePrice %> </span>
                                             <span class="old-price" style="color: black;">$<%=data[i].regularPrice %></span>
                                         </div>
-                                        <div class="product-action-1 show">
+                                        <!-- <div class="product-action-1 show">
                                             <a aria-label="Add To Cart" class="action-btn hover-up" href="shop-cart.html"><i class="fi-rs-shopping-bag-add"></i></a>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
                             </div>
                             <% } %>
+                            <div class="d-flex justify-content-center">
+                                <a class="btn btn-lg btn-dark text-center" href="/nav?clicked=shop" style="width: 20%; background-color: black;">show more</a>
+                            </div>
+                            
                             <!-- <div class="col-lg-3 col-md-4 col-12 col-sm-6">
                                 <div class="product-cart-wrap mb-30">
                                     <div class="product-img-action-wrap">

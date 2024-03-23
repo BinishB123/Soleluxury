@@ -788,6 +788,8 @@
                 <span style="background-color: rgb(255, 255, 255); color: rgb(235, 19, 19);">Cancelled</span>
             <% } else if (order[i].products.status === "delivered") { %>
                 <a href="#" id="" class="btn btn-sm" style="background-color: rgb(0, 132, 255); color: white;" onclick="returnOrder('<%= order[i]._id %>', '<%= order[i].products._id %>')">Return</a>
+                <a class="btn btn-sm" onclick="dldInvoice('<%= order[i]._id %>', '<%= order[i].products._id %>')" style="background-color: black;">Download invoice</a>
+
                 <% } else if(order[i].products.status === "return Pending") { %>
                     <span class="badge" style="color: rgb(133, 133, 133);">Return pending</span>
                     <% } else if(order[i].products.status === "Returned") { %>
@@ -986,7 +988,128 @@
     <script src="public/assets/js/maind134.js?v=3.4"></script>
     <!-- <script src="/public/js/orderDetail.js"></script> -->
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/easyinvoice/dist/easyinvoice.min.js"></script>
     <script>
+
+function dldInvoice(orderid, productDocid) {
+  $.ajax({
+    url: '/invoicedownload',
+    method: 'POST',
+    data: { orderid: orderid, productDocid: productDocid },
+    success: function(response) {
+      if (response.data) {
+        const details = response.data;
+        const currentDate = new Date(); // Create a new Date object representing the current date and time
+        const formattedDate = currentDate.toLocaleDateString();
+        console.log(formattedDate)
+        // Prepare data for creating invoice
+        var data = {
+          apiKey: "free",
+          mode: "development",
+          images: {
+            logo: "https://public.budgetinvoice.com/img/logo_en_original.png",
+          },
+          sender: {
+            company:"Solelucury",
+            address: " kundanoor maradu",
+            zip: "AdC",
+            city: "Kochi",
+            country: "India"
+          },
+          client: {
+            company: details.address.name,
+            address: details.address.house,
+            city: details.address.city,
+            country: details.address.country
+          },
+          information: {
+            number: "2021.0001",
+            date: formattedDate,
+            
+          },
+          products: [
+            {
+              quantity: details.products.quantity,
+              description: details.prod.productName,
+              price: details.products.productPrice
+            }
+          ],
+          bottomNotice: "",
+          settings: {
+            currency: "INR"
+          }
+        };
+
+        // Create the invoice
+        easyinvoice.createInvoice(data, function (result) {
+          
+          easyinvoice.download('Soleluxury-invoice.pdf', result.pdf);
+        });
+      } else {
+        swal("Error", "Failed to fetch individual order data.", "error");
+      }
+    },
+    error: function(xhr, status, error) {
+      swal("Error", "Failed to download invoice. Please try again later.", "error");
+      console.error('Error downloading invoice:', error);
+    }
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         function goBack() {
             window.history.back();
         }

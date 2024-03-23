@@ -838,16 +838,16 @@
                             <ul class="categories">
                                 <li>
                                     <form  method="post" action="/categoryFilter?clicked=mens">
-                                        <input type="hidden" name="category" id="" value="<%= JSON.stringify(product) %>">
+                                        <input type="hidden" name="allPrdoucts" id="" value="<%= JSON.stringify(allPrdoucts) %>">
                                         <button  class="btn btn-sm" type="submit"  style="background-color: white;color: black;">Mens</button>
                                     </form>
                                     </li>
                                 <li><form  method="post" action="/categoryFilter?clicked=womens">
-                                    <input type="hidden" name="category"  id="" value="<%= JSON.stringify(product) %>">
+                                    <input type="hidden" name="allPrdoucts"  id="" value="<%= JSON.stringify(allPrdoucts) %>">
                                     <button  class="btn btn-sm" type="submit"  style="background-color: white;color: black;">Womens</button>
                                 </form></li>
                                 <li><form  method="post" action="/categoryFilter?clicked=kids">
-                                    <input type="hidden" name="category"  id="" value="<%= JSON.stringify(product) %>">
+                                    <input type="hidden" name="allPrdoucts"  id="" value="<%= JSON.stringify(allPrdoucts) %>">
                                     <button  class="btn btn-sm" type="submit"  style="background-color: white;color: black;">Kids</button>
                                 </form></li>
                                 
@@ -864,14 +864,14 @@
         
                                 <li>
                                     <form   method="post" action="/priceFiltered?clicked=lth">
-                                        <input type="hidden" id="productData" name="productData" value="<%= JSON.stringify(product) %>">
+                                        <input type="hidden" id="productData" name="allPrdoucts" value="<%= JSON.stringify(allPrdoucts) %>">
                                         <button class="btn btn-sm" type="submit"  style="background-color: white;color: black;">Price: Low to High</button>
         
                                         </form>
                                 </li>
                                 <li>
                                     <form   method="post" action="/priceFiltered?clicked=htl">
-                                        <input type="hidden" id="productData" name="productData" value="<%= JSON.stringify(product) %>">
+                                        <input type="hidden" id="productData" name="allPrdoucts" value="<%= JSON.stringify(allPrdoucts) %>">
                                         <button class="btn btn-sm" type="submit"  style="background-color: white;color: black;">Price: High to low</button>
         
                                         </form>                             
@@ -964,6 +964,46 @@
                         <!--End tab-content-->
                     </div>
                 </div>
+                
+                <% if(locals.sortPage == true) { %>
+                    <% if (totalPages) { %>
+                        <div class="pagination">
+                            <% if (currentPage > 1) { %>
+                                <form id="prevForm" action="<%= baseRoute %>?page=<%= currentPage - 1 %><%= additionalQueryParameter ? `&${additionalQueryParameter}` : '' %>" method="POST" style="display: inline;">
+                                    <input type="hidden" name="page" value="<%= currentPage - 1 %>">
+                                    <input type="hidden" name="allPrdoucts" value="<%= JSON.stringify(allPrdoucts) %>">
+                                    <button type="submit" class="btn btn-sm" style="color: white;">Previous</button>
+                                </form>
+                            <% } %>
+                            <form action="<%= baseRoute %>?page=<%= currentPage %><%= additionalQueryParameter ? `&${additionalQueryParameter}` : '' %>" method="POST" style="display: inline;">
+                                <input type="hidden" name="page" value="<%= currentPage %>">
+                                <input type="hidden" name="allPrdoucts" value="<%= JSON.stringify(allPrdoucts) %>">
+                                <button type="submit" class="btn btn-sm active" style="color: white; background-color: black;"><%= currentPage %></button>
+                            </form>
+                            <% if (currentPage < totalPages) { %>
+                                <form id="nextForm" action="<%= baseRoute %>?page=<%= currentPage + 1 %><%= additionalQueryParameter ? `&${additionalQueryParameter}` : '' %>" method="POST" style="display: inline;">
+                                    <input type="hidden" name="page" value="<%= currentPage + 1 %>">
+                                    <input type="hidden" name="allPrdoucts" value="<%= JSON.stringify(allPrdoucts) %>">
+                                    <button type="submit" class="btn btn-sm" style="color: white; background-color: black;">Next</button>
+                                </form>
+                            <% } %>
+                        </div>
+                        <% } %>
+                    <% } else { %>
+                        <% console.log("okkk"); %>
+                        <div class="pagination">
+                            <% if (currentPage > 1) { %>
+                                <a class="btn btn-sm" href="<%= baseRoute %>?page=<%= currentPage - 1 %><%= additionalQueryParameter ? `&${additionalQueryParameter}` : '' %>" style="color: white; background-color: black;">Previous</a>
+                            <% } %>
+                            <li class="page-item"><a class="btn btn-sm active" style="color: white; background-color: black;"><%= currentPage %></a></li>
+                            &nbsp;
+                            <% if (currentPage < totalPages) { %>
+                                <a class="btn btn-sm" href="<%= baseRoute %>?page=<%= currentPage + 1 %><%= additionalQueryParameter ? `&${additionalQueryParameter}` : '' %>" style="color: white; background-color: black;">Next</a>
+                            <% } %>
+                        </div>
+                    <% } %>
+               
+                
             </div>
         </section>
       

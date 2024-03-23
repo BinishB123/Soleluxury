@@ -93,7 +93,9 @@ adminRoute.delete("/deleteCategoryoffer",adminMiddleware.adminLogged,categoryOff
 
 //Admin Salesreport
 adminRoute.get("/sales-report",adminMiddleware.adminLogged,salesReportController.salesReportPage)
+ adminRoute.get("/monthlySalesReport",adminMiddleware.adminLogged,salesReportController.monthlySalesReport)
+ adminRoute.get("/salesreportaccordingtotwodates",adminMiddleware.adminLogged,salesReportController.salesreportaccordingtotwodates)
 
 
 
-module.exports = adminRoute
+module.exports = adminRoute   
