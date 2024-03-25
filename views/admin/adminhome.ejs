@@ -542,14 +542,23 @@ if ($('#yearlySales').length) {
         // Sale statistics Chart 1
         if ($('#myChart').length) {
             const salesReport =  JSON.parse( document.getElementById("salesReport").value)
+               // console.log(salesReport);
           var ctx = document.getElementById('myChart').getContext('2d');
           const allMonths = Array.from({ length: 12 }, (_, i) => i + 1); // Array representing all months (1 to 12)
+        
            const monthlyDataMap = new Map(salesReport.map(item => [item._id, item.totalAmount]));
+           const months = [
+                "January", "February", "March", "April", "May", "June", 
+                "July", "August", "September", "October", "November", "December"
+        ]
+             ;
+           
              const monthlyDataFilled = allMonths.map(month => ({ _id: month, totalAmount: monthlyDataMap.get(month) || 0 }));
+            //  console.log(monthlyDataFilled)
           var chart = new Chart(ctx, {
             type: 'line',
             data: {
-              labels:monthlyDataFilled.map((product)=>product._id),
+              labels:months.map((month)=>month),
               datasets: [{
                   label: 'Sales',
                   tension: 0.3,

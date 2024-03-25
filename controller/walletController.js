@@ -98,10 +98,26 @@ const verifyPayment = async (req, res) => {
   
 
 
+
+  const decrementAmount = async (userid, amount) => {
+    try {
+      const updateAmount = await walletModel.updateOne(
+        { userid: userid },
+        { $inc: { balance: -amount } }
+      );
+      return updateAmount;
+    } catch (error) {
+      console.error("Error decrementing amount:", error.message);
+      throw error;
+    }
+  };
+  
+
 const walletContoller = {
     wallet,
     addMoneyWallet,
-    verifyPayment
+    verifyPayment,
+    decrementAmount
 }
 
 module.exports= walletContoller

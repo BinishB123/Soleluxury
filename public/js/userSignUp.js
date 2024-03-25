@@ -9,7 +9,6 @@ const error4 = document.getElementById('error4');
 const referalcodeX = document.getElementById('referalcodeX')
 const refferalCodeWarning = document.getElementById("refferalCodeWarning")
 const regform = document.getElementById('logform');
- console.log(emailid)
 function emailvalidate() {
   const emailval = emailid.value;
   const emailpattern = /^([a-zA-Z0-9._-]+)@([a-zA-Z.-]+).([a-zA-z]{2,4})$/;
@@ -111,7 +110,7 @@ regform.addEventListener('submit', function (e) {
   console.log('After validation');
 
   if (error1.innerHTML || error2.innerHTML || error3.innerHTML || error4.innerHTML||refferalCodeWarning.innerHTML) {
-    console.log('Validation failed');
+    // console.log('Validation failed');
     e.preventDefault();
   } else {
     console.log('Validation passed');

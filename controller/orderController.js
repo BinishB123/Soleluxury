@@ -11,6 +11,8 @@ const crypto = require("crypto");
 const wallet = require("../model/walletModel");
 const easyinvoice = require('easyinvoice');
 const { individualOrderDetail } = require("./adminOrder");
+const walletContoller = require("./walletController");
+const { log } = require("console");
 const ObjectId = require("mongoose").Types.ObjectId;
 
 const placeOrder = async (req, res) => {
@@ -24,14 +26,28 @@ const placeOrder = async (req, res) => {
         const cartCleared = await cartController.clearingCart(user);
         if (cartCleared) {
           res.json({ success: true, url: "/orderplaced" });
+        } else {
+          res.json({ success: true, message: placedOrder.message });
         }
-      } else {
-        res.json({ success: true, message: placedOrder.message });
+      }
+    } else if (req.body.paymentMethod === "wallet") {
+      const placedOrder = await placeOrderHelper.placeOrder(body, user);
+      const cart = await cartModel.findOne({ userId: user });
+      const amount = cart.totalPrice;
+       console.log("amount",amount)
+      if (placedOrder.status === true) {
+        const walletDec = await walletContoller.decrementAmount(user, amount);
+         
+        const cartCleared = await cartController.clearingCart(user);
+        if (cartCleared) {
+          res.json({ success: true, url: "/orderplaced" });
+        } else {
+          res.json({ success: true, message: placedOrder.message });
+        }
       }
     } else {
       const userCart = await cartModel.findOne({ userId: user });
       const totalAmount = userCart.totalPrice;
-
       const checker = await userHelper.generateRazorpay(user, totalAmount);
       if (checker.success === true) {
         res.json({ status: true, order: checker.order });
@@ -44,6 +60,7 @@ const placeOrder = async (req, res) => {
     res.json({ status: false, error: error.message });
   }
 };
+
 
 const orderPlacedCnfrm = async (req, res) => {
   try {
@@ -153,7 +170,7 @@ const cancelIndividualproductOrder = async (req, res) => {
         _id: new ObjectId(orderid),
         "products._id": new ObjectId(productDocid),
       });
-      if (checker.paymentMethod === "razorpay") {
+      if (checker.paymentMethod === "razorpay"|| checker.paymentMethod === "wallet") {
         const userHaveWallet = await walletModel.findOne({ userid: userid });
         if (userHaveWallet) {
           const updating = await walletModel.updateOne(

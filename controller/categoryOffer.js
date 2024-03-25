@@ -12,6 +12,8 @@ const categoryOfferPage = async(req,res)=>{
            
     } catch (error) {
         console.log(error.message)
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+
     }
 }
 
@@ -48,7 +50,8 @@ const AddCategoryOffer = async(req,res)=>{
       res.redirect("/admin/categoryOffer")
         
     } catch (error) {
-       console.log(error.message) 
+    //    console.log(error.message) 
+       res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 }
 
@@ -64,27 +67,33 @@ const categoryEditOffer = async(req,res)=>{
                 "categoryOffer.discount":req.body.discountAmount,
                 "categoryOffer.offerStatus":true
             }})
-            res.redirect("/admin/categoryOffer")
+            res.status(200).redirect("/admin/categoryOffer")
     } catch (error) {
-        console.log(error.message)
+        // console.log(error.message)
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 }
 
 
 
-const deleteOffer = async(req,res)=>{
+const deleteOffer = async (req, res) => {
     try {
-        const id = req.query.id 
+        const id = req.query.id;
         
         const deleteOffer = await categoryOfferModel.findByIdAndDelete(id);
-          if (deleteOffer) {
-            res.json({success:true})
-          }else{
-            res.json({success:false})
-          }
+        
+        if (deleteOffer) {
+            // Respond with a 200 OK status code for successful deletion
+            res.status(200).json({ success: true });
+        } else {
+            // Respond with a 404 Not Found status code if the offer to delete was not found
+            res.status(404).json({ success: false, message: 'Offer not found' });
+        }
         
     } catch (error) {
-       console.log(error.message) 
+        // Handle any errors and respond with a 500 Internal Server Error status code
+        // console.error(error.message);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 }
 

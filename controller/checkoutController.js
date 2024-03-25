@@ -4,6 +4,7 @@ const productModel = require("../model/productModel");
 const couponModel = require("../model/couponModel");
 const cartHelper = require("../helper/cartHelper");
 const offerHelper = require("../helper/offerHelper");
+const walletModel = require("../model/walletModel")
 
 const checkoutPage = async (req, res) => {
   try {
@@ -52,13 +53,16 @@ const checkoutPage = async (req, res) => {
     );
 
     const coupons = await couponModel.find({ usedByUser: { $nin: [userId] } });
-     console.log(updateTotalPricePromise)
-    console.log("userCart||||||", userCart.totalPrice);
+    const walletAmount = await walletModel.findOne({userid:userId})
+    // console.log(walletAmount)
+    //  console.log(updateTotalPricePromise)
+    // console.log("userCart||||||", userCart.totalPrice);
     res.render("checkout", {
       user: user,
       products: products,
       cart:updateTotalPricePromise ,
       coupons: coupons,
+      walletAmount:walletAmount.balance
     });
   } catch (error) {
     console.error("Error in checkoutPage:", error);

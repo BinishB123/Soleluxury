@@ -17,11 +17,70 @@ const { parse } = require("dotenv");
 
 
 
+const forgotPassword = async(req,res)=>{
+  try {
+    
+         if (req.session.user) {
+          res.redirect("/home")
+         }else{
+          const message = req.flash("message")
+          res.render("forgotpassword",{message:message})
+         }
+    
+  } catch (error) {
+    console.log(error.message)
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+
+  }
+}
+
+const updatingPassword = async (req, res) => {
+  try {
+    const { email, password, confirmPassword } = req.body;
+
+    if (!email || !password || !confirmPassword) {
+      req.flash("message", "Missing required fields");
+      return res.redirect("/forgotPassword");
+    }
+
+    const finalNewpass = password.trim();
+    const finalCnfmpass = confirmPassword.trim();
+
+    if (finalCnfmpass !== finalNewpass) {
+      req.flash("message", "Passwords do not match");
+      return res.redirect("/forgotPassword");
+    }
+
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      req.flash("message", "No user found with this email");
+      return res.redirect("/forgotPassword");
+    }
+
+    const newPassword = await bcrypt.hash(finalCnfmpass, 10);
+    const updated = await userModel.updateOne({ email }, { $set: { password: newPassword } });
+
+    if (updated.modifiedCount === 1) {
+      req.flash("message", "Password changed successfully");
+      return res.redirect("/login");
+    } else {
+      req.flash("message", "Failed to update password. Please try again.");
+      return res.redirect("/forgotPassword");
+    }
+  } catch (error) {
+    console.error("Error updating password:", error.message);
+    req.flash("message", "Internal server error");
+    return res.status(500).redirect("/forgotPassword");
+  }
+};
 
 
 
-const loginload = function (req, res) {
-  console.log("Request come to userloginLoad");  
+
+
+
+const loginload = function (req, res) {  
   if (req.session.user) {
     res.redirect("/home");
   } else {
@@ -179,6 +238,8 @@ const productView = async (req, res) => {
 
   } catch (error) {
       console.log(error.message)
+      res.status(500).json({ success: false, message: 'Internal Server Error' });
+
   }
 }
 
@@ -215,6 +276,8 @@ const displaySize =async(req,res)=>{
     
   } catch (error) {
     console.log(error.message)
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+
     
   }
 }
@@ -279,6 +342,8 @@ const viewCart = async(req, res) => {
 
   } catch (error) {
       // Handle error
+      res.status(500).json({ success: false, message: 'Internal Server Error' });
+
   }
 }
 
@@ -326,61 +391,119 @@ const editUserProfile = async(req,res)=>{
     
   } catch (error) {
     console.log(error.message)
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+
   }
 }
 
 
 
-const search = async(req,res)=>{
+const search = async (req, res) => {
   try {
-         const searchTerm =req.query.search
-        // console.log(searchTerm)
-        const searchedThings = await productModel.aggregate([
+      const searchTerm = req.query.search;
+      let productData = req.body.allPrdoucts;
+
+      if (productData) {
+          // If product data is available in the request body, use it directly
+          const products =  await offerHelper.findOffer(productData)
+
+          const itemsPerPage = 6;
+          const currentPage = parseInt(req.query.page) || 1;
+          const startIndex = (currentPage - 1) * itemsPerPage;
+          const endIndex = startIndex + itemsPerPage;
+          const totalPages = Math.ceil(products.length / itemsPerPage);
+          const currentProduct = products.slice(startIndex, endIndex);
+          const baseRoute = "/search";
+          const sortPage = false;
+          
+          return res.render("searchedProducts", {
+              product: currentProduct,
+              totalPages: totalPages,
+              currentPage: currentPage,
+              baseRoute: baseRoute,
+              additionalQueryParameter: undefined,
+              allPrdoucts: products,
+              sortPage: sortPage
+          });
+      }
+
+      // If product data is not available, perform a database query
+      const searchedThings = await productModel.aggregate([
           {
-            $match: {
-              $or: [
-                { productName: { $regex: new RegExp("^" + searchTerm, "i") } },
-                { brand: { $regex: new RegExp("^" + searchTerm, "i") } }
-              ]
-            }
+              $match: {
+                  $or: [
+                      { productName: { $regex: new RegExp("^" + searchTerm, "i") } },
+                      { brand: { $regex: new RegExp("^" + searchTerm, "i") } }
+                  ]
+              }
           },
           {
-            $lookup: {
-              from: "categories",
-              localField: "category",
-              foreignField: "_id",
-              as: "category"
-            }
+              $lookup: {
+                  from: "categories",
+                  localField: "category",
+                  foreignField: "_id",
+                  as: "category"
+              }
           },
           { $unwind: "$category" }
-        ]);
-        
-      const product = await offerHelper.findOffer(searchedThings)
-      
-         res.render("searchedProducts",{product:product})
-          
+      ]);
+
+      const product = await offerHelper.findOffer(searchedThings);
+
+      const itemsPerPage = 6;
+      const currentPage = parseInt(req.query.page) || 1;
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const totalPages = Math.ceil(product.length / itemsPerPage);
+      const currentProduct = product.slice(startIndex, endIndex);
+      const baseRoute = "/search";
+      const sortPage = false;
+
+      res.render("searchedProducts", {
+          product: currentProduct,
+          totalPages: totalPages,
+          currentPage: currentPage,
+          baseRoute: baseRoute,
+          additionalQueryParameter: undefined,
+          allPrdoucts: product,
+          sortPage: sortPage
+      });
   } catch (error) {
-    console.log(error.message)
+      console.log(error.message);
+      res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
-}
+};
+
 
 
 const nav = async(req,res)=>{
   try {
-    // let clicked = req.query.clicked
+    let productData = req.body.allPrdoucts;
+
+      if (productData) {
+          // If product data is available in the request body, use it directly
+          const products =  await offerHelper.findOffer(productData)
+
+          const itemsPerPage = 6;
+          const currentPage = parseInt(req.query.page) || 1;
+          const startIndex = (currentPage - 1) * itemsPerPage;
+          const endIndex = startIndex + itemsPerPage;
+          const totalPages = Math.ceil(products.length / itemsPerPage);
+          const currentProduct = products.slice(startIndex, endIndex);
+          const baseRoute = "/nav";
+          const sortPage = false;
+          
+          return res.render("searchedProducts", {
+              product: currentProduct,
+              totalPages: totalPages,
+              currentPage: currentPage,
+              baseRoute: baseRoute,
+              additionalQueryParameter: undefined,
+              allPrdoucts: productData,
+              sortPage: sortPage
+          });
+      }
     
-    
-    //  const product = await productModel.aggregate([
-    //   {$lookup:{
-    //     from:"categories",
-    //     localField:"category",
-    //     foreignField:"_id",
-    //     as:"categ"
-    //   }},
-    //   {$unwind:"$categ"},
-    //  ])
-     
-    //  const matchingProducts = product.filter(product => product.categ.name === clicked);
     const product =  await productModel.aggregate([
       {
           $lookup: {
@@ -417,6 +540,8 @@ const products = await offerHelper.findOffer(product)
     
   } catch (error) {
     console.log(error.message)
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+
   }
 }
 
@@ -426,6 +551,31 @@ const filteredBrand = async(req,res)=>{
    
     const clicked = req.query.brand
     const latest = req.query.latest
+    let productData = req.body.allPrdoucts;
+    if (productData) {
+      // If product data is available in the request body, use it directly
+      const products =  await offerHelper.findOffer(productData)
+
+      const itemsPerPage = 6;
+      const currentPage = parseInt(req.query.page) || 1;
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const totalPages = Math.ceil(products.length / itemsPerPage);
+      const currentProduct = products.slice(startIndex, endIndex);
+      const baseRoute = "/filtered";
+      const sortPage = false;
+      
+      return res.render("searchedProducts", {
+          product: currentProduct,
+          totalPages: totalPages,
+          currentPage: currentPage,
+          baseRoute: baseRoute,
+          additionalQueryParameter: undefined,
+          allPrdoucts: productData,
+          sortPage: sortPage
+      });
+  }
+
        if(latest==="latest"){
         const productsWithCategories = await productModel.aggregate([
           {$match:{isBlocked:false}},
@@ -475,13 +625,15 @@ const filteredBrand = async(req,res)=>{
          let totalPages = Math.ceil(products.length/itemsPerPage)
          const currentProduct = products.slice(startIndex,endIndex)
          console.log("currentProduct",currentProduct.length)
-         let additionalQueryParameter = undefined;
+         let additionalQueryParameter = clicked ? `brand=${clicked}` : undefined;
         res.render("searchedProducts",{product:currentProduct,totalPages:totalPages,currentPage,baseRoute:"/filtered",additionalQueryParameter,allPrdoucts:products})
         return
     
       
   } catch (error) {
     console.log(error.message)
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+
   }
 }
 
@@ -530,6 +682,8 @@ const pricefiltered = async (req, res) => {
       
   } catch (error) {
       console.error("Error parsing productData:", error);
+      res.status(500).json({ success: false, message: 'Internal Server Error' });
+
   }
   
 }
@@ -588,6 +742,8 @@ const categoryFilter = async(req,res)=>{
      }
   } catch (error) {
     console.log(error.message)
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+
   }
 }
  
@@ -610,7 +766,9 @@ const userController = {
   nav,
   filteredBrand,
   pricefiltered,
-  categoryFilter
+  categoryFilter,
+  forgotPassword,
+  updatingPassword
 };
 
 module.exports = userController;

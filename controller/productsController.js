@@ -35,6 +35,8 @@ const productsLoad =async (req,res)=>{
         
     } catch (error) {
         console.log("error is in productsLoad : "+error)
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+
     }
 }
 
@@ -53,6 +55,8 @@ const createProductPage = async(req,res)=>{
         
     } catch (error) { 
       console.log("erro in add products "+error)  
+      res.status(500).json({ success: false, message: 'Internal Server Error' });
+
     }
 }
 
@@ -176,6 +180,7 @@ const getEditProduct = async(req,res)=>{
         
     } catch (error) {
         consol.log("error found in geteditproduct : "+error.message)
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
         
     }
 }
@@ -199,6 +204,7 @@ const deleteImage = async(req,res)=>{
             
         }else{
             console.log(`Image ${image} not found`);
+            res.json({success:FontFaceSetLoadEvent})
         }
          
 
@@ -206,6 +212,7 @@ const deleteImage = async(req,res)=>{
     } catch (error) {
 
         console.log("error catched  in deleteimage: "+error.message)
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
         
     }
 }
@@ -277,6 +284,8 @@ const productUpdate = async (req, res) => {
         }
     } catch (error) {
         console.log("Error message when updating : " + error.message);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+
     }
 };
 

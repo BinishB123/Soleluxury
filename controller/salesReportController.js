@@ -48,7 +48,7 @@ const salesReportPage = async (req, res) => {
       date: customDate ? day : null, 
     });
   } catch (error) {
-    console.error("Error in sales report page:", error.message);
+    // console.error("Error in sales report page:", error.message);
     res.status(500).send("Internal Server Error");
   }
 };
@@ -99,7 +99,7 @@ const monthlySalesReport = async (req, res) => {
       salesMonthly: true,
     });
   } catch (error) {
-    console.error("Error in sales report page:", error.message);
+    //console.error("Error in sales report page:", error.message);
     res.status(500).send("Internal Server Error");
   }
 };
@@ -319,7 +319,8 @@ const ordersWithCustomerInfo = await orderModel.aggregate([
 
     
   } catch (error) {
-    console.log(error.message)
+    // console.log(error.message)
+    res.status(500).send('Internal Server Error');
   }
 }
 

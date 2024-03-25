@@ -22,6 +22,8 @@ userRoute.post('/signup',userController.insertUser)
 userRoute.post('/sendotp',otpHelper.sendOtp)
 userRoute.post('/verify',otpHelper.verify)
 userRoute.get('/logout',userController.logout)
+userRoute.get("/forgotPassword",userController.forgotPassword)
+userRoute.post("/changingPassword",userController.updatingPassword)
 
 
 //home views

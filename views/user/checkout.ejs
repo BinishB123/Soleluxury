@@ -882,15 +882,7 @@
                                     <p class="text-muted mt-5">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration. </p>
                                 </div>
                             </div> -->
-                          <%  if (locals.cart >1000){ %> 
-                            <div class="custome-radio">
-                                <input class="form-check-input" required="" type="radio" value="razorpay" name="payment_option" id="exampleRadios4" checked="">
-                                <label class="form-check-label" for="exampleRadios4" data-bs-toggle="collapse" data-target="#checkPayment" aria-controls="checkPayment">Razorpay</label>
-                                <div class="form-group collapse in" id="checkPayment">
-                                    <!-- <p class="text-muted mt-5">Please send your cheque to Store Name, Store Street, Store Town, Store State / County, Store Postcode. </p> -->
-                                </div>
-                            </div>
-                            <% }else{ %>
+                            <% if (locals.cart > 1000) { %>
                                 <div class="custome-radio">
                                     <input class="form-check-input" required="" type="radio" value="razorpay" name="payment_option" id="exampleRadios4" checked="">
                                     <label class="form-check-label" for="exampleRadios4" data-bs-toggle="collapse" data-target="#checkPayment" aria-controls="checkPayment">Razorpay</label>
@@ -898,15 +890,41 @@
                                         <!-- <p class="text-muted mt-5">Please send your cheque to Store Name, Store Street, Store Town, Store State / County, Store Postcode. </p> -->
                                     </div>
                                 </div>
-                            <div class="custome-radio">
-                                <input class="form-check-input" required="" value="cashOnDelivery" type="radio" name="payment_option" id="exampleRadios5" checked="">
-                                <label class="form-check-label" for="exampleRadios5"  data-bs-toggle="collapse" data-target="#paypal" aria-controls="paypal">Cash On Delivery</label>
-                                <div class="form-group collapse in" id="paypal">
-                                    <p class="text-muted mt-5">Pay via PayPal; you can pay with your credit card if you don't have a PayPal account.</p>
+                                <% if (locals.walletAmount > locals.cart) { %>
+                                    <div class="custome-radio">
+                                        <input class="form-check-input" required="" type="radio" value="wallet" name="payment_option" id="exampleRadios5" checked="">
+                                        <label class="form-check-label" for="exampleRadios5" data-bs-toggle="collapse" data-target="#checkPayment" aria-controls="checkPayment">Wallet</label>
+                                        <div class="form-group collapse in" id="checkPayment">
+                                            <!-- <p class="text-muted mt-5">Please send your cheque to Store Name, Store Street, Store Town, Store State / County, Store Postcode. </p> -->
+                                        </div>
+                                    </div>
+                                <% } %>
+                            <% } else { %>
+                                <div class="custome-radio">
+                                    <input class="form-check-input" required="" type="radio" value="razorpay" name="payment_option" id="exampleRadios6" checked="">
+                                    <label class="form-check-label" for="exampleRadios6" data-bs-toggle="collapse" data-target="#checkPayment" aria-controls="checkPayment">Razorpay</label>
+                                    <div class="form-group collapse in" id="checkPayment">
+                                        <!-- <p class="text-muted mt-5">Please send your cheque to Store Name, Store Street, Store Town, Store State / County, Store Postcode. </p> -->
+                                    </div>
                                 </div>
-                            </div>
+                                <% if (locals.walletAmount > locals.cart) { %>
+                                    <div class="custome-radio">
+                                        <input class="form-check-input" required="" type="radio" value="wallet" name="payment_option" id="exampleRadios7" checked="">
+                                        <label class="form-check-label" for="exampleRadios7" data-bs-toggle="collapse" data-target="#checkPayment" aria-controls="checkPayment">Wallet</label>
+                                        <div class="form-group collapse in" id="checkPayment">
+                                            <!-- <p class="text-muted mt-5">Please send your cheque to Store Name, Store Street, Store Town, Store State / County, Store Postcode. </p> -->
+                                        </div>
+                                    </div>
+                                <% } %>
+                                <div class="custome-radio">
+                                    <input class="form-check-input" required="" value="cashOnDelivery" type="radio" name="payment_option" id="exampleRadios8" checked="">
+                                    <label class="form-check-label" for="exampleRadios8"  data-bs-toggle="collapse" data-target="#paypal" aria-controls="paypal">Cash On Delivery</label>
+                                    <div class="form-group collapse in" id="paypal">
+                                        <p class="text-muted mt-5">Pay via PayPal; you can pay with your credit card if you don't have a PayPal account.</p>
+                                    </div>
+                                </div>
                             <% } %>
-
+                            
                         </div>
                     </div>
                     <a href="#" class="btn btn-fill-out btn-block mt-30" style="background-color: rgb(0, 76, 255);"    onclick="placeOrder()">Place Order</a>
