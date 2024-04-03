@@ -74,7 +74,7 @@ function namevalidate() {
   }
 }
 
-
+let samp =""
 function referalcode(){
   const referalcodeXval = referalcodeX.value.trim()
   // console.log(referalcodeXval)
@@ -86,9 +86,11 @@ function referalcode(){
       refferalCodeWarning.style.display ="block"
       refferalCodeWarning.style.color ="red"
       refferalCodeWarning.innerHTML = "referral only have 15 characters"
+      samp =    refferalCodeWarning.innerHTML
      }else{
       refferalCodeWarning.style.display="none"
       refferalCodeWarning.innerHTML=""
+      samp =  refferalCodeWarning.innerHTML
      }
   }
 }
@@ -101,7 +103,7 @@ referalcodeX.addEventListener("blur",referalcode)
 regform.addEventListener('submit', function (e) {
  
 
-  emailvalidate();
+  emailvalidate(); 
   mobvalidate();
   passvalidate();
   namevalidate();
@@ -109,8 +111,9 @@ regform.addEventListener('submit', function (e) {
 
   // console.log('After validation');
 
-  if (error1.innerHTML || error2.innerHTML || error3.innerHTML || error4.innerHTML||refferalCodeWarning.innerHTML) {
-    // console.log('Validation failed');
+  if (error1.innerHTML || error2.innerHTML || error3.innerHTML || error4.innerHTML||samp) {
+  
    return e.preventDefault();
   }
 });
+ 
