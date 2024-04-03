@@ -18,10 +18,7 @@
     <!-- Template CSS -->
     <link rel="stylesheet" href="/public/assets/css/maind134.css?v=3.4">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
 </head>
 
@@ -171,25 +168,13 @@
             <div class="container">
                 <div class="header-wrap">
                     <div class="logo logo-width-1">
-                        <a href="index.html"><img src="/public/assets/my/logo3.png" alt="logo"></a>
+                        <a href="/profile"><img src="/public/assets/my/logo3.png" alt="logo"></a>
                     </div>
                     <div class="header-right">
                         <div class="search-style-2">
-                            <form action="#">
-                                <select class="select-active">
-                                    <option>All Categories</option>
-                                    <option>Women's</option>
-                                    <option>Men's</option>
-                                    <option>Cellphones</option>
-                                    <option>Computer</option>
-                                    <option>Electronics</option>
-                                    <option> Accessories</option>
-                                    <option>Home & Garden</option>
-                                    <option>Luggage</option>
-                                    <option>Shoes</option>
-                                    <option>Mother & Kids</option>
-                                </select>
-                                <input type="text" placeholder="Search for items...">
+                            <form action="/search">
+                                
+                                <input type="text" name="search" placeholder="Search for items...">
                             </form>
                         </div>
                         <div class="header-action-right">
@@ -738,203 +723,72 @@
                 </div>
             </div>
         </div>
-    </div>>
-
-
-    <div class="container mt-50 mb-50">
-        <div class="row">
-            <!-- Left Section -->
-            <div class="col-md-4 col-lg-6">
-                <h3>Select Address</h3>
-               
-                    <button type="button" class="btn " style="background-color: black;" onclick="addAddress()">Add Address</button>
-            
-                <% for(let i =0;i<user.address.length;i++) {%>
+    </div>
+    <main class="main">
+        <section class="pt-100 pb-120">
+            <div class="container">
                 <div class="row">
-                    <div class="col-lg-6" id="<%=user.address[i]._id %>">
-                        <div class="card mt-2 mb-3 mb-lg-0" style="width: 150%; border: 2px solid black; justify-content: center;">
-
-                            <div class="card-body" style="color: white;">
-                                <input type="radio" class="form-check-input" name="address" id="" value="<%= user.address[i]._id %>" checked>
-                                <h6 style="color: black;">
-                                    <%= user.address[i].name %> <br>
-                                    <%= user.address[i].mobile %> <br>
-                                    <%= user.address[i].housName %> ,
-                                    <%= user.address[i].CityOrTown %> <br>
-                                    pincode: <%= user.address[i].pincode %> <br>
-                                    <%= user.address[i].district %> ,
-                                    <%= user.address[i].state %> <br>
-                                    <%= user.address[i].country %>. <br>
-                                </h6>
-                                <a href="/editaddress?id=<%= user.address[i]._id %>&userid=<%= user._id %>" class="btn btn-sm  float-end" style="background-color: black; color: white;">Edit</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <% } %>
-            </div>
-            <!-- Right Section -->
-            <div class="col-md-6">
-                <div class="order_review" style="border: 2px solid rgb(93, 92, 92);">
-                    <div class="mb-20">
-                        <h4>Your Orders</h4>
-                    </div>
-                    <div class="table-responsive order_table text-center" >
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th colspan="2">Product</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% for(let i =0 ;i<products.length;i++){ %>
-                                <tr>
-                                    <td class="image product-thumbnail"><img src="/public/photos/productImages/<%=products[i].productImage[0] %>" alt="#"></td>
-                                    <td>
-                                        <h5><a href="shop-product-full.html"><%=products[i].productName  %></a></h5> <span class="product-qty">x <%=products[i].quantity  %></span>
-                                    </td>
-                                    <td>₹<%=products[i].individualPrice %></td>
-                                </tr>
-                                <% } %>
-                                <tr id="coupontd"> 
-                                    <th>coupon</th>
-                                    
-                                    <td class="" id="couponOffer" colspan="2">No coupon used  </td>
-                                </tr>
-                              
-                                <tr>
-                                    <th>SubTotal</th>
-                                    <%  if (locals.cart){ %>
-                                    <td class="product-subtotal"  colspan="2">₹<%=cart %></td>
-                                    <input type="hidden" value="<%=cart%>" id="firstSubTotal">
-                                </tr>
-                                <tr>
-                                    <th>Shipping</th>
-                                    <td colspan="2"><em>Free Shipping</em></td>
-                                </tr>
-                                <tr>
-                                    <th>Total</th>
-                                    <td colspan="2" class="product-subtotal"><span class="font-xl text-brand fw-900" id="secondsubtotal" data-value="<%=cart  %>">₹<%=cart  %></span></td>
-                                </tr>
-                                <% } %>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="form-group col-lg-6">
-                        <button class="btn  btn-sm" id="couponusing" style="background-color: black;" data-toggle="modal" data-target="#couponModal"><i class="fi-rs-label mr-10"></i>use Available coupons</button>
-                    </div>
-                    
-                      
-                      <!-- Modal -->
-                      <div class="modal fade" id="couponModal" tabindex="-1" role="dialog" aria-labelledby="couponModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h5 class="modal-title" id="couponModalLabel">Coupons</h5>
-                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                              </button>
-                            </div>
-                            <div class="modal-body">
-                              <table class="table">
+                    <div class="col-12">
+                        <h4 class="text-center">Orders</h4>
+                        <div class="table-responsive">
+                            <table class="table text-center" style="border: none;">
                                 <thead>
-                                  <tr>
-                                    <th>Coupon Code</th>
-                                    <th>Coupon Name</th>
-                                    <th>Discount</th>
-                                    <th>use Coupon</th>
-                                  </tr>
+                                    <tr >
+                                        <th>Order Id</th>
+                                        
+                                        <th>orderedOn</th>
+                                        <th>TotalAmount</th>
+                                        <th>Actions</th>
+                                        
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                  <!-- Replace this with your backend logic to populate the coupons -->
-                                  <% for( let i = 0; i < coupons.length; i++ ) { %>
-                                     <tr>
-                                      <td><%= coupons[i].couponCode %></td>
-                                    <td><%= coupons[i].name %></td>
+                                    <% for(let i = 0; i < order.length; i++) { %>
+    <tr class="text-center">
+        <td><%= order[i].orderId %></td>
+        <td><%= order[i].orderedOn.toLocaleDateString() %></td> 
+        <td><%= order[i].totalAmount %></td>
+        <td><a href="/orderdetails?id=<%=order[i]._id  %>" class="btn-sm" style="background-color: black ;color: white;">View</a></td>
+        
+        
+       
+       
+    </tr>
+<% } %>
+
                                     
-                                    <td><%= coupons[i].discount %>%</td>
-                                    <td><a class="btn btn-sm" style="background-color: rgb(11, 11, 11);color: white;" onclick="useCoupon('<%=coupons[i]._id%>')">use</a></td>
-                                  </tr>
-                                  
-                                  <% } %>
-                                 
-                                 
-                                  <!-- End of coupon data -->
                                 </tbody>
-                              </table>
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    <div class="bt-1 border-color-1 mt-30 mb-30"></div>
-                    <div class="payment_method">
-                        <div class="mb-25">
-                            <h5>Payment</h5>
-                        </div>
-                        <div class="payment_option">
-                            <!-- <div class="custome-radio">
-                                <input class="form-check-input" required="" type="radio" name="payment_option" id="exampleRadios3" checked="">
-                                <label class="form-check-label" for="exampleRadios3" data-bs-toggle="collapse" data-target="#bankTranfer" aria-controls="bankTranfer">Direct Bank Transfer</label>
-                                <div class="form-group collapse in" id="bankTranfer">
-                                    <p class="text-muted mt-5">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration. </p>
-                                </div>
-                            </div> -->
-                            <% if (locals.cart > 1000) { %>
-                                <div class="custome-radio">
-                                    <input class="form-check-input" required="" type="radio" value="razorpay" name="payment_option" id="exampleRadios4" checked="">
-                                    <label class="form-check-label" for="exampleRadios4" data-bs-toggle="collapse" data-target="#checkPayment" aria-controls="checkPayment">Razorpay</label>
-                                    <div class="form-group collapse in" id="checkPayment">
-                                        <!-- <p class="text-muted mt-5">Please send your cheque to Store Name, Store Street, Store Town, Store State / County, Store Postcode. </p> -->
-                                    </div>
-                                </div>
-                                <% if (locals.walletAmount > locals.cart) { %>
-                                    <div class="custome-radio">
-                                        <input class="form-check-input" required="" type="radio" value="wallet" name="payment_option" id="exampleRadios5" checked="">
-                                        <label class="form-check-label" for="exampleRadios5" data-bs-toggle="collapse" data-target="#checkPayment" aria-controls="checkPayment">Wallet</label>
-                                        <div class="form-group collapse in" id="checkPayment">
-                                            <!-- <p class="text-muted mt-5">Please send your cheque to Store Name, Store Street, Store Town, Store State / County, Store Postcode. </p> -->
-                                        </div>
-                                    </div>
-                                <% } %>
-                            <% } else { %>
-                                <div class="custome-radio">
-                                    <input class="form-check-input" required="" type="radio" value="razorpay" name="payment_option" id="exampleRadios6" checked="">
-                                    <label class="form-check-label" for="exampleRadios6" data-bs-toggle="collapse" data-target="#checkPayment" aria-controls="checkPayment">Razorpay</label>
-                                    <div class="form-group collapse in" id="checkPayment">
-                                        <!-- <p class="text-muted mt-5">Please send your cheque to Store Name, Store Street, Store Town, Store State / County, Store Postcode. </p> -->
-                                    </div>
-                                </div>
-                                <% if (locals.walletAmount > locals.cart) { %>
-                                    <div class="custome-radio">
-                                        <input class="form-check-input" required="" type="radio" value="wallet" name="payment_option" id="exampleRadios7" checked="">
-                                        <label class="form-check-label" for="exampleRadios7" data-bs-toggle="collapse" data-target="#checkPayment" aria-controls="checkPayment">Wallet</label>
-                                        <div class="form-group collapse in" id="checkPayment">
-                                            <!-- <p class="text-muted mt-5">Please send your cheque to Store Name, Store Street, Store Town, Store State / County, Store Postcode. </p> -->
-                                        </div>
-                                    </div>
-                                <% } %>
-                                <div class="custome-radio">
-                                    <input class="form-check-input" required="" value="cashOnDelivery" type="radio" name="payment_option" id="exampleRadios8" checked="">
-                                    <label class="form-check-label" for="exampleRadios8"  data-bs-toggle="collapse" data-target="#paypal" aria-controls="paypal">Cash On Delivery</label>
-                                    <div class="form-group collapse in" id="paypal">
-                                        <p class="text-muted mt-5">Pay via PayPal; you can pay with your credit card if you don't have a PayPal account.</p>
-                                    </div>
-                                </div>
-                            <% } %>
-                            
+                            </table>
+                            <% if (totalPages){ %>
+                                <nav aria-label="Page navigation example" >
+                                    <ul class="pagination justify-content-center">
+                                    <% if (currentPage > 1) { %>
+                                      <li class="page-item ">
+                                        <a class="page-link" href="/orders?page=<%=currentPage-1%>" >Previous</a>
+                                      </li>
+                                      <% } %>
+                                     
+                                      <li class="page-item"><a class="btn btn-sm active" ><%=currentPage%></a></li>
+                                    
+                                      <% if (currentPage < totalPages) { %>
+                                      <li class="page-item">
+                                        <a class="page-link" href="/orders?page=<%=currentPage+1%>">Next</a>
+                                      </li>
+                                      <% } %>
+                                    </ul>
+                                  </nav>
+                                  <% } %>
                         </div>
                     </div>
-                    <a href="#" class="btn btn-fill-out btn-block mt-30" style="background-color: rgb(0, 76, 255);"    onclick="placeOrder()">Place Order</a>
                 </div>
             </div>
-        </div>
-    </div>
-        
+            
+            
+            
+            
+        </section>
     </main>
+    
     <footer class="main">
         <section class="newsletter p-30 text-white wow fadeIn animated">
             <div class="container">
@@ -1051,12 +905,12 @@
         <div class="preloader d-flex align-items-center justify-content-center">
             <div class="preloader-inner position-relative">
                 <div class="text-center">
-                    <h5 class="mb-5" >Now Loading</h5>
+                    <h5 class="mb-5">Now Loading</h5>
                     <div class="loader">
                         <div class="bar bar1"></div>
                         <div class="bar bar2"></div>
                         <div class="bar bar3"></div>
-                    </div >
+                    </div>
                 </div>
             </div>
         </div>
@@ -1080,250 +934,182 @@
     <script src="public/assets/js/plugins/isotope.js"></script>
     <script src="public/assets/js/plugins/scrollup.js"></script>
     <script src="public/assets/js/plugins/jquery.vticker-min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="public/assets/js/plugins/jquery.theia.sticky.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
     <!-- Template  JS -->
     <script src="public/assets/js/maind134.js?v=3.4"></script>
-    <script src="public/assets/js/shopd134.js?v=3.4"></script>
-    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!-- <script src="/public/js/orderDetail.js"></script> -->
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/easyinvoice/dist/easyinvoice.min.js"></script>
     <script>
-        const firstSubTotal = document.getElementById("firstSubTotal").value
-    function hideCouponModal() {
-    const modal = document.getElementById('couponModal');
-    modal.style.display = 'none';
-    $('.modal-backdrop').remove(); 
-}
 
-
-
-
-    let couponId
-    function useCoupon(couponid) {
-
-        const couponOffer = document.getElementById("couponOffer")
-        const coupontd = document.getElementById("coupontd")
-        // console.log(couponOffer)
-       couponId = couponid;
-    const subtotal = document.getElementById("secondsubtotal").getAttribute("data-value");
-    $.ajax({
-        url: `/use-coupon?id=${couponid}`,
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({ subtotal: subtotal }),
-        success: function(response) {
-            if (response.success) {
-                const couponusing = document.getElementById("couponusing")
-                couponusing.style.display="none"
-                hideCouponModal()
-                const newTotalPrice = response.newPrice;
-                // console.log(newTotalPrice);
-                const fistSubTotal = document.getElementById("firstSubTotal");
-                const secondsubtotal = document.getElementById("secondsubtotal");
-                fistSubTotal.textContent = '₹' + newTotalPrice;
-                secondsubtotal.textContent = '₹' + newTotalPrice ;
-                Toastify({
-                    text: "Coupon Offer Added",
-                    backgroundColor: "green",
-                    duration: 6000,
-                    position: "center"
-                }).showToast();
-                
-                const originalPrice = firstSubTotal; // Original price
-                 const discountPercentage = response.coupon.discount; // Discount percentage from the coupon
-
-// Calculate the discount amount
-                 const discountAmount = (originalPrice * discountPercentage) / 100;
-
-// Calculate the amount to be paid after applying the discount
-                   const amountToBePaid = originalPrice - discountAmount;
-
-                couponOffer.innerHTML =`Actual price is  ${firstSubTotal} ,Coupon Applied ${response.coupon.discount}% off   <i class="bi bi-x-circle"  style="color: black;"  onclick='removeCoupon()' id="removeIcon"></i>  `
-                couponOffer.style.color ="black"
-
-                
-            } else {
-                Toastify({
-                    text: "Cannot apply coupon",
-                    backgroundColor: "red",
-                    duration: 6000,
-                    position: "center"
-                }).showToast();
+function dldInvoice(orderid, productDocid) {
+  $.ajax({
+    url: '/invoicedownload',
+    method: 'POST',
+    data: { orderid: orderid, productDocid: productDocid },
+    success: function(response) {
+      if (response.data) {
+        const details = response.data;
+        const currentDate = new Date(); // Create a new Date object representing the current date and time
+        const formattedDate = currentDate.toLocaleDateString();
+        // console.log(formattedDate)
+        // Prepare data for creating invoice
+        var data = {
+          apiKey: "free",
+          mode: "development",
+          images: {
+            logo: "https://public.budgetinvoice.com/img/logo_en_original.png",
+          },
+          sender: {
+            company:"Solelucury",
+            address: " kundanoor maradu",
+            zip: "AdC",
+            city: "Kochi",
+            country: "India"
+          },
+          client: {
+            company: details.address.name,
+            address: details.address.house,
+            city: details.address.city,
+            country: details.address.country
+          },
+          information: {
+            number: "2021.0001",
+            date: formattedDate,
+            
+          },
+          products: [
+            {
+              quantity: details.products.quantity,
+              description: details.prod.productName,
+              price: details.products.productPrice
             }
-        },
-        error: function(error) {
-            window.location.href = '/login';
-        }
-    });
-}
+          ],
+          bottomNotice: "",
+          settings: {
+            currency: "INR"
+          }
+        };
 
-function removeCoupon() {
-    let confirmationMessage = "Are you sure you want to remove this coupon?";
-    
-    swal({
-        text: confirmationMessage,
-        buttons: ["Cancel", "Yes"],
-    }).then((result) => {
-        if (result) {
-            window.location.reload();
-        }
-    });
-}
-
-
-
-
-
-
-
-        
-
-
-   function addAddress(){
-    window.location.href = "/addaddress"
-   }
-
-
-
-   var addressId = $("input[name='address']:checked").val();
-
-function placeOrder() {
-    let addressId = $("input[name='address']:checked").val();
-    let payment_method = $("input[name='payment_option']:checked").val(); // Assuming payment options are radio buttons
- 
-    const data = {
-        addressId: addressId,
-        paymentMethod: payment_method,
-        couponId:couponId
-    };
-    
-
-    $.ajax({
-        url: '/placeorder',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(data), // Convert data object to JSON string
-        success: function(response) {
-           
-           if (response.success==true) {
-            
-            window.location.href = response.url;
-            }
-            // else{
-        //     Toastify({
-        //         text: response.message,
-        //          backgroundColor: "red",
-        //      duration: 6000,
-        //      position: "center" 
-        //  }).showToast();
-        
-           
-           
-           
-            if (response.status===true) {
-            
-            const order = response.order
-           
-             razorPayment(order)
-            
-           }else{
-            Toastify({
-                text: "payment process failed",
-                 backgroundColor: "red",
-             duration: 6000,
-             position: "center" 
-         }).showToast();
-           }
-           
-
-
-
-        },
-        error: function(error) {
-            // Redirect to login page if there's an error
-            window.location.href = '/login';
-        }
-    });
-}
-
-   function razorPayment(order){
-    
-    
-   
-    var options = {
-    "key": "rzp_test_EEotY5tKE8Vqxh", // Enter the Key ID generated from the Dashboard
-    "amount": 100000, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-    "currency": "INR",
-    "name": "Soleluxury", //your business name
-    "description": "Test Transaction",
-    "image": "https://example.com/your_logo",
-    "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-    "handler": function (response){
-        verifyPayment(response,order)
+        // Create the invoice
+        easyinvoice.createInvoice(data, function (result) {
+          
+          easyinvoice.download('Soleluxury-invoice.pdf', result.pdf);
+        });
+      } else {
+        swal("Error", "Failed to fetch individual order data.", "error");
+      }
     },
-    "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
-        "name": "Gaurav Kumar", //your customer's name
-        "email": "gaurav.kumar@example.com", 
-        "contact": "9000090000"  //Provide the customer's phone number for better conversion rates 
-    },
-    "notes": {
-        "address": "Razorpay Corporate Office"
-    },
-    "theme": {
-        "color": "#3399cc"
+    error: function(xhr, status, error) {
+      swal("Error", "Failed to download invoice. Please try again later.", "error");
+      console.error('Error downloading invoice:', error);
     }
-};
-var rzp1 = new Razorpay(options);
-rzp1.open();
-   }
+  });
+}
 
 
 
-   function verifyPayment(payment,order){
-    
-    let payment_method = $("input[name='payment_option']:checked").val();
-    const data = {
-        addressId: addressId,
-        paymentMethod : payment_method,
-        couponId:couponId
-    };
-    $.ajax({
-        url: '/verify-payment',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({ payment: payment, order: order ,data:data}),
-        success: function(response) {
-            // console.log(response)
-           if (response.success) {
-            window.location.href = response.url;
-           }else{
-            Toastify({
-                text: response.message,
-                 backgroundColor: "red",
-             duration: 6000,
-             position: "center" 
-         }).showToast();
-
-           }
 
 
-        },
-        error: function(error) {
+
+
+
+
+
+
+
+
+        function goBack() {
+            window.history.back();
+        }
+
+  function cancelOrder(orderid, productDocid, quantity, size, productid) {
             
-            window.location.href = '/login';
+    swal({
+        title: "Cancel Order",
+        text: "Are you sure you want to cancel this order?",
+        icon: "warning",
+        buttons: ["No", "Yes"],
+        dangerMode: true,
+    })
+    .then((willCancel) => {
+        if (willCancel) {
+            // Send AJAX request to cancel the order
+            $.ajax({
+                url: '/cancelOrder', 
+                method: 'PATCH', 
+                data: { orderid: orderid, productDocid: productDocid, quantity: quantity, size: size,productid:productid }, 
+                success: function(response) {
+                    // console.log(response)
+                    if (response.success === true) {
+                        window.location.reload();
+                        swal("Success", "Order canceled!", "success");
+                    } else {
+                        swal("Error", "Failed to cancel the order. Please try again later.", "error");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    swal("Error", "Failed to cancel the order. Please try again later.", "error");
+                    console.error('Error canceling order:', error);
+                }
+            });
+        } else {
+            swal("Cancelled", "Your order is safe :)", "info");
         }
     });
-      
-   }
+}
+function returnOrder(orderid,productDocid){
+    // console.log("productDocId",productDocid)
+    // console.log("orderid",orderid)
+    swal({
+        title: "Return",
+        text: "Are you sure you want to return this order?",
+        icon: "warning",
+        buttons: ["No", "Yes"],
+        dangerMode: true,
+    })
+    .then((willreturn) => {
+        if (willreturn) {
+            $.ajax({
+                url: '/returnOrder', 
+                method: 'PATCH', 
+                data: { orderid: orderid, productDocid: productDocid}, 
+                success: function(response) {
+                    // console.log(response)
+                    if (response.success === true) {
+                        window.location.reload();
+                        swal("Success", "Return process intiated", "success");
+                    } else {
+                        swal("Error", "Failed to return the order. Please try again later.", "error");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    swal("Error", "Failed to cancel the order. Please try again later.", "error");
+                    console.error('Error canceling order:', error);
+                }
+            });
+        } else {
+            swal("Cancelled", "Your order is safe :)", "info");
+        }
+    });
+
+}
+
+
+
+
 
 
 
 
     </script>
+    
+    
 </body>
 
 
-<!-- Mirrored from wp.alithemes.com/html/evara/evara-frontend/shop-checkout.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 15 Jul 2023 10:10:07 GMT -->
+<!-- Mirrored from wp.alithemes.com/html/evara/evara-frontend/page-account.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 15 Jul 2023 10:11:15 GMT -->
 </html>

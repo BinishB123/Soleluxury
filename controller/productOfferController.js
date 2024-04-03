@@ -2,20 +2,22 @@ const productModel = require("../model/productModel")
 const productOfferModel = require("../model/productOfferModel")
 
 
-const productOfferPage = async(req,res)=>{
+const productOfferPage = async(req,res,next)=>{
     try {
         const offer = await productOfferModel.find({}).populate("productOffer.product")
-        console.log(offer)
+        // console.log(offer)
         
       const products= await productModel.find({isBlocked:false})
       res.render("productOffer",{offers:offer,products :products })
       
     } catch (error) {
-      console.log(error.message)
+      console.error("Error in productoffer:", error)
+   
+      next(error)
     }
   } 
 
-const AddProductOffer = async(req,res)=>{
+const AddProductOffer = async(req,res,next)=>{
     try {
         
 
@@ -30,11 +32,13 @@ const AddProductOffer = async(req,res)=>{
       res.redirect("/admin/product-Offer")
         
     } catch (error) {
-       console.log(error.message) 
+      console.error("Error in addproductOffer:", error);
+   
+      next(error)
     }
 }
 
-const editProductOffer = async (req, res) => {
+const editProductOffer = async (req, res,next) => {
     try {
         
         const id = req.params.id;
@@ -44,13 +48,14 @@ const editProductOffer = async (req, res) => {
 
         res.json(offer); // Sending the formatted offer as a JSON response
     } catch (error) {
-        console.log(error.message);
-        res.status(500).send("Internal Server Error");
+      console.error("Error in editproductoffer:", error);
+   
+      next(error)
     }
 }
-const productEditOffer = async(req,res)=>{
+const productEditOffer = async(req,res,next)=>{
     try {
-        console.log(req.body);
+        // console.log(req.body);
         const updated = await productOfferModel.updateOne({_id:req.body.offerId},
             {$set:{
                 name:req.body.editofferName,
@@ -63,12 +68,14 @@ const productEditOffer = async(req,res)=>{
             }})
             res.redirect("/admin/product-Offer")
     } catch (error) {
-        console.log(error.message)
+      console.error("Error in producteditoffer:", error);
+   
+      next(error)
     }
 }
 
 
-const deleteOffer = async(req,res)=>{
+const deleteOffer = async(req,res,next)=>{
     try {
         const id = req.query.id 
         const deleteOffer = await productOfferModel.findByIdAndDelete(id);
@@ -79,7 +86,9 @@ const deleteOffer = async(req,res)=>{
           }
         
     } catch (error) {
-       console.log(error.message) 
+      console.error("Error in deleteoffer:", error);
+   
+      next(error)
     }
 }
 

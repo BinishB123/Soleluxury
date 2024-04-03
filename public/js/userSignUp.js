@@ -77,10 +77,10 @@ function namevalidate() {
 
 function referalcode(){
   const referalcodeXval = referalcodeX.value.trim()
-  console.log(referalcodeXval)
-  console.log(refferalCodeWarning)
+  // console.log(referalcodeXval)
+  // console.log(refferalCodeWarning)
   if (referalcodeXval!=undefined && referalcodeXval!=null&&referalcodeXval!="") {
-    console.log(referalcodeXval.length)
+    // console.log(referalcodeXval.length)
      if (referalcodeXval.length!=15) {
       refferalCodeWarning.style.display ="none"
       refferalCodeWarning.style.display ="block"
@@ -107,12 +107,10 @@ regform.addEventListener('submit', function (e) {
   namevalidate();
   referalcode();
 
-  console.log('After validation');
+  // console.log('After validation');
 
   if (error1.innerHTML || error2.innerHTML || error3.innerHTML || error4.innerHTML||refferalCodeWarning.innerHTML) {
     // console.log('Validation failed');
-    e.preventDefault();
-  } else {
-    console.log('Validation passed');
+   return e.preventDefault();
   }
 });

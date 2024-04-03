@@ -176,9 +176,7 @@ editproductForm.addEventListener("submit", function (event) {
     colorError.innerHTML !== "" ||
     imageError.innerHTML !== ""
   ) {
-    event.preventDefault();
-    console.log("Validation failed");
-  } else {
-    console.log("Validation passed");
+   return event.preventDefault();
+   
   }
 });

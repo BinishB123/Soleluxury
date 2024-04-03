@@ -6,7 +6,7 @@ const cartHelper = require("../helper/cartHelper");
 const offerHelper = require("../helper/offerHelper");
 const walletModel = require("../model/walletModel")
 
-const checkoutPage = async (req, res) => {
+const checkoutPage = async (req, res,next) => {
   try {
     const userId = req.session.user._id;
     const user = await userModel.findOne({ _id: userId });
@@ -54,6 +54,14 @@ const checkoutPage = async (req, res) => {
 
     const coupons = await couponModel.find({ usedByUser: { $nin: [userId] } });
     const walletAmount = await walletModel.findOne({userid:userId})
+    
+    let balance =0
+    console.log(walletAmount)
+    if (walletAmount) {
+       balance = walletAmount.balance
+    }else{
+      balance =0
+    }
     // console.log(walletAmount)
     //  console.log(updateTotalPricePromise)
     // console.log("userCart||||||", userCart.totalPrice);
@@ -62,11 +70,12 @@ const checkoutPage = async (req, res) => {
       products: products,
       cart:updateTotalPricePromise ,
       coupons: coupons,
-      walletAmount:walletAmount.balance
+      walletAmount:balance
     });
   } catch (error) {
-    console.error("Error in checkoutPage:", error);
-    res.status(500).send("Internal Server Error");
+    console.error("Error in checkoutpage:", error);
+   
+    next(error)
   }
 };
 

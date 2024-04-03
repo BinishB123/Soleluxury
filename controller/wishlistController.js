@@ -3,7 +3,7 @@ const product = require("../model/productModel");
 const { findById } = require("../model/userModel");
 const wishlistModel = require("../model/wishlistModel");
 
-const whistlistPage = async (req, res) => {
+const whistlistPage = async (req, res,next) => {
   try {
     const wishlist = await wishlistModel.aggregate([
       { $unwind: "$items" },
@@ -25,11 +25,13 @@ const whistlistPage = async (req, res) => {
     // }
     res.render("wishlist", { wishlist: products });
   } catch (error) {
-    console.log(error.message);
+    console.error("Error in  wishlist:", error);
+   
+    next(error)
   }
 };
 
-const addToWishlist = async (req, res) => {
+const addToWishlist = async (req, res,next) => {
   try {
     const productId = req.query.id;
     const userId = req.session.user._id;
@@ -64,11 +66,13 @@ const addToWishlist = async (req, res) => {
       res.json({ status: true });
     }
   } catch (error) {
-    console.log(error.message);
+    console.error("Error in  addtowishlist:", error);
+   
+    next(error)
   }
 };
 
-const removeWishlist = async (req, res) => {
+const removeWishlist = async (req, res,next) => {
   try {
     const productid = req.query.id;
     const userId = req.session.user._id;
@@ -82,7 +86,9 @@ const removeWishlist = async (req, res) => {
       res.json({ success: false });
     }
   } catch (error) {
-    console.log(error.message);
+    console.error("Error in  remove form wishlist:", error);
+   
+    next(error)
   }
 };
 

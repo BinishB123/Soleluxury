@@ -76,7 +76,8 @@ userRoute.get('/prodcutwithsizecartcheck',userHelper.checkingUserBlockedOrNot,ca
  //user_order
  userRoute.post("/placeorder",userHelper.checkingUserBlockedOrNot,orderController.placeOrder)
  userRoute.get("/orderplaced",userHelper.checkingUserBlockedOrNot,orderController.orderPlacedCnfrm)
- userRoute.get("/orderdetails",userHelper.checkingUserBlockedOrNot,orderController.orderDetails)
+ userRoute.get("/orders",userHelper.checkingUserBlockedOrNot,orderController.orders)
+ userRoute.get("/orderdetails",userHelper.checkingUserBlockedOrNot,orderController.orderdetails)
  userRoute.post("/invoicedownload",userHelper.checkingUserBlockedOrNot,orderController.invoiceDownload)
  userRoute.patch("/cancelOrder",userHelper.checkingUserBlockedOrNot,orderController.cancelIndividualproductOrder)
  userRoute.patch("/returnOrder",userHelper.checkingUserBlockedOrNot,orderController.returnOrder)

@@ -15,7 +15,7 @@ const walletContoller = require("./walletController");
 const { log } = require("console");
 const ObjectId = require("mongoose").Types.ObjectId;
 
-const placeOrder = async (req, res) => {
+const placeOrder = async (req, res,next) => {
   try {
     const body = req.body;
     const user = req.session.user._id;
@@ -34,7 +34,7 @@ const placeOrder = async (req, res) => {
       const placedOrder = await placeOrderHelper.placeOrder(body, user);
       const cart = await cartModel.findOne({ userId: user });
       const amount = cart.totalPrice;
-       console.log("amount",amount)
+      //  console.log("amount",amount)
       if (placedOrder.status === true) {
         const walletDec = await walletContoller.decrementAmount(user, amount);
          
@@ -56,8 +56,9 @@ const placeOrder = async (req, res) => {
       }
     }
   } catch (error) {
-    console.log(error.message);
-    res.json({ status: false, error: error.message });
+    console.error("Error in placeorder:", error);
+   
+    next(error)
   }
 };
 
@@ -65,38 +66,55 @@ const placeOrder = async (req, res) => {
 const orderPlacedCnfrm = async (req, res) => {
   try {
     res.render("orderplaced");
-  } catch (error) {}
+  } catch (error) {
+    console.error("Error in placeordercnfrm:", error);
+   
+    next(error)
+  }
 };
 
-const orderDetails = async (req, res) => {
+const orders = async (req, res,next) => {
   try {
     const userId = req.session.user._id;
+    // const userOrders = await orderModel.aggregate([
+    //   { $match: { user: new ObjectId(userId) } },
+    //   { $sort: { orderedOn: -1 } },
+    //   { $unwind: "$products" },
+    // ]);
     const userOrders = await orderModel.aggregate([
       { $match: { user: new ObjectId(userId) } },
       { $sort: { orderedOn: -1 } },
-      { $unwind: "$products" },
-    ]);
-    //  console.log("userOrders",userOrders)
-    const products = await orderModel.aggregate([
-      { $match: { user: new ObjectId(userId) } },
-      { $sort: { orderedOn: -1 } },
-      { $unwind: "$products" },
       {
         $lookup: {
-          from: "products",
-          localField: "products.product",
+          from: "users",
+          localField: "user",
           foreignField: "_id",
-          as: "product",
+          as: "user",
         },
       },
-      {
-        $project: {
-          productName: { $arrayElemAt: ["$product.productName", 0] },
-          productImage: { $arrayElemAt: ["$product.productImage", 0] },
-          _id: { $arrayElemAt: ["$product._id", 0] },
-        },
-      },
+      { $unwind: "$user" },
     ]);
+    //  console.log("userOrders",userOrders)
+    // const products = await orderModel.aggregate([
+    //   { $match: { user: new ObjectId(userId) } },
+    //   { $sort: { orderedOn: -1 } },
+
+    //   {
+    //     $lookup: {
+    //       from: "products",
+    //       localField: "products.product",
+    //       foreignField: "_id",
+    //       as: "product",
+    //     },
+    //   },
+    //   {
+    //     $project: {
+    //       productName: { $arrayElemAt: ["$product.productName", 0] },
+    //       productImage: { $arrayElemAt: ["$product.productImage", 0] },
+    //       _id: { $arrayElemAt: ["$product._id", 0] },
+    //     },
+    //   },
+    // ]);
     //console.log("products",products)
     let itemsPerPage = 5;
     let currentPage = parseInt(req.query.page) || 1;
@@ -104,19 +122,22 @@ const orderDetails = async (req, res) => {
     let endIndex = startIndex + itemsPerPage;
     let totalPages = Math.ceil(userOrders.length / itemsPerPage);
     const currentOrders = userOrders.slice(startIndex, endIndex);
-    const currentProducts = products.slice(startIndex, endIndex);
+    // const currentProducts = products.slice(startIndex, endIndex);
 
-    res.render("orderDetails", {
+    res.render("orders", {
       order: currentOrders,
-      products: currentProducts,
       totalPages: totalPages,
       currentPage: currentPage,
       user: req.session.user._id,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.error("Error in orders:", error);
+   
+    next(error)
+  }
 };
 
-const cancelIndividualproductOrder = async (req, res) => {
+const cancelIndividualproductOrder = async (req, res,next) => {
   try {
     const orderid = req.body.orderid;
     const productDocid = req.body.productDocid;
@@ -166,10 +187,12 @@ const cancelIndividualproductOrder = async (req, res) => {
       );
       
 
-      const checker = await orderModel.findOne({
-        _id: new ObjectId(orderid),
-        "products._id": new ObjectId(productDocid),
-      });
+      const [checker] = await orderModel.aggregate([
+       {$match:{ _id: new ObjectId(orderid)}},
+       {$unwind:"$products"},
+       {$match:{"products._id": new ObjectId(productDocid)}},
+      ]);
+      console.log
       if (checker.paymentMethod === "razorpay"|| checker.paymentMethod === "wallet") {
         const userHaveWallet = await walletModel.findOne({ userid: userid });
         if (userHaveWallet) {
@@ -178,28 +201,28 @@ const cancelIndividualproductOrder = async (req, res) => {
             {
               $push: {
                 walletDatas: {
-                  amount: checker.products[0].productPrice,
+                  amount: checker.products.productPrice,
                   date: new Date(), // Set the current date
                   paymentMethod: checker.paymentMethod, // Set the payment method
                 },
               },
-              $inc: { balance: checker.products[0].productPrice },
+              $inc: { balance: checker.products.productPrice },
             }
           );
-          console.log("updatinf in if ", updating);
+          // console.log("updatinf in if ", updating);
         } else {
           const creating = await walletModel.create({
             userid: userid,
-            balance: checker.products[0].productPrice,
+            balance: checker.products.productPrice,
             walletDatas: [
               {
-                amount: checker.products[0].productPrice,
+                amount: checker.products.productPrice,
                 date: new Date(),
                 paymentMethod: checker.paymentMethod,
               },
             ],
           });
-          console.log("creating in else", creating);
+          // console.log("creating in else", creating);
         }
       }
 
@@ -216,16 +239,18 @@ const cancelIndividualproductOrder = async (req, res) => {
       res.json({ success: false });
     }
   } catch (error) {
-    console.log(error.message);
+    console.error("Error in cacncelorder:", error);
+   
+    next(error)
   }
 };
 
-const returnOrder = async (req, res) => {
+const returnOrder = async (req, res,next) => {
   try {
     const productDocid = req.body.productDocid;
     const orderid = req.body.orderid;
-    console.log(productDocid, ":productDocid");
-    console.log(orderid, ":orderid");
+    // console.log(productDocid, ":productDocid");
+    // console.log(orderid, ":orderid");
     const productReturn = await orderModel.updateOne(
       {
         _id: new ObjectId(orderid),
@@ -235,11 +260,13 @@ const returnOrder = async (req, res) => {
     );
     res.json({success:true})
   } catch (error) {
-    console.log(error.message);
+    console.error("Error in returnorder:", error);
+   
+    next(error)
   }
 };
 
-const verifyPayment = async (req, res) => {
+const verifyPayment = async (req, res,next) => {
   try {
     const payment = req.body.payment;
     const orderId = req.body.order.id;
@@ -261,9 +288,9 @@ const verifyPayment = async (req, res) => {
       if (placedOrder.status === true) {
         // console.log("placedOrder", placeOrder);
         const cartCleared = await cartController.clearingCart(user);
-        console.log("cartclearing");
+        // console.log("cartclearing");
         if (cartCleared) {
-          console.log("cartclearing", cartCleared);
+          // console.log("cartclearing", cartCleared);
           res.json({ success: true, url: "/orderplaced" });
         }
       } else {
@@ -276,13 +303,14 @@ const verifyPayment = async (req, res) => {
         .json({ success: false, message: "Payment verification failed" });
     }
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Error in verifypayment:", error);
+   
+    next(error)
   }
 };
 
 
-const invoiceDownload = async(req,res)=>{
+const invoiceDownload = async(req,res,next)=>{
   try {
     const productDocId = req.body.productDocid
     const orderId = req.body.orderid
@@ -305,12 +333,41 @@ const invoiceDownload = async(req,res)=>{
        }
     
   } catch (error) {
+    console.error("Error in invoice:", error);
+   
+    next(error)
     
   }
 }
 
 
-
+const orderdetails =  async(req,res,next)=>{
+  try {
+    const id = req.query.id
+     const products = await orderModel.aggregate([
+      { $match: { _id: new ObjectId(id) } },
+      { $sort: { orderedOn: -1 } },
+      {$unwind:"$products"},
+      {
+        $lookup: {
+          from: "products",
+          localField: "products.product",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      {$unwind:"$product"}
+    ]);
+    // console.log(products)
+    res.render("orderDetails",
+    {order:products})
+    
+  } catch (error) {
+    console.error("Error in orderdetail:", error);
+   
+    next(error)
+  }
+}
 
 
 
@@ -323,10 +380,11 @@ const invoiceDownload = async(req,res)=>{
 const orderController = {
   placeOrder,
   orderPlacedCnfrm,
-  orderDetails,
+  orders,
   cancelIndividualproductOrder,
   returnOrder,
   verifyPayment,
-  invoiceDownload
+  invoiceDownload,
+  orderdetails
 };
 module.exports = orderController;

@@ -40,7 +40,7 @@ const productsLoad =async (req,res)=>{
     }
 }
 
-const createProductPage = async(req,res)=>{
+const createProductPage = async(req,res,next)=>{
     try {
         if (req.session.admin) {
             const category = await categoryModel.find({islisted:true})
@@ -54,20 +54,21 @@ const createProductPage = async(req,res)=>{
       
         
     } catch (error) { 
-      console.log("erro in add products "+error)  
-      res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error("Error in createproductpage:", error);
+   
+        next(error)
 
     }
 }
 
 
-const addproducts = async (req, res) => {
+const addproducts = async (req, res,next) => {
     try {
       
         const product = req.body;
         let productName = req.body.productName
          productName = productName.trim()
-        console.log(product)
+        // console.log(product)
 
        
         const productExist = await productModel.findOne({ productName: productName });
@@ -79,7 +80,7 @@ const addproducts = async (req, res) => {
       
 
         if (!productExist) {
-            console.log("product does not exist");
+            // console.log("product does not exist");
         
             const images = [];
         
@@ -89,7 +90,7 @@ const addproducts = async (req, res) => {
                     const file = req.files[i];
                     // Check if the file is an image
                     if (!file.mimetype.startsWith('image/')) {
-                        console.log("File MIME Type:", file.mimetype);
+                        // console.log("File MIME Type:", file.mimetype);
 
                         const errormessage ="Cannot Add product please upload images only";
                         return res.json({ success: false, fileerrormessage:errormessage }); 
@@ -129,13 +130,14 @@ const addproducts = async (req, res) => {
         }
         
     } catch (error) {
-        console.log("error happened in addproducts:", error);
-        res.status(500).json({ error: error.message });
+        console.error("Error in addproducts:", error);
+   
+    next(error)
     }
 };
 
 
-const  blockOrUnblockproduct= async (req, res) => {
+const  blockOrUnblockproduct= async (req, res,next) => {
     try {
         const id = req.query.id;
         const product = await productModel.findOne({ _id: id });
@@ -152,8 +154,9 @@ const  blockOrUnblockproduct= async (req, res) => {
             return res.json({ success: true, flag: 0 });
         }
     } catch (error) {
-        console.error(error.message);
-        return res.status(500).json({ success: false, message: 'Internal server error' });
+        console.error("Error in  block or unblockproduct:", error);
+   
+    next(error)
     }
 };
 
@@ -162,7 +165,7 @@ const  blockOrUnblockproduct= async (req, res) => {
 
 
 
-const getEditProduct = async(req,res)=>{
+const getEditProduct = async(req,res,next)=>{
     try {
        
         const id = req.query.id
@@ -179,17 +182,17 @@ const getEditProduct = async(req,res)=>{
 
         
     } catch (error) {
-        consol.log("error found in geteditproduct : "+error.message)
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
-        
+        console.error("Error in  geteditproduct:", error);
+   
+    next(error)
     }
 }
 
 
-const deleteImage = async(req,res)=>{
+const deleteImage = async(req,res,next)=>{
     try {
        // console.log("//////////") 
-        console.log(" req in deleting image of edit product")
+        // console.log(" req in deleting image of edit product")
         const productId = req.body.productId;
         //console.log(" productid : "+productId)
         const productImage =req.body.productImage;
@@ -199,11 +202,11 @@ const deleteImage = async(req,res)=>{
 
         if (fs.existsSync(imagePath)) {
           await  fs.unlinkSync(imagePath)
-          console.log(`image ${productImage}is deleted successfully`)
+        //   console.log(`image ${productImage}is deleted successfully`)
           res.json({success:true})
             
         }else{
-            console.log(`Image ${image} not found`);
+            //console.log(`Image ${image} not found`);
             res.json({success:FontFaceSetLoadEvent})
         }
          
@@ -211,22 +214,23 @@ const deleteImage = async(req,res)=>{
         
     } catch (error) {
 
-        console.log("error catched  in deleteimage: "+error.message)
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error("Error in  block or deleteimage:", error);
+   
+    next(error)
         
     }
 }
 
 
 
-const productUpdate = async (req, res) => {
+const productUpdate = async (req, res,next) => {
     try {
-        console.log("req now in productUpdate ");
+        // console.log("req now in productUpdate ");
         const id = req.params.id;
-        console.log(id)
+        // console.log(id)
         const data = req.body;
         const images = [];
-        console.log(data.productName)
+        // console.log(data.productName)
 
         if (req.files && req.files.length > 0) {
             for (let i = 0; i < req.files.length; i++) {
@@ -242,7 +246,7 @@ const productUpdate = async (req, res) => {
                 const prodata = await productModel.findById({_id:id})
                 prodata.productImage.push(...images)
                 prodata.save()
-                console.log(prodata.productImage);
+                // console.log(prodata.productImage);
             }
 
 
@@ -252,7 +256,7 @@ const productUpdate = async (req, res) => {
         if (!duplicate || duplicate._id.toString() === id) {
              
             // Allow updating if it's the same product or the name doesn't exist
-            console.log("Yes product name available or it's the same product.");
+            // console.log("Yes product name available or it's the same product.");
 
             // Update product data
             await productModel.findByIdAndUpdate(
@@ -283,8 +287,9 @@ const productUpdate = async (req, res) => {
             res.redirect(`/admin/editproduct?id=${duplicate.id}`);
         }
     } catch (error) {
-        console.log("Error message when updating : " + error.message);
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error("Error in  block or productupdate:", error);
+   
+    next(error)
 
     }
 };

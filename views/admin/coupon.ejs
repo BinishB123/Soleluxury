@@ -190,8 +190,8 @@ function discountVal() {
 function validateDates() {
     const startDateParts = startDateInput.value.split('-');
     const endDateParts = endDateInput.value.split('-');
-    console.log("Start Date Parts:", startDateParts);
-    console.log("End Date Parts:", endDateParts);
+    // console.log("Start Date Parts:", startDateParts);
+    // console.log("End Date Parts:", endDateParts);
     
     // Construct Date objects for start and end dates
     const startDateValue = new Date(startDateParts[0], startDateParts[1] - 1, startDateParts[2]);
@@ -200,8 +200,8 @@ function validateDates() {
     // Get the current date
     const currentDate = new Date(); 
     
-    console.log("Start Date Value:", startDateValue);
-    console.log("End Date Value:", endDateValue);
+    // console.log("Start Date Value:", startDateValue);
+    // console.log("End Date Value:", endDateValue);
     
     if (isNaN(startDateValue.getTime()) || isNaN(endDateValue.getTime())) {
         // Display error messages for invalid date format
@@ -253,7 +253,7 @@ couponform.addEventListener("submit", function (event) {
     if (namerror.innerHTML || discounterror.innerHTML || startDateError.innerHTML || endDateError.innerHTML) {
         console.log("Validation failed");
     } else {
-        console.log("Validation passed");
+        // console.log("Validation passed");
         couponform.submit(); 
     }
 });

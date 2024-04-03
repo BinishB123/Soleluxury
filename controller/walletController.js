@@ -4,24 +4,26 @@ const order = require("../model/orderModel")
 const crypto = require("crypto")
 
 
-const wallet = async(req,res)=>{
+const wallet = async(req,res,next)=>{
     try {
         const userid = req.session.user._id
         const walletdata = await walletModel.find({userid:userid})
-        console.log("wallet",walletdata)
+        // console.log("wallet",walletdata)
         
     } catch (error) {
-       console.log(error.message) 
+      console.error("Error in  wallet:", error);
+   
+      next(error)
     }
 }
 
 
-const addMoneyWallet = async(req,res)=>{
+const addMoneyWallet = async(req,res,next)=>{
     try {
         const userId = req.session.user._id
         const amount =JSON.parse(req.body.amount)
         const razorpay = await userHelper.generateRazorpay(userId,amount)
-        console.log("razorpay",razorpay)
+        // console.log("razorpay",razorpay)
         if (razorpay.success === true) {
             res.json({ status: true, order: razorpay.order });
           } else {
@@ -30,17 +32,19 @@ const addMoneyWallet = async(req,res)=>{
 
         
     } catch (error) {
-      console.log(error.message)  
+      console.error("Error in  addmoneywallet:", error);
+   
+      next(error)  
     }
 }
 
-const verifyPayment = async (req, res) => {
+const verifyPayment = async (req, res,next) => {
     try {
       const payment = req.body.payment;
       const amount = JSON.parse(req.body.amount)
-      console.log("payment",payment)
+      // console.log("payment",payment)
       const orderId = req.body.order.id;
-      console.log("order",req.body.order)
+      // console.log("order",req.body.order)
       
   
       const user = req.session.user._id;
@@ -67,7 +71,7 @@ const verifyPayment = async (req, res) => {
               $inc: { balance: amount },
             }
           );
-          console.log("updatinf in if ", updating);
+          // console.log("updatinf in if ", updating);
         } else {
           const creating = await walletModel.create({
             userid: user,
@@ -80,7 +84,7 @@ const verifyPayment = async (req, res) => {
               },
             ],
           });
-          console.log("creating in else", creating);
+          // console.log("creating in else", creating);
         }
       
         
@@ -91,8 +95,9 @@ const verifyPayment = async (req, res) => {
           .json({ success: false, message: "Payment verification failed" });
       }
     } catch (error) {
-      console.log(error.message);
-      res.status(500).json({ success: false, message: error.message });
+      console.error("Error in  walletverifypayment:", error);
+   
+      next(error)
     }
   };
   

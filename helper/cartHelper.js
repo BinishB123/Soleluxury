@@ -62,24 +62,24 @@ const quantityIncrementOrDecrement = (userId,productId,quantity,Size)=>{
 const secondsubtotal = (products, userId,qty) => {
     return new Promise(async (resolve, reject) => {
         try {
-            console.log(qty)
+            // console.log(qty)
             const userCart = await cartModel.findOne({ userId: userId });
             let total = 0;
             
             // Apply offers to products and update products array
             products = await offerHelper.findOffer(products);
-            console.log("//////");
-            console.log(products);
-            console.log("/////////");
+            // console.log("//////");
+            // console.log(products);
+            // console.log("/////////");
 
             for (let i = 0; i < products.length; i++) {
-                console.log("fuck ",products[i].salePrice);
+                // console.log("fuck ",products[i].salePrice);
                 const priceAfterDiscount = products[i].salePrice * qty[i];
                 total += priceAfterDiscount;
             }
 
             userCart.totalPrice = parseFloat(total);
-            console.log("userCart.totalPrice", userCart.totalPrice);
+            // console.log("userCart.totalPrice", userCart.totalPrice);
             await userCart.save();
             resolve(total);
         } catch (error) {

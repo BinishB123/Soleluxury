@@ -17,7 +17,7 @@ const { parse } = require("dotenv");
 
 
 
-const forgotPassword = async(req,res)=>{
+const forgotPassword = async(req,res,next)=>{
   try {
     
          if (req.session.user) {
@@ -28,13 +28,14 @@ const forgotPassword = async(req,res)=>{
          }
     
   } catch (error) {
-    console.log(error.message)
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error("Error in  forgotpassword:", error);
+   
+    next(error)
 
   }
 }
 
-const updatingPassword = async (req, res) => {
+const updatingPassword = async (req, res,next) => {
   try {
     const { email, password, confirmPassword } = req.body;
 
@@ -69,9 +70,9 @@ const updatingPassword = async (req, res) => {
       return res.redirect("/forgotPassword");
     }
   } catch (error) {
-    console.error("Error updating password:", error.message);
-    req.flash("message", "Internal server error");
-    return res.status(500).redirect("/forgotPassword");
+    console.error("Error in  updatepassword:", error);
+   
+    next(error)
   }
 };
 
@@ -80,29 +81,41 @@ const updatingPassword = async (req, res) => {
 
 
 
-const loginload = function (req, res) {  
+const loginload = function (req, res,next) { 
+  try{ 
   if (req.session.user) {
     res.redirect("/home");
   } else {
     const message = req.flash("message")
     res.render("login",{message:message});
   }
+}catch(error){
+  console.error("Error in  loginload:", error);
+   
+  next(error)
+}
 };
 
-const loadSignUp = function (req, res) {
+const loadSignUp = function (req, res,next) {
+  try{
   if (req.session.user) {
     res.redirect("/home");    
   } else {
    const message=req.flash("message");
     res.render("signup",{message:message});
   }
+}catch(error){
+  console.error("Error in  loadsignup:", error);
+   
+  next(error)
+}
 };
 
 
-const insertUser = async (req, res) => {
+const insertUser = async (req, res,next) => {
   try {
-    console.log("Request Entered to insertUser");
-    console.log(req.body.confirmPassword);
+    // console.log("Request Entered to insertUser");
+    // console.log(req.body.confirmPassword);
     const response = await userHelper.doSignUp(
       req.body,
       req.session.otpmatched,
@@ -132,7 +145,7 @@ const insertUser = async (req, res) => {
               $inc: { balance: 100 },
             }
           );
-          console.log("updating in if ", updating); 
+          // console.log("updating in if ", updating); 
         } else {
           const creating = await walletModel.create({
             userid: response.user._id,
@@ -145,7 +158,7 @@ const insertUser = async (req, res) => {
               },
             ],
           });
-          console.log("creating in else", creating);
+          // console.log("creating in else", creating);
         }
       }
     }
@@ -153,15 +166,15 @@ const insertUser = async (req, res) => {
     req.flash("message", response.message);
     res.redirect("/login");
   } catch (err) {
-    console.error("Error in insertUser:", err);
-    req.flash("message", "An error occurred during user registration.");
-    res.redirect("/signup");
+    console.error("Error in  insertuser:", error);
+   
+    next(error)
   }
 };
 
 
 
-const loginHome = async (req, res) => {
+const loginHome = async (req, res,next) => {
   try {
     const response = await userHelper.loginHome(req.body);
     
@@ -174,13 +187,15 @@ const loginHome = async (req, res) => {
       res.render("login", { errorMessage: response.loginMessage });
     }
   } catch (error) {
-    //console.error('Error in loginHome:', error);
-      res.status(500).send('Internal Server Error');
+    console.error("Error in  loginhome:", error);
+   
+    next(error)
   }
 };
 
 
-const userHome = async(req,res)=>{
+const userHome = async(req,res,next)=>{
+  try{
   
   if (req.session.user) {
     const product= await productModel.find()
@@ -190,20 +205,27 @@ const userHome = async(req,res)=>{
   }else{
     res.redirect('/')
   }
+}catch(error){
+  console.error("Error in  userhome:", error);
+   
+  next(error)
+}
 }
 
-const logout = (req,res)=>{
+const logout = (req,res,next)=>{
   try{
       req.session.user = null
       res.redirect('/')
 
   }catch(error){
-    console.log(error)
+    console.error("Error in  logout:", error);
+   
+    next(error)
   }
 }
 
 
-const productView = async (req, res) => {
+const productView = async (req, res,next) => {
   try {
       const id = req.params.id
 
@@ -237,15 +259,16 @@ const productView = async (req, res) => {
       }
 
   } catch (error) {
-      console.log(error.message)
-      res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error("Error in  productview:", error);
+   
+    next(error)
 
   }
 }
 
 
 
-const displaySize =async(req,res)=>{
+const displaySize =async(req,res,next)=>{
   try {
 
       if (req.session.user) {
@@ -275,14 +298,16 @@ const displaySize =async(req,res)=>{
       }
     
   } catch (error) {
-    console.log(error.message)
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error("Error in  displaysize:", error);
+   
+    next(error)
 
     
   }
 }
 
-const guestUser = async(req,res)=>{
+const guestUser = async(req,res,next)=>{
+  try{
   if (!req.session.user) {
     const product= await productModel.find()
     const productNotBlocked = await productHelper.productFiltered()
@@ -291,11 +316,16 @@ const guestUser = async(req,res)=>{
   }else{
     res.redirect("/home")
   }
+}catch(error){
+  console.error("Error in  guestuser:", error);
+   
+  next(error)
+}
   
 }
 
 
-const viewCart = async(req, res) => {
+const viewCart = async(req, res,next) => {
   try {
       if (req.session.user) {
           const id = req.session.user._id
@@ -327,7 +357,7 @@ const viewCart = async(req, res) => {
                const totalPrice = await cartHelper.subtotal(products,id) 
 
              
-               res.render("cart", { products: products,totalPrice:totalPrice})
+               res.render("cart", { products: products,totalPrice:totalPrice,user:id})
               
              }else{
               res.render("cart")
@@ -341,21 +371,26 @@ const viewCart = async(req, res) => {
       }
 
   } catch (error) {
-      // Handle error
-      res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error("Error in  viewcart:", error);
+   
+    next(error)
 
   }
 }
 
 
 
-const profile = async(req,res)=>{
+const profile = async(req,res,next)=>{
+  try{
   if (req.session.user) {
     const id = req.session.user._id
     const user = await userModel.findOne({_id:id})
     const orderdetail = await orderModel.find({user:id}).sort({orderedOn:-1})
-    const walletdata = await walletModel.findOne({userid:id})
-   
+    const walletdata = await walletModel.findOne({ userid: id }).lean(); // Fetch the document
+    if (walletdata) {
+        walletdata.walletDatas.sort((a, b) => b.date - a.date); // Sort the walletDatas array
+    }
+       
     
     const message = req.flash("message")
     const errormessage = req.flash("errormessage")
@@ -363,11 +398,16 @@ const profile = async(req,res)=>{
   }else{
     res.redirect("/login")
   }
+}catch(error){
+  console.error("Error in  profile:", error);
+   
+  next(error)
+}
   
 }
 
 
-const editUserProfile = async(req,res)=>{
+const editUserProfile = async(req,res,next)=>{
   try {
     if (req.session.user) {
       const userId = req.session.user._id
@@ -377,11 +417,11 @@ const editUserProfile = async(req,res)=>{
         user.name =req.body.name,
         user.mobile = req.body.mobile,
         await user.save();
-        console.log("verified")
+        // console.log("verified")
         res.redirect("/profile")
         
       }else{
-        console.log("not verified")
+        // console.log("not verified")
         res.redirect("/profile")
       }
 
@@ -390,15 +430,16 @@ const editUserProfile = async(req,res)=>{
     }
     
   } catch (error) {
-    console.log(error.message)
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error("Error in  edituserprofile:", error);
+   
+    next(error)
 
   }
 }
 
 
 
-const search = async (req, res) => {
+const search = async (req, res,next) => {
   try {
       const searchTerm = req.query.search;
       let productData = req.body.allPrdoucts;
@@ -429,24 +470,26 @@ const search = async (req, res) => {
 
       // If product data is not available, perform a database query
       const searchedThings = await productModel.aggregate([
-          {
-              $match: {
-                  $or: [
-                      { productName: { $regex: new RegExp("^" + searchTerm, "i") } },
-                      { brand: { $regex: new RegExp("^" + searchTerm, "i") } }
-                  ]
-              }
-          },
-          {
-              $lookup: {
-                  from: "categories",
-                  localField: "category",
-                  foreignField: "_id",
-                  as: "category"
-              }
-          },
-          { $unwind: "$category" }
-      ]);
+        {
+            $match: {
+                $or: [
+                    { productName: { $regex: new RegExp(searchTerm, "i") } }, // Match substring in productName
+                    { brand: { $regex: new RegExp(searchTerm, "i") } } // Match substring in brand
+                ]
+            }
+        },
+        {
+            $lookup: {
+                from: "categories",
+                localField: "category",
+                foreignField: "_id",
+                as: "category"
+            }
+        },
+        { $unwind: "$category" }
+    ]);
+    
+    
 
       const product = await offerHelper.findOffer(searchedThings);
 
@@ -469,14 +512,15 @@ const search = async (req, res) => {
           sortPage: sortPage
       });
   } catch (error) {
-      console.log(error.message);
-      res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error("Error in  search:", error);
+   
+    next(error)
   }
 };
 
 
 
-const nav = async(req,res)=>{
+const nav = async(req,res,next)=>{
   try {
     let productData = req.body.allPrdoucts;
 
@@ -539,14 +583,15 @@ const products = await offerHelper.findOffer(product)
     
     
   } catch (error) {
-    console.log(error.message)
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error("Error in  nav:", error);
+   
+    next(error)
 
   }
 }
 
 
-const filteredBrand = async(req,res)=>{
+const filteredBrand = async(req,res,next)=>{
   try {
    
     const clicked = req.query.brand
@@ -624,20 +669,21 @@ const filteredBrand = async(req,res)=>{
          let endIndex = startIndex +itemsPerPage
          let totalPages = Math.ceil(products.length/itemsPerPage)
          const currentProduct = products.slice(startIndex,endIndex)
-         console.log("currentProduct",currentProduct.length)
+        //  console.log("currentProduct",currentProduct.length)
          let additionalQueryParameter = clicked ? `brand=${clicked}` : undefined;
         res.render("searchedProducts",{product:currentProduct,totalPages:totalPages,currentPage,baseRoute:"/filtered",additionalQueryParameter,allPrdoucts:products})
         return
     
       
   } catch (error) {
-    console.log(error.message)
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error("Error in  filteredbrand:", error);
+   
+    next(error)
 
   }
 }
 
-const pricefiltered = async (req, res) => {
+const pricefiltered = async (req, res,next) => {
   const clicked = req.query.clicked;
   let productData = req.body.allPrdoucts;
   const sortPage = true
@@ -658,7 +704,7 @@ const pricefiltered = async (req, res) => {
         let endIndex = startIndex +itemsPerPage
         let totalPages = Math.ceil(product.length/itemsPerPage)
         const currentProduct = product.slice(startIndex,endIndex)
-        console.log("currentProduct",currentProduct.length)
+        // console.log("currentProduct",currentProduct.length)
         let additionalQueryParameter = clicked ? `clicked=${clicked}` : "";
         res.render("searchedProducts",{product:currentProduct,totalPages:totalPages,currentPage,baseRoute:"/pricefiltered",additionalQueryParameter,allPrdoucts:product,sortPage})
        return
@@ -672,7 +718,7 @@ const pricefiltered = async (req, res) => {
         let endIndex = startIndex +itemsPerPage
         let totalPages = Math.ceil(product.length/itemsPerPage)
         const currentProduct = product.slice(startIndex,endIndex)
-        console.log("currentProduct",currentProduct.length)
+        // console.log("currentProduct",currentProduct.length)
         let additionalQueryParameter = clicked ? `clicked=${clicked}` : "";
         res.render("searchedProducts",{product:currentProduct,totalPages:totalPages,currentPage,baseRoute:"/pricefiltered",additionalQueryParameter,allPrdoucts:product,sortPage})
 
@@ -681,15 +727,16 @@ const pricefiltered = async (req, res) => {
      
       
   } catch (error) {
-      console.error("Error parsing productData:", error);
-      res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error("Error in  pricefiltered:", error);
+   
+    next(error)
 
   }
   
 }
 
 
-const categoryFilter = async(req,res)=>{
+const categoryFilter = async(req,res,next)=>{
   try {
     const clicked = req.query.clicked
     const productWithcategory = JSON.parse(req.body.allPrdoucts)
@@ -706,7 +753,7 @@ const categoryFilter = async(req,res)=>{
          let endIndex = startIndex +itemsPerPage
          let totalPages = Math.ceil(product.length/itemsPerPage)
          const currentProduct = product.slice(startIndex,endIndex)
-         console.log("currentProduct",currentProduct.length)
+        //  console.log("currentProduct",currentProduct.length)
          let additionalQueryParameter = clicked ? `clicked=${clicked}` : "";
          res.render("searchedProducts",{product:currentProduct,totalPages:totalPages,currentPage,baseRoute:"/categoryFilter",additionalQueryParameter,allPrdoucts:product,sortPage:sortPage})
  
@@ -720,7 +767,7 @@ const categoryFilter = async(req,res)=>{
         let endIndex = startIndex +itemsPerPage
         let totalPages = Math.ceil(product.length/itemsPerPage)
         const currentProduct = product.slice(startIndex,endIndex)
-        console.log("currentProduct",currentProduct.length)
+        // console.log("currentProduct",currentProduct.length)
         let additionalQueryParameter = clicked ? `clicked=${clicked}` : "";
         res.render("searchedProducts",{product:currentProduct,totalPages:totalPages,currentPage,baseRoute:"/categoryFilter",additionalQueryParameter,allPrdoucts:product,sortPage:sortPage})
 
@@ -734,15 +781,16 @@ const categoryFilter = async(req,res)=>{
         let endIndex = startIndex +itemsPerPage
         let totalPages = Math.ceil(product.length/itemsPerPage)
         const currentProduct = product.slice(startIndex,endIndex)
-        console.log("currentProduct",currentProduct.length)
+        // console.log("currentProduct",currentProduct.length)
         let additionalQueryParameter = clicked ? `clicked=${clicked}` : "";
         res.render("searchedProducts",{product:currentProduct,totalPages:totalPages,currentPage,baseRoute:"/categoryFilter",additionalQueryParameter,allPrdoucts:product,sortPage:sortPage})
 
 
      }
   } catch (error) {
-    console.log(error.message)
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error("Error in  category:", error);
+   
+    next(error)
 
   }
 }

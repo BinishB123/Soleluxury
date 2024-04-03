@@ -2,7 +2,7 @@ const categoryOfferModel = require("../model/categoryOfferModel")
 const categoryModel = require("../model/categoryModel")
 
 
-const categoryOfferPage = async(req,res)=>{
+const categoryOfferPage = async(req,res,next)=>{
     try {
        
                 const offer = await categoryOfferModel.find({}).populate("categoryOffer.category")
@@ -11,30 +11,32 @@ const categoryOfferPage = async(req,res)=>{
               res.render("categoryOffer",{offers:offer,category :category })
            
     } catch (error) {
-        console.log(error.message)
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error("Error in categoryofferpage:", error);
+        
+        next(error)
 
     }
 }
 
-const editcategoryOffer = async (req, res) => {
+const editcategoryOffer = async (req, res,next) => {
     try {
         
         const id = req.params.id;
-        console.log(id)
+        // console.log(id)
         const offer = await categoryOfferModel.findOne({ _id: id }).lean();
         offer.formattedStartingDate = formatDate(offer.startingDate);
         offer.formattedEndingDate = formatDate(offer.endingDate);
-         console.log(offer)
+        //  console.log(offer)
         res.json(offer); // Sending the formatted offer as a JSON response
     } catch (error) {
-        console.log(error.message);
-        res.status(500).send("Internal Server Error");
+        console.error("Error in editcategorypage:", error);
+   
+    next(error)
     }
 }
 
 
-const AddCategoryOffer = async(req,res)=>{
+const AddCategoryOffer = async(req,res,next)=>{
     try {
         
 
@@ -46,18 +48,19 @@ const AddCategoryOffer = async(req,res)=>{
                 "categoryOffer.discount":req.body.discountAmount,
                 "categoryOffer.offerStatus":true
             })
-            console.log(offerCreating)
+            // console.log(offerCreating)
       res.redirect("/admin/categoryOffer")
         
     } catch (error) {
-    //    console.log(error.message) 
-       res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error("Error in addcategoryoffer:", error);
+       
+        next(error)
     }
 }
 
-const categoryEditOffer = async(req,res)=>{
+const categoryEditOffer = async(req,res,next)=>{
     try {
-        console.log(req.body);
+        // console.log(req.body);
         const updated = await categoryOfferModel.updateOne({_id:req.body.offerId},
             {$set:{
                 name:req.body.editofferName,
@@ -69,14 +72,15 @@ const categoryEditOffer = async(req,res)=>{
             }})
             res.status(200).redirect("/admin/categoryOffer")
     } catch (error) {
-        // console.log(error.message)
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error("Error in categoryeditoffer:", error);
+   
+    next(error)
     }
 }
 
 
 
-const deleteOffer = async (req, res) => {
+const deleteOffer = async (req, res,next) => {
     try {
         const id = req.query.id;
         
@@ -91,9 +95,9 @@ const deleteOffer = async (req, res) => {
         }
         
     } catch (error) {
-        // Handle any errors and respond with a 500 Internal Server Error status code
-        // console.error(error.message);
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error("Error in deleteoffercategory:", error);
+   
+    next(error)
     }
 }
 

@@ -8,7 +8,7 @@ const addingCouponUsedUser = (couponId,userId)=>{
            
                usedCoupon.usedByUser.push(userId)
                await usedCoupon.save()
-               console.log(usedCoupon)
+            //    console.log(usedCoupon)
                resolve(true) 
             
         } catch (error) {

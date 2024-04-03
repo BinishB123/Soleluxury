@@ -83,14 +83,7 @@
 
                     </article>
                 </div>
-                <div class="card mb-4">
-                    <article class="card-body">
-                        <h5 class="card-title">weekly statistics</h5>
-                        <canvas id="weekly" height="120px"></canvas>
-                        <input type="hidden" value="<%= JSON.stringify(weeklyDatas) %>" id="weeklyReport">
-
-                    </article>
-                </div>
+                
                 <div class="row">
                     <div class="col-lg-5">
                         <div class="card mb-4">
@@ -405,36 +398,36 @@
 
 //yearly sorting
 
-if ($('#weekly').length) {
+// if ($('#weekly').length) {
 
-    const weekDataString = document.getElementById("weeklyReport").value
-    const { weeklyDatas, DatNum } = JSON.parse(weekDataString);
-    let weeklyTotalAmount =[]
-   for(let i =0;i< weeklyDatas.length;i++){
-      weeklyTotalAmount.push(weeklyDatas[i].totalAmount)
-   }
+//     const weekDataString = document.getElementById("weeklyReport").value
+//     const { weeklyDatas, DatNum } = JSON.parse(weekDataString);
+//     let weeklyTotalAmount =[]
+//    for(let i =0;i< weeklyDatas.length;i++){
+//       weeklyTotalAmount.push(weeklyDatas[i].totalAmount)
+//    }
 
 
-  const labels = DatNum; // Array of labels
-  const data = {
-    labels: labels,
-    datasets: [{
-      label: 'week',
-      data: weeklyTotalAmount,
-      fill: false,
-      borderColor: 'rgb(75, 192, 192)',
-      tension: 0.1
-    }]
-  };
+//   const labels = DatNum; // Array of labels
+//   const data = {
+//     labels: labels,
+//     datasets: [{
+//       label: 'week',
+//       data: weeklyTotalAmount,
+//       fill: false,
+//       borderColor: 'rgb(75, 192, 192)',
+//       tension: 0.1
+//     }]
+//   };
 
-  const config = {
-    type: 'line',
-    data: data,
-  };
+//   const config = {
+//     type: 'line',
+//     data: data,
+//   };
 
-  const weekly = document.getElementById('weekly').getContext('2d');
-  var myChart = new Chart(weekly, config);
-}
+//   const weekly = document.getElementById('weekly').getContext('2d');
+//   var myChart = new Chart(weekly, config);
+// }
 
 
 

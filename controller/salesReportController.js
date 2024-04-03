@@ -1,8 +1,23 @@
 const orderModel = require("../model/orderModel");
 const couponModel = require("../model/couponModel");
 
-const salesReportPage = async (req, res) => {
+const salesReportPage = async (req, res,next) => {
   try {
+    const [{ orderedOn }] = await orderModel.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      { $sort: { orderedOn: -1 } },
+      { $limit: 1 }, // Limit to only the latest order
+      { $project: { _id: 0, orderedOn: 1 } } // Project only the orderedOn field
+    ]);
+    // console.log(orderedOn)
     const day = req.query.day;
     const customDate = day ? new Date(day) : null;
 
@@ -46,15 +61,31 @@ const salesReportPage = async (req, res) => {
       totalAmount: totalAmount,
       salesMonthly: true,
       date: customDate ? day : null, 
+      latestDate:orderedOn
     });
   } catch (error) {
-    // console.error("Error in sales report page:", error.message);
-    res.status(500).send("Internal Server Error");
+    console.error("Error in  salereportpage:", error);
+   
+    next(error)
   }
 };
 
-const monthlySalesReport = async (req, res) => {
+const monthlySalesReport = async (req, res,next) => {
   try {
+    const [{ orderedOn }] = await orderModel.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      { $sort: { orderedOn: -1 } },
+      { $limit: 1 }, // Limit to only the latest order
+      { $project: { _id: 0, orderedOn: 1 } } // Project only the orderedOn field
+    ]);
     const targetMonth = parseInt(req.query.monthly);
     // const customDate = day ? new Date(day) : null;
 
@@ -97,10 +128,12 @@ const monthlySalesReport = async (req, res) => {
       currentPage: paginatedData.currentPage,
       totalAmount: totalAmount,
       salesMonthly: true,
+      latestDate:orderedOn
     });
   } catch (error) {
-    //console.error("Error in sales report page:", error.message);
-    res.status(500).send("Internal Server Error");
+    console.error("Error in  monthlysalesreport:", error);
+   
+    next(error)
   }
 };
 
@@ -249,12 +282,25 @@ function calculateTotalAmount(filteredInfos) {
 // };
 
 
-const salesreportaccordingtotwodates = async(req,res)=>{
+const salesreportaccordingtotwodates = async(req,res,next)=>{
   try {
+    const [{ orderedOn }] = await orderModel.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      { $sort: { orderedOn: -1 } },
+      { $limit: 1 }, // Limit to only the latest order
+      { $project: { _id: 0, orderedOn: 1 } } // Project only the orderedOn field
+    ]);
     const customStartDate = new Date(req.query.startdate);
 const customEndDate = new Date(req.query.enddate);
-console.log(customEndDate)
-console.log(customStartDate)
+
 
 const ordersWithCustomerInfo = await orderModel.aggregate([
   {
@@ -271,9 +317,10 @@ const ordersWithCustomerInfo = await orderModel.aggregate([
     $match: {
       orderedOn: {
         $gte: customStartDate, // Greater than or equal to customStartDate
-        $lt: customEndDate     // Less than customEndDate
+        $lte: customEndDate     // Less than or equal to customEndDate
       }
     }
+    
   },
   { $unwind: "$products" },
   {
@@ -286,7 +333,7 @@ const ordersWithCustomerInfo = await orderModel.aggregate([
   },
   { $unwind: "$product" },
 ]);
-    // console.log("ordersWithCustomerInfo",ordersWithCustomerInfo)
+    
 
 
     for (const order of ordersWithCustomerInfo) {
@@ -307,7 +354,7 @@ const ordersWithCustomerInfo = await orderModel.aggregate([
     const filteredInfos = filterOrders(ordersWithCustomerInfo);
     const paginatedData = paginateData(filteredInfos, req.query.page);
     const totalAmount = calculateTotalAmount(filteredInfos);
-    console.log("paginatedData",paginatedData)
+    // console.log("paginatedData",paginatedData)
                                                   
     res.render("salesReport", {       
       data: paginatedData.data,
@@ -315,12 +362,14 @@ const ordersWithCustomerInfo = await orderModel.aggregate([
       currentPage: paginatedData.currentPage,
       totalAmount: totalAmount,
       salesMonthly: true,
+      latestDate:orderedOn
     });
 
     
   } catch (error) {
-    // console.log(error.message)
-    res.status(500).send('Internal Server Error');
+    console.error("Error in  salesreportaccordingtodates:", error);
+   
+    next(error)
   }
 }
 

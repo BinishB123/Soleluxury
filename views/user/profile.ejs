@@ -754,7 +754,7 @@
                                         </div>
                                     </li>
                                     <li class="nav-item" style="background-color: black;">
-                                        <a class="nav-link" id="orders-tab" href="/orderdetails" role="tab" aria-controls="orders" aria-selected="false" style="color: white;">
+                                        <a class="nav-link" id="orders-tab" href="/orders" role="tab" aria-controls="orders" aria-selected="false" style="color: white;">
                                             <i class="bi bi-box2-fill" style="font-size: 1rem; color: white;"></i>
                                             Orders
                                         </a>
@@ -934,9 +934,7 @@
                                                 </tr>
                                             </thead>
                                             <% if(locals.wallet) {%>
-                                            <% for(let i=0;i<wallet.walletDatas.length;i++) { %>
-                                                <% console.log(wallet.walletDatas[i]) %>
-                                                <% } %>
+                                            
                                             <tbody>
                                                 <% if (wallet && wallet.walletDatas && wallet.walletDatas.length > 0) { %>
                                                     <% for(let i=0;i<wallet.walletDatas.length;i++) { %>
@@ -960,7 +958,7 @@
                                         <div style="border: 2px solid #007bff; border-radius: 10px; padding: 20px; font-size: 24px; text-align: center;" class="d-flex justify-content-center">
                                             <div>
                                                 <% if (wallet && typeof wallet.balance !== 'undefined') { %>
-                                                    Wallet Balance: <%= wallet.balance %>
+                                                    Wallet Balance: <%=parseFloat( wallet.balance.toFixed(2))  %>
                                                 <% } else { %>
                                                    No Balance 
                                                 <% } %>
@@ -1320,7 +1318,7 @@
 
 function generateRazorpay() {
     const amount =  document.getElementById('moneyToAdd').value
-    console.log(amount)
+    // console.log(amount)
     
     $.ajax({
         url: '/add-money-to-wallet',
@@ -1334,7 +1332,7 @@ function generateRazorpay() {
            
            
             if (response.status===true) {
-               console.log("true")
+            //    console.log("true")
             const order = response.order
             closeSizeMode()
     
@@ -1363,7 +1361,7 @@ function generateRazorpay() {
 
 
 function razorPayment(order){
-    console.log("razorpayment")
+    // console.log("razorpayment")
     var options = {
     "key": "rzp_test_EEotY5tKE8Vqxh", // Enter the Key ID generated from the Dashboard
     "amount": 100000, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
@@ -1394,8 +1392,8 @@ rzp1.open();
 
    function verifyPayment( payment,order){
     const amount =  document.getElementById('moneyToAdd').value
-    console.log(amount)
-      console.log("at verify payment")
+    // console.log(amount)
+    //   console.log("at verify payment")
     $.ajax({
         url: '/wallet-verifypayment',
         method: 'POST',
@@ -1454,7 +1452,7 @@ rzp1.open();
 
 
  async function refferalShare(userRefferalCode) {
-    console.log(userRefferalCode);
+    // console.log(userRefferalCode);
 
     if (navigator.share) {
         
@@ -1467,12 +1465,12 @@ rzp1.open();
         
         try {
             await navigator.share(shareData);
-            console.log('Shared successfully');
+            // console.log('Shared successfully');
         } catch (error) {
             console.error('Error sharing:', error);
         }
     } else {
-        console.log('Web Share API is not supported in this browser');
+        // console.log('Web Share API is not supported in this browser');
     }
 }
 

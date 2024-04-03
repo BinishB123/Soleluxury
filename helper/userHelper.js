@@ -5,13 +5,13 @@ const walletModel = require("../model/walletModel")
 const bcrypt = require("bcrypt");
 const Razorpay = require("razorpay")
 var instance = new Razorpay({
-  key_id: 'rzp_test_EEotY5tKE8Vqxh',
-  key_secret: 'p82tQtMSPH6JUUjE7vwvh4HQ',
+  key_id: process.env.key_id,
+  key_secret: process.env.key_secret ,
 });
 
 
 const loginHome = (userData)=>{
-  console.log(userData)
+  // console.log(userData)
   return new Promise(async(resolve,reject)=>{
 
          try{
@@ -26,10 +26,10 @@ const loginHome = (userData)=>{
                    if (user.isActive) {
                        bcrypt.compare(userData.password,user.password).then((result)=>{
                         if(result){
-                          console.log(result)
+                          // console.log(result)
                             response.user = user
                             response.login = true;
-                             console.log(response)
+                            //  console.log(response)
                             resolve(response)
                         }else{
                           response.loginMessage = "invalid email or password"
@@ -95,7 +95,7 @@ const doSignUp = (userData, verify, emailVerify) => {
                 $inc: { balance: 100 },
               }
             );
-            console.log("updating in if ", updating);
+            // console.log("updating in if ", updating);
           } else {
             const creating = await walletModel.create({
               userid: userWithReferralcode._id,
@@ -108,21 +108,21 @@ const doSignUp = (userData, verify, emailVerify) => {
                 },
               ],
             });
-            console.log("creating in else", creating);
+            // console.log("creating in else", creating);
           }
         }
       }
 
       if (emailVerify === userData.email) {
         if (!userExist) {
-          console.log("user not exist");
+          // console.log("user not exist");
 
           if (userData.password === userData.confirmPassword) {
-            console.log("password matched");
-            console.log(verify);
+            // console.log("password matched");
+            // console.log(verify);
 
             if (verify) {
-              console.log("verified");
+              // console.log("verified");
 
               const password = await bcrypt.hash(userData.password, 10);
               const referalCode = await generateRandomString();
@@ -137,7 +137,7 @@ const doSignUp = (userData, verify, emailVerify) => {
 
               const createdUser = await userModel.create(newUser);
 
-              console.log("User created:", createdUser);
+              // console.log("User created:", createdUser);
               response.user = createdUser
               response.status = true;
               response.message = "Signed Up Successfully";
@@ -206,7 +206,7 @@ const generateRazorpay = (userId,totalAmount)=>{
             success:true,
             order:order
           }
-           console.log("order in generateRazorpay",order)
+          //  console.log("order in generateRazorpay",order)
           resolve(response)
         }
         

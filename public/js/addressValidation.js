@@ -201,19 +201,19 @@ addAddressForm.addEventListener("submit", function (e) {
     stateError.innerHTML ||
     countryError.innerHTML
   ) {
-    console.log("Validation failed");
+    // console.log("Validation failed");
     e.preventDefault();
   } else {
-    console.log("Validation passed");
+    // console.log("Validation passed");
 
     this.submit(); //
-    console.log("Validation passed");
+    // console.log("Validation passed");
   }
 });
 
 const newpass = document.getElementById("newpassword");
 const cnfpass = document.getElementById("confrmpass");
-console.log(newpass);
+// console.log(newpass);
 
 const error2 = document.getElementById("error2");
 const error3 = document.getElementById("error3");
@@ -262,13 +262,11 @@ newpass.addEventListener("blur", passvalidate);
 cnfpass.addEventListener("blur", passvalidate);
 
 passform.addEventListener("submit", function (e) {
-  console.log("Form submitted");
+  // console.log("Form submitted");
   passvalidate();
-  console.log("After validation");
+  // console.log("After validation");
   if (error2.innerHTML || error3.innerHTML) {
-    console.log("Validation failed");
-    e.preventDefault();
-  } else {
-    console.log("Validation passed");
-  }
+    // console.log("Validation failed");
+   return e.preventDefault();
+  } 
 });

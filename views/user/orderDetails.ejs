@@ -18,7 +18,9 @@
     <!-- Template CSS -->
     <link rel="stylesheet" href="/public/assets/css/maind134.css?v=3.4">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
 
 </head>
 
@@ -138,9 +140,7 @@
                                 <div class="bt-1 border-color-1 mt-30 mb-30"></div>
                                 <div class="detail-extralink">
                                     <div class="detail-qty border radius">
-                                        <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
-                                        <span class="qty-val">1</span>
-                                        <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
+                                  
                                     </div>
                                     <div class="product-extra-link2">
                                         <button type="submit" class="button button-add-to-cart">Add to cart</button>
@@ -180,7 +180,7 @@
                         <div class="header-action-right">
                             <div class="header-action-2">
                                 <div class="header-action-icon-2">
-                                    <a href="shop-wishlist.html">
+                                    <a href="/wishlist">
                                         <img class="svgInject" alt="Evara" src="/public/assets/imgs/theme/icons/icon-heart.svg">
                                     </a>
                                 </div>
@@ -412,7 +412,7 @@
                                         </ul> -->
                                     </li>
                                     <li>
-                                        <a href="/nav?clicked=Mens">Shop</a>
+                                        <a href="/nav?clicked=shop">Shop</a>
                                     </li>
                                     <li><a href="/profile">Profile </i></a>
                                        
@@ -725,124 +725,173 @@
         </div>
     </div>
     <main class="main">
-        <section class="pt-100 pb-120">
+       
+        <section class="mt-0 mb-50">
             <div class="container">
                 <div class="row">
-                    <div class="col-12">
-                        <h4 class="text-center">Orders</h4>
-                        <div class="table-responsive">
-                            <table class="table" style="border: none;">
-                                <thead>
-                                    <tr >
-                                        <th>Order Id</th>
-                                        <th>product Image</th>
-                                        <th>Product Name</th>
-                                        <th>Quantity</th>
-                                        <th>Price</th>
-                                        <th>orderedOn</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                        
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% for(let i = 0; i < order.length; i++) { %>
-    <tr class="text-center">
-        <td><%= order[i].orderId %></td>
-        <td>
-            <% if (products[i].productImage && products[i].productImage[0]) { %>
-                <img src="/public/photos/productImages/<%= products[i].productImage[0] %>" class="img-fluid rounded mx-auto d-block" alt="Product Image" style="max-width: 100px;">
-            <% } else { %>
-                <!-- Handle the case where product image is not available -->
-                <p>No Image Available</p>
-            <% } %>
-        </td>
-        <td><%= products[i].productName %></td>
-        <td>x<%= order[i].products.quantity %></td>
-        <td><%= order[i].totalAmount %></td>
-        <td><%= order[i].orderedOn.toLocaleDateString() %></td> 
-        <td>
-            <% if(order[i].products.status === "cancelled") { %>
-                <span class="badge" style="background-color: red;"><%= order[i].products.status %></span>
-            <% } else if(order[i].products.status === "pending") { %>
-                <span class="badge" style="background-color: rgb(0, 149, 255);"><%= order[i].products.status %></span>
-            <% } else if(order[i].products.status === "processing") { %>
-                <span class="badge" style="background-color: rgb(255, 179, 0);"><%= order[i].products.status %></span>
-            <% } else if(order[i].products.status === "confirmed") { %>
-                <span class="badge" style="background-color: rgb(255, 208, 0);"><%= order[i].products.status %></span>
-            <% } else if(order[i].products.status === "shipped") { %>
-                <span class="badge" style="background-color: rgb(179, 212, 15);"><%= order[i].products.status %></span>
-            <% } else if(order[i].products.status === "delivered") { %>
-                <span class="badge" style="background-color: rgb(8, 230, 45);"><%= order[i].products.status %></span>
-            <% } else if(order[i].products.status === "return Pending") { %>
-                <span class="badge" style="background-color: rgb(220, 152, 17);"><%= order[i].products.status %></span>
-            <% } else if(order[i].products.status === "outForDelivery") { %>
-                <span class="badge" style="background-color: rgb(31, 229, 17);"><%= order[i].products.status %></span>
+                    <div class="col-12  mt-0">
+                        <div class="table-responsive mt-0">
+                          <div id="errorMessage" style="visibility: hidden; color: red;">Error occurred during product removal.</div>
+
+<table class="table shopping-summery text-center clean">
+    <thead>
+        <tr class="main-heading">
+            <th scope="col">Product Image</th>
+            <th scope="col">Product Name</th>
+            <th scope="col">Size</th>
+            <th scope="col">Price</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Status</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% for(let i = 0; i < order.length; i++) { %>
+        <tr id="<%= order[i]._id %>">
+            <td class="image product-thumbnail">
+                <img src="/public/photos/productImages/<%= order[i].product.productImage[0] %>" alt="/productview/<%= order[i].product._id %>">
+            </td>
+            <td class="product-des product-name">
+                <h5 class="product-name"><a href="/productview/<%= order[i].product._id %>"><%= order[i].product.productName %></a></h5>
+            </td>
+            <td class="price" data-title="Size"><span><%= order[i].products.size %></span></td>
+            <td class="price" data-title="Price">₹<span><%= order[i].products.productPrice %></span></td>
+            <td class="text-center" data-title="Quantity">
+                <div class="detail-qty border radius m-auto">
+                    <span><%= order[i].products.quantity %></span>
+                </div>
+            </td>
+            <td class="action" data-title="Status">
+                <% if(order[i].products.status === "cancelled") { %>
+                    <span class="badge" style="background-color: red;"><%= order[i].products.status %></span>
+                <% } else if(order[i].products.status === "pending") { %>
+                    <span class="badge" style="background-color: rgb(0, 149, 255);"><%= order[i].products.status %></span>
+                <% } else if(order[i].products.status === "processing") { %>
+                    <span class="badge" style="background-color: rgb(255, 179, 0);"><%= order[i].products.status %></span>
+                <% } else if(order[i].products.status === "confirmed") { %>
+                    <span class="badge" style="background-color: rgb(255, 208, 0);"><%= order[i].products.status %></span>
+                <% } else if(order[i].products.status === "shipped") { %>
+                    <span class="badge" style="background-color: rgb(179, 212, 15);"><%= order[i].products.status %></span>
+                <% } else if(order[i].products.status === "delivered") { %>
+                    <span class="badge" style="background-color: rgb(8, 230, 45);"><%= order[i].products.status %></span>
+                <% } else if(order[i].products.status === "return Pending") { %>
+                    <span class="badge" style="background-color: rgb(220, 152, 17);"><%= order[i].products.status %></span>
+                <% } else if(order[i].products.status === "outForDelivery") { %>
+                    <span class="badge" style="background-color: rgb(31, 229, 17);"><%= order[i].products.status %></span>
                 <% } else if(order[i].products.status === "Returned") { %>
                     <span class="badge" style="background-color: rgb(18, 52, 15);"><%= order[i].products.status %></span>
                 <% } %>
-        </td>
-        <td>
-           
-            <% if(order[i].products.status === "cancelled") { %>
-                <span style="background-color: rgb(255, 255, 255); color: rgb(235, 19, 19);">Cancelled</span>
-            <% } else if (order[i].products.status === "delivered") { %>
-                <a href="#" id="" class="btn btn-sm" style="background-color: rgb(0, 132, 255); color: white;" onclick="returnOrder('<%= order[i]._id %>', '<%= order[i].products._id %>')">Return</a>
-                <a class="btn btn-sm" onclick="dldInvoice('<%= order[i]._id %>', '<%= order[i].products._id %>')" style="background-color: black;">Download invoice</a>
-
+            </td>
+            <td class="action" data-title="Action">
+                <% if(order[i].products.status === "cancelled") { %>
+                    <span style="background-color: rgb(255, 255, 255); color: rgb(235, 19, 19);">Cancelled</span>
+                <% } else if (order[i].products.status === "delivered") { %>
+                    <a href="#" id="" class="btn btn-sm" style="background-color: rgb(0, 132, 255); color: white;" onclick="returnOrder('<%= order[i]._id %>', '<%= order[i].products._id %>')">Return</a>
+                    <a class="btn btn-sm" onclick="dldInvoice('<%= order[i]._id %>', '<%= order[i].products._id %>')" style="background-color: black;">Download invoice</a>
                 <% } else if(order[i].products.status === "return Pending") { %>
                     <span class="badge" style="color: rgb(133, 133, 133);">Return pending</span>
-                    <% } else if(order[i].products.status === "Returned") { %>
-                        <span class="badge" style="color: rgb(13, 42, 184);">Returned</span>
+                <% } else if(order[i].products.status === "Returned") { %>
+                    <span class="badge" style="color: rgb(13, 42, 184);">Returned</span>
+                <% } else { %>
+                    <a href="#" id="" class="btn btn-sm" style="background-color: red; color: white;" onclick="cancelOrder('<%= order[i]._id %>', '<%= order[i].products._id %>','<%=order[i].products.quantity%>','<%=order[i].products.size%>','<%=order[i].product._id%>')">Cancel</a>
+                <% } %>
+            </td>
+        </tr>
+        <% } %>
+    </tbody>
+</table>
 
-                    <% }else{ %>
-                <a href="#" id="" class="btn btn-sm" style="background-color: red; color: white;" onclick="cancelOrder('<%= order[i]._id %>', '<%= order[i].products._id %>','<%=order[i].products.quantity%>','<%=order[i].products.size%>','<%=products[i]._id%>')">Cancel</a>
-            <% } %>
-        </td>
-    </tr>
-<% } %>
+<div class="text-end">
+    <div class="cart-action">
+        <a class="btn" href="/home" style="background-color: rgb(0, 89, 255);"><i class="fi-rs-shopping-bag mr-10"></i>Continue Shopping</a>
+        <a href="/orders" class="btn btn-primary" style="background-color: black;">Go to Order Details</a>
+    </div>
+    <div class="form-group text-end"></div>
+</div>
 
-                                    
-                                </tbody>
-                            </table>
-                            <% if (totalPages){ %>
-                                <nav aria-label="Page navigation example" >
-                                    <ul class="pagination justify-content-center">
-                                    <% if (currentPage > 1) { %>
-                                      <li class="page-item ">
-                                        <a class="page-link" href="/orderdetails?page=<%=currentPage-1%>" >Previous</a>
-                                      </li>
-                                      <% } %>
-                                     
-                                      <li class="page-item"><a class="btn btn-sm active" ><%=currentPage%></a></li>
-                                    
-                                      <% if (currentPage < totalPages) { %>
-                                      <li class="page-item">
-                                        <a class="page-link" href="/orderdetails?page=<%=currentPage+1%>">Next</a>
-                                      </li>
-                                      <% } %>
-                                    </ul>
-                                  </nav>
-                                  <% } %>
                         </div>
+                        <div class="row mb-50">
+                            <div class="col-lg-6 col-md-12">
+                                
+                                <div class="mb-30 mt-50">
+                                    <div class="heading_s1 mb-3">
+                                        <!-- <h4>Apply Coupon</h4> -->
+                                    </div>
+                                    
+                                    <div class="total-amount">
+                                        <div class="left">
+                                            <div class="coupon">
+                                              <div class="card mt-0 mb-3 mb-lg-0 black-border">
+                                               
+                                                <div class="card-body" style="color: white;">
+                                                  <h4>ordered Address</h4>
+                                                   
+                                                    <p style="color: black;">
+                                                        <%= order[0].address.name %> <br>
+                                                        <%= order[0].address.mobile %> <br>
+                                                        <%= order[0].address.house %> ,
+                                                        <%= order[0].address.city %> <br>
+                                                      pincode: <%= order[0].address.pincode %> <br>
+                                                        <%= order[0].address.state %> <br>
+                                                        <%= order[0].address.country %>. <br>
+                                                    </p>
+                                                </div>
+                                        
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-6 col-md-12">
+                                <div class="border p-md-4 p-30 border-radius cart-totals">
+                                    <div class="heading_s1 mb-3">
+                                        <h4>order Totals</h4>
+                                    </div>
+                                    <div class="table-responsive">
+                                       
+                                        <table class="table">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="cart_total_label">Total Amount</td>
+                                                    <td class="cart_total_amount"><span class="font-lg fw-900 text-brand" id="firstotal">₹<%=order[0].totalAmount %></span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="cart_total_label">Shipping</td>
+                                                    <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> Free Shipping</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="cart_total_label">Total</td>
+                                                    <td class="cart_total_amount"><strong><span class="font-xl fw-900 text-brand"  id="secondtotal">₹<%=order[0].totalAmount %></span></strong></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                       
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
                     </div>
                 </div>
             </div>
-            
-            
-            
-            
         </section>
-    </main>
-    
-    <footer class="main">
+    </main>           
+    <div class="dropdown-divider"></div>
+                          
+                        </div>
+ 
+    <footer class="main main mb-50">
         <section class="newsletter p-30 text-white wow fadeIn animated">
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-lg-7 mb-md-3 mb-lg-0">
                         <div class="row align-items-center">
                             <div class="col flex-horizontal-center">
-                                <img class="icon-email" src="public/assets/imgs/theme/icons/icon-email.svg" alt="">
+                                <img class="icon-email" src="/public/assets/imgs/theme/icons/icon-email.svg" alt="">
                                 <h4 class="font-size-20 mb-0 ml-3">Sign up to Newsletter</h4>
                             </div>
                             <div class="col my-4 my-md-0 des">
@@ -867,7 +916,7 @@
                     <div class="col-lg-4 col-md-6">
                         <div class="widget-about font-md mb-md-5 mb-lg-0">
                             <div class="logo logo-width-1 wow fadeIn animated">
-                                <a href="index.html"><img src="public/assets/imgs/theme/logo.svg" alt="logo"></a>
+                                <a href="index.html"><img src="/public/assets/my/logo3.png" alt="logo"></a>
                             </div>
                             <h5 class="mt-20 mb-10 fw-600 text-grey-4 wow fadeIn animated">Contact</h5>
                             <p class="wow fadeIn animated">
@@ -881,11 +930,11 @@
                             </p>
                             <h5 class="mb-10 mt-30 fw-600 text-grey-4 wow fadeIn animated">Follow Us</h5>
                             <div class="mobile-social-icon wow fadeIn animated mb-sm-5 mb-md-0">
-                                <a href="#"><img src="public/assets/imgs/theme/icons/icon-facebook.svg" alt=""></a>
-                                <a href="#"><img src="public/assets/imgs/theme/icons/icon-twitter.svg" alt=""></a>
-                                <a href="#"><img src="public/assets/imgs/theme/icons/icon-instagram.svg" alt=""></a>
-                                <a href="#"><img src="public/assets/imgs/theme/icons/icon-pinterest.svg" alt=""></a>
-                                <a href="#"><img src="public/assets/imgs/theme/icons/icon-youtube.svg" alt=""></a>
+                                <a href="#"><img src="/public/assets/imgs/theme/icons/icon-facebook.svg" alt=""></a>
+                                <a href="#"><img src="/public/assets/imgs/theme/icons/icon-twitter.svg" alt=""></a>
+                                <a href="#"><img src="/public/assets/imgs/theme/icons/icon-instagram.svg" alt=""></a>
+                                <a href="#"><img src="/public/assets/imgs/theme/icons/icon-pinterest.svg" alt=""></a>
+                                <a href="#"><img src="/public/assets/imgs/theme/icons/icon-youtube.svg" alt=""></a>
                             </div>
                         </div>
                     </div>
@@ -917,13 +966,13 @@
                             <div class="col-md-8 col-lg-12">
                                 <p class="wow fadeIn animated">From App Store or Google Play</p>
                                 <div class="download-app wow fadeIn animated">
-                                    <a href="#" class="hover-up mb-sm-4 mb-lg-0"><img class="active" src="public/assets/imgs/theme/app-store.jpg" alt=""></a>
-                                    <a href="#" class="hover-up"><img src="public/assets/imgs/theme/google-play.jpg" alt=""></a>
+                                    <a href="#" class="hover-up mb-sm-4 mb-lg-0"><img class="active" src="/public/assets/imgs/theme/app-store.jpg" alt=""></a>
+                                    <a href="#" class="hover-up"><img src="/public/assets/imgs/theme/google-play.jpg" alt=""></a>
                                 </div>
                             </div>
                             <div class="col-md-4 col-lg-12 mt-md-3 mt-lg-0">
                                 <p class="mb-20 wow fadeIn animated">Secured Payment Gateways</p>
-                                <img class="wow fadeIn animated" src="public/assets/imgs/theme/payment-method.png" alt="">
+                                <img class="wow fadeIn animated" src="/public/assets/imgs/theme/payment-method.png" alt="">
                             </div>
                         </div>
                     </div>
@@ -951,7 +1000,7 @@
         <div class="preloader d-flex align-items-center justify-content-center">
             <div class="preloader-inner position-relative">
                 <div class="text-center">
-                    <h5 class="mb-5">Now Loading</h5>
+                    <h5 class="mb-10">Now Loading</h5>
                     <div class="loader">
                         <div class="bar bar1"></div>
                         <div class="bar bar2"></div>
@@ -962,36 +1011,36 @@
         </div>
     </div>
     <!-- Vendor JS-->
-    <script src="public/assets/js/vendor/modernizr-3.6.0.min.js"></script>
-    <script src="public/assets/js/vendor/jquery-3.6.0.min.js"></script>
-    <script src="public/assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
-    <script src="public/assets/js/vendor/bootstrap.bundle.min.js"></script>
-    <script src="public/assets/js/plugins/slick.js"></script>
-    <script src="public/assets/js/plugins/jquery.syotimer.min.js"></script>
-    <script src="public/assets/js/plugins/wow.js"></script>
-    <script src="public/assets/js/plugins/jquery-ui.js"></script>
-    <script src="public/assets/js/plugins/perfect-scrollbar.js"></script>
-    <script src="public/assets/js/plugins/magnific-popup.js"></script>
-    <script src="public/assets/js/plugins/select2.min.js"></script>
-    <script src="public/assets/js/plugins/waypoints.js"></script>
-    <script src="public/assets/js/plugins/counterup.js"></script>
-    <script src="public/assets/js/plugins/jquery.countdown.min.js"></script>
-    <script src="public/assets/js/plugins/images-loaded.js"></script>
-    <script src="public/assets/js/plugins/isotope.js"></script>
-    <script src="public/assets/js/plugins/scrollup.js"></script>
-    <script src="public/assets/js/plugins/jquery.vticker-min.js"></script>
-    <script src="public/assets/js/plugins/jquery.theia.sticky.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    <script src="/public/assets/js/vendor/modernizr-3.6.0.min.js"></script>
+    <script src="/public/assets/js/vendor/jquery-3.6.0.min.js"></script>
+    <script src="/public/assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+    <script src="/public/assets/js/vendor/bootstrap.bundle.min.js"></script>
+    <script src="/public/assets/js/plugins/slick.js"></script>
+    <script src="/public/assets/js/plugins/jquery.syotimer.min.js"></script>
+    <script src="/public/assets/js/plugins/wow.js"></script>
+    <script src="/public/assets/js/plugins/jquery-ui.js"></script>
+    <script src="/public/assets/js/plugins/perfect-scrollbar.js"></script>
+    <script src="/public/assets/js/plugins/magnific-popup.js"></script>
+    <script src="/public/assets/js/plugins/select2.min.js"></script>
+    <script src="/public/assets/js/plugins/waypoints.js"></script>
+    <script src="/public/assets/js/plugins/counterup.js"></script>
+    <script src="/public/assets/js/plugins/jquery.countdown.min.js"></script>
+    <script src="/public/assets/js/plugins/images-loaded.js"></script>
+    <script src="/public/assets/js/plugins/isotope.js"></script>
+    <script src="/public/assets/js/plugins/scrollup.js"></script>
+    <script src="/public/assets/js/plugins/jquery.vticker-min.js"></script>
+    <script src="/public/assets/js/plugins/jquery.theia.sticky.js"></script>
+    <script src="/public/assets/js/plugins/jquery.elevatezoom.js"></script>
     <!-- Template  JS -->
-    <script src="public/assets/js/maind134.js?v=3.4"></script>
-    <!-- <script src="/public/js/orderDetail.js"></script> -->
+    <script src="/public/assets/js/maind134.js?v=3.4"></script>
+    <script src="/public/assets/js/shopd134.js?v=3.4"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="https://cdn.jsdelivr.net/npm/easyinvoice/dist/easyinvoice.min.js"></script>
-    <script>
 
-function dldInvoice(orderid, productDocid) {
+</body>
+<script>
+  function dldInvoice(orderid, productDocid) {
   $.ajax({
     url: '/invoicedownload',
     method: 'POST',
@@ -1001,7 +1050,7 @@ function dldInvoice(orderid, productDocid) {
         const details = response.data;
         const currentDate = new Date(); // Create a new Date object representing the current date and time
         const formattedDate = currentDate.toLocaleDateString();
-        console.log(formattedDate)
+        // console.log(formattedDate)
         // Prepare data for creating invoice
         var data = {
           apiKey: "free",
@@ -1039,7 +1088,6 @@ function dldInvoice(orderid, productDocid) {
             currency: "INR"
           }
         };
-
         // Create the invoice
         easyinvoice.createInvoice(data, function (result) {
           
@@ -1055,65 +1103,9 @@ function dldInvoice(orderid, productDocid) {
     }
   });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         function goBack() {
             window.history.back();
         }
-
   function cancelOrder(orderid, productDocid, quantity, size, productid) {
             
     swal({
@@ -1131,7 +1123,7 @@ function dldInvoice(orderid, productDocid) {
                 method: 'PATCH', 
                 data: { orderid: orderid, productDocid: productDocid, quantity: quantity, size: size,productid:productid }, 
                 success: function(response) {
-                    console.log(response)
+                    // console.log(response)
                     if (response.success === true) {
                         window.location.reload();
                         swal("Success", "Order canceled!", "success");
@@ -1145,13 +1137,13 @@ function dldInvoice(orderid, productDocid) {
                 }
             });
         } else {
-            swal("Cancelled", "Your order is safe :)", "info");
+            swal("not Cancelled", "Your order is safe :)", "info");
         }
     });
 }
 function returnOrder(orderid,productDocid){
-    console.log("productDocId",productDocid)
-    console.log("orderid",orderid)
+    // console.log("productDocId",productDocid)
+    // console.log("orderid",orderid)
     swal({
         title: "Return",
         text: "Are you sure you want to return this order?",
@@ -1166,7 +1158,7 @@ function returnOrder(orderid,productDocid){
                 method: 'PATCH', 
                 data: { orderid: orderid, productDocid: productDocid}, 
                 success: function(response) {
-                    console.log(response)
+                    // console.log(response)
                     if (response.success === true) {
                         window.location.reload();
                         swal("Success", "Return process intiated", "success");
@@ -1180,24 +1172,12 @@ function returnOrder(orderid,productDocid){
                 }
             });
         } else {
-            swal("Cancelled", "Your order is safe :)", "info");
+            swal("not cancelled", "Your order is safe :)", "info");
         }
     });
-
 }
+</script>
 
 
-
-
-
-
-
-
-    </script>
-    
-    
-</body>
-
-
-<!-- Mirrored from wp.alithemes.com/html/evara/evara-frontend/page-account.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 15 Jul 2023 10:11:15 GMT -->
+<!-- Mirrored from wp.alithemes.com/html/evara/evara-frontend/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 15 Jul 2023 10:09:48 GMT -->
 </html>

@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt")
 
 
 
-const addAddress = async(req,res)=>{
+const addAddress = async(req,res,next)=>{
     try {
      
         const id = req.query.id
@@ -29,12 +29,14 @@ const addAddress = async(req,res)=>{
             res.redirect(req.session.prevUrl||"/profile")
       
     } catch (error) {
-      console.log(error.message)
+      console.error("Error in  addaddress:", error);
+   
+    next(error)
     }
   }
 
 
-const editAddresspage =  async(req,res)=>{
+const editAddresspage =  async(req,res,next)=>{
   try {
     if (req.session.user) {
       const addressId = req.query.id
@@ -51,12 +53,14 @@ const editAddresspage =  async(req,res)=>{
     
     
   } catch (error) {
-    console.log(error.message)
+    console.error("Error in  editaddresspage:", error);
+   
+    next(error)
     
   }
 }
 
-const editaddress = async(req,res)=>{
+const editaddress = async(req,res,next)=>{
   try {
     const addressId = req.query.id
     const userId = req.session.user._id
@@ -83,13 +87,15 @@ const editaddress = async(req,res)=>{
 
                res.redirect('/profile')
   } catch (error) {
-    console.log(error.message)
+    console.error("Error in  editaddress:", error);
+   
+    next(error)
   }
 }
 
-const changePassword = async(req,res)=>{
+const changePassword = async(req,res,next)=>{
   try {
-    console.log("in chnge password")
+    // console.log("in chnge password")
     if (req.session.user) {
       
       const userId = req.session.user._id
@@ -104,9 +110,7 @@ const changePassword = async(req,res)=>{
       if (passwordCheck) {
         const updated =  await userModel.updateOne({ _id: userId }, { $set: { password: newPassword } });
        
-        res.redirect("/profile")
-      }else{
-        console.log("pass incorrect")
+       return res.redirect("/profile")
       }
 
     }else{
@@ -114,12 +118,14 @@ const changePassword = async(req,res)=>{
     }
     
   } catch (error) {
-    console.log(error.message)
+    console.error("Error in  changepassword:", error);
+   
+    next(error)
   }
 
 }
 
-const deleteAddress = async (req,res)=>{
+const deleteAddress = async (req,res,next)=>{
   try {
     const addressId = req.query.id
     const userId = req.session.user._id
@@ -133,12 +139,14 @@ const deleteAddress = async (req,res)=>{
       res.json({success:false})
      }
   } catch (error) {
-    console.log(error.message)
+    console.error("Error in  deleteaddress:", error);
+   
+    next(error)
   }
 
 }
 
-const addAddressPage = async(req,res)=>{
+const addAddressPage = async(req,res,next)=>{
   try {
 
     if(req.session.user){
@@ -149,15 +157,17 @@ const addAddressPage = async(req,res)=>{
       res.redirect("/login")
     }
   } catch (error) {
-    console.log(error.message)
+    console.error("Error in  addaddresspage:", error);
+   
+    next(error)
   }
 }
 
 
 
-const changeEmailid = async(req,res)=>{
+const changeEmailid = async(req,res,next)=>{
   try {
-    console.log("in change email id")
+    // console.log("in change email id")
       const userId = req.session.user._id
       const user = await userModel.findById(userId)
       const newemail = req.body.newemail
@@ -170,19 +180,21 @@ const changeEmailid = async(req,res)=>{
       }else{
         req.flash("errormessage","cannot update the existing email ,Enter a new Email")
         res.redirect('/profile')
-        console.log("email notupdated")
+        // console.log("email notupdated")
       }
     }else{
       req.flash("errormessage","otp verification failed cannot update the email")
       res.redirect('/profile')
-      console.log("email otpmatch")
+      // console.log("email otpmatch")
     }
       
       
      
     
   } catch (error) {
-    console.log(error.message)
+    console.error("Error in  changeemailid:", error);
+   
+    next(error)
   }
 }
 

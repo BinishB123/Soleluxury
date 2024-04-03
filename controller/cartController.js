@@ -5,11 +5,11 @@ const cartHelper = require("../helper/cartHelper")
 const offerHelper = require("../helper/offerHelper")
 const {ObjectId} = require('mongodb')
 
-const addToCart = async (req, res) => {
+const addToCart = async (req, res,next) => {
     try {
         if (req.session.user) {
 
-      console.log("call come to add to cart")
+    //   console.log("call come to add to cart")
             const productId = req.query.id;
             const size = req.query.size
             const userId = req.session.user._id;
@@ -62,14 +62,15 @@ const addToCart = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal server error' });
+        next(error)
     }
 };
 
 
 
-const sizeproductChecker = async(req,res)=>{
+const sizeproductChecker = async(req,res,next)=>{
     try {
-        console.log("in  size chcker")
+        // console.log("in  size chcker")
      const userId = req.session.user._id 
      const size = req.query.size
      const productId = req.query.id
@@ -93,14 +94,16 @@ const sizeproductChecker = async(req,res)=>{
 
         
     } catch (error) {
-        console.log(error.message)
+        console.error("Error in logout:", error);
+       
+        next(error)
     }
 }
 
 
 
 
-const removeProductFromTheCart = async(req,res)=>{
+const removeProductFromTheCart = async(req,res,next)=>{
     try {
         const productid = req.query.id;
        
@@ -121,11 +124,13 @@ const removeProductFromTheCart = async(req,res)=>{
           }
 
     } catch (error) {
-        console.log(error.message)
+        console.error("Error in logout:", error);
+   
+    next(error)
     }
 }
 
-const quantityIncrementOrDecrement = async (req, res) => {
+const quantityIncrementOrDecrement = async (req, res,next) => {
     try {
         const productId = req.query.productid;
         const size = req.query.productSize;
@@ -174,7 +179,9 @@ const quantityIncrementOrDecrement = async (req, res) => {
             
         
     } catch (error) {
-        console.log(error.message);
+        console.error("qtydec:", error);
+      
+       next(error)
     }
 };
 
@@ -185,7 +192,9 @@ const clearingCart = (userId)=>{
             const result = await cartModel.deleteOne({userId:userId});
             resolve(result)
         } catch (error) {
-            console.log(error.message)
+            console.error("Error in clearingcart:", error);
+      
+       next(error)
         }
     })
 }

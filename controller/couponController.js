@@ -2,7 +2,7 @@ const couponModel = require("../model/couponModel");
 const ObjectId = require("mongoose").Types.ObjectId
 const cartModel = require("../model/cartModel")
 //admin coupon
-const couponPage = async (req, res) => {
+const couponPage = async (req, res,next) => {
   try {
     const errorMessage = req.flash("error");
 
@@ -10,11 +10,13 @@ const couponPage = async (req, res) => {
 
     res.render("coupon", { errorMessage: errorMessage, coupons: coupons });
   } catch (error) {
-    console.log(error.message);
+    console.error("Error in couponpage:", error);
+   
+    next(error)
   }
 };
 
-const addCoupon = async (req, res) => {
+const addCoupon = async (req, res,next) => {
   try {
     let couponName = req.body.couponName;
     const startDate = req.body.startDate;
@@ -22,7 +24,7 @@ const addCoupon = async (req, res) => {
     const Discount = req.body.Discount;
     couponName = couponName.trim();
     const sameName = await couponModel.findOne({ name: couponName });
-    console.log("same name",sameName)
+    // console.log("same name",sameName)
 
     if (sameName) {
       req.flash("error", "coupon exist with same name");
@@ -38,11 +40,13 @@ const addCoupon = async (req, res) => {
       res.redirect("/admin/coupon");
     }
   } catch (error) {
-    console.log(error.message);
+    console.error("Error in addcoupon:", error);
+   
+    next(error)
   }
 };
 
-const editCouponPage = async (req, res) => {
+const editCouponPage = async (req, res,next) => {
   try {
     const id = req.query.id;
     const coupon = await couponModel.findOne({ _id: id });
@@ -57,7 +61,9 @@ const editCouponPage = async (req, res) => {
       errorMessage: errorMessage,
     });
   } catch (error) {
-    console.log(error.message);
+    console.error("Error in editcoupon:", error);
+   
+    next(error)
   }
 };
 
@@ -69,7 +75,7 @@ function formatDate(dateString) {
   return `${year}-${month}-${day}`;
 }
 
-const updatecoupon = async (req, res) => {
+const updatecoupon = async (req, res,next) => {
   try {
     let couponName = req.body.couponName.trim();
     const startDate = req.body.startDate;
@@ -80,7 +86,7 @@ const updatecoupon = async (req, res) => {
       name: couponName,
       _id: { $ne: req.query.id },
     });
-    console.log("same name",sameName)
+    // console.log("same name",sameName)
 
     if (sameName) {
       req.flash("error", "Coupon exists with the same name");
@@ -96,13 +102,14 @@ const updatecoupon = async (req, res) => {
 
     res.redirect("/admin/coupon");
   } catch (error) {
-    console.log(error.message);
-    res.status(500).send("Internal Server Error");
+    console.error("Error in updatecoupon:", error);
+   
+    next(error)
   }
 };
 
 ///USER COUPON MANAGEMENT
-const couponUse = async (req, res) => {
+const couponUse = async (req, res,next) => {
   try {
     const couponId = req.query.id;
     const userid = req.session.user._id
@@ -124,7 +131,9 @@ const couponUse = async (req, res) => {
 
     
   } catch (error) {
-    console.log(error.message);
+    console.error("Error in couponuse:", error);
+   
+    next(error)
   }
 };
 

@@ -13,18 +13,18 @@ function generateSixDigitNumber() {
   });  
   
   const sendOtp = async (req, res) => {
-    console.log("Request came to send the OTP");
+    // console.log("Request came to send the OTP");
   
     try {      
-      console.log("Request came to send the OTP");   
+      // console.log("Request came to send the OTP");   
   
       const otp = generateSixDigitNumber();
       req.session.otpExpiry = Date.now()+30*1000
       
-      console.log(otp, "OTP generated");
+      // console.log(otp, "OTP generated");
       const userEmail = req.body.email;
       req.session.userEmail = userEmail
-      console.log(userEmail+" otp sending to this email");
+      // console.log(userEmail+" otp sending to this email");
   
       if (!userEmail) {
         return res
@@ -42,14 +42,14 @@ function generateSixDigitNumber() {
       // Send email asynchronously without waiting for it to complete
       
       transporter.sendMail(mailOptions, (error) => {
-        console.log("1st")
+        // console.log("1st")
         if (error) {
-          console.log(error);
+          // console.log(error);
           return res.status(500).json({ error: "Error sending OTP email" }); 
         }
-        console.log("otp sended to the user email");
+        // console.log("otp sended to the user email");
       });
-        console.log("2")
+        // console.log("2")
       req.session.otp = otp;
       res.json({ message: "OTP Sent To Your Email ! Check it " });
     } catch (error) {
@@ -63,24 +63,24 @@ function generateSixDigitNumber() {
     
       const sendedOtp = req.session.otp;
       const verifyOtp = req.body.otp;
-      console.log(sendedOtp);
-      console.log(verifyOtp);    
-      console.log("started checking");
+      // console.log(sendedOtp);
+      // console.log(verifyOtp);    
+      // console.log("started checking");
   
       if (sendedOtp === verifyOtp) {
 
         if(Date.now() < req.session.otpExpiry){
-          console.log("otp Entered before time expires")
+          // console.log("otp Entered before time expires")
         req.session.otpmatched = true;
         res.json({ status: true, message: "otp verified" });
         }else{
-          console.log("failed otp verification")
+          // console.log("failed otp verification")
           req.session.otpmatched = false;
           res.json({ status: false, message: "failed" });
         }
       
       } else {
-        console.log("verification fails")
+        // console.log("verification fails")
         req.session.otpmatched = false;
         res.json({ status: false, message: "failed" });
       }

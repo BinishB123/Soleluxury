@@ -2,22 +2,27 @@ const Admin = require("../model/adminModel");
 const orderModel = require("../model/orderModel");
 const DateHelper = require("../helper/dateHelper");
 
-const loginload = async (req, res) => {
-  console.log("Request come to admin  login");
-  if (req.session.admin) {
-    res.redirect("/admin/adminhome");
-  } else {
-    const message = req.flash("errorMessage");
-    res.render("adminlogin", { errorMessage: message });
+const loginload = async (req, res, next) => {
+  try {
+    if (req.session.admin) {
+      res.redirect("/admin/adminhome");
+    } else {
+      const message = req.flash("errorMessage");
+      res.render("adminlogin", { errorMessage: message });
+    }
+  } catch (error) {
+    console.error("Error in loginload:", error);
+    
+    next(error); // Pass the error to the next error-handling middleware
   }
 };
 
-const adminlogin = async (req, res) => {
+const adminlogin = async (req, res,next) => {
   try {
-    console.log("admin login load", req.body.email);
+    // console.log("admin login load", req.body.email);
     const admin = await Admin.findOne({ email: req.body.email });
 
-    console.log(admin);
+    // console.log(admin);
 
     if (admin) {
       // console.log(" /////")
@@ -41,11 +46,13 @@ const adminlogin = async (req, res) => {
     }
   } catch (error) {
     console.log("Error in  admin login: " + error);
-    res.status(500).send("internal server error");
+    
+    next(error)
   }
 };
 
-const adminhome = async (req, res) => {
+const adminhome = async (req, res,next) => {
+  try{
   if (req.session.admin) {
     const category = await orderModel.aggregate([
       { $unwind: "$products" },
@@ -160,47 +167,53 @@ const adminhome = async (req, res) => {
       { $limit: 10 },
     ]);
 
-    let currentDate = new Date();
-    let currentMonth = currentDate.getMonth(); // This will return the month (0-indexed)
-    const currentYe = currentDate.getFullYear();
-    const weeksWithDates = await DateHelper.getWeeksOfMonth(
-      currentYe,
-      currentMonth
-    );
-    const Dates = weeksWithDates.flat();
-    let weeklyDatas = [];
-    let DatNum = [];
-    for (let i = 0; i < Dates.length; i++) {
-      const startDate = Dates[i];
-      const endDate = Dates[i + 1]; // Assuming Dates is an array of date strings
-      DatNum.push(i + 1);
+    // let currentDate = new Date();
+    // let currentMonth = currentDate.getMonth(); // This will return the month (0-indexed)
+    // const currentYe = currentDate.getFullYear();
+    // const weeksWithDates = await DateHelper.getWeeksOfMonth(
+    //   currentYe,
+    //   currentMonth
+    // );
+    // const Dates = weeksWithDates.flat();
+    // let weeklyDatas = [];
+    // let DatNum = [];
+    // for (let i = 0; i < Dates.length; i++) {
+    //   const startDate = Dates[i];
+    //   const endDate = Dates[i + 1]; // Assuming Dates is an array of date strings
+    //   DatNum.push(i + 1);
 
-      const Datas = await orderModel.aggregate([
-        { $unwind: "$products" },
-        {
-          $match: {
-            "products.status": "delivered",
-            orderedOn: { $gte: new Date(startDate), $lt: new Date(endDate) },
-          },
-        },
-        {
-          $group: {
-            _id: "$orderId",
-            totalAmount: { $sum: "$products.productPrice" },
-            totalProducts: { $sum: 1 },
-          },
-        },
-      ]);
+    //   const Datas = await orderModel.aggregate([
+    //     { $unwind: "$products" },
+    //     {
+    //       $match: {
+    //         "products.status": "delivered",
+    //         orderedOn: { $gte: new Date(startDate), $lt: new Date(endDate) },
+    //       },
+    //     },
+    //     {
+    //       $group: {
+    //         _id: "$orderId",
+    //         totalAmount: { $sum: "$products.productPrice" },
+    //         totalProducts: { $sum: 1 },
+    //       },
+    //     },
+    //   ]);
 
-      weeklyDatas.push(Datas);
-    }
+    //   weeklyDatas.push(Datas);
+    // }
 
-    weeklyDatas = weeklyDatas.flat();
-    const weekly = {
-      weeklyDatas,
-      DatNum,
-    };
-    console.log(weeklyDatas)
+    // weeklyDatas = weeklyDatas.flat();
+    // const weekly = {
+    //   weeklyDatas,
+    //   DatNum,
+    // };
+    // console.log("This is yearly report: ",yearlyReport)
+    // console.log("This is category: ",category);
+    // console.log("This is brand: ",brand);
+    // console.log("This is salesreport: ",salesReport);
+    // console.log("This is yearlyReport:",yearlyReport);
+    // console.log("This is bestselling product", bestSellingProduct);
+    // console.log(weeklyDatas)
     res.render("adminhome", {
       category: category,
       order: orders,
@@ -208,19 +221,26 @@ const adminhome = async (req, res) => {
       salesReport: salesReport,
       yearlyReport: yearlyReport,
       bestSellingProduct: bestSellingProduct,
-      weeklyDatas: weekly,
+      
     });
   } else {
     res.redirect("/admin");
   }
+}catch(error){
+    console.error("Error in adminhome:", error);
+    
+    next(error)
+}
 };
 
-const logout = (req, res) => {
+const logout = (req, res,next) => {
   try {
     req.session.admin = null;
     res.redirect("/admin");
   } catch (error) {
-    console.log(error);
+    console.error("Error in logout:", error.message);
+    
+    next(error)
   }
 };
 

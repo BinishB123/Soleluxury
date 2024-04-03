@@ -3,7 +3,7 @@ const userModel = require("../model/userModel");
 const walletModel = require("../model/walletModel");
 const objectId = require("mongoose").Types.ObjectId;
 
-const orderList = async (req, res) => {
+const orderList = async (req, res,next) => {
   try {
     const usersWhoOrdered = await orderModel.aggregate([
       { $sort: { orderedOn: -1 } },
@@ -29,11 +29,13 @@ const orderList = async (req, res) => {
       currentPage: currentPage,
     });
   } catch (error) {
-    console.log(error.message);
+    console.error("Error in logout:", error);
+    
+    next(error)
   }
 };
 
-const individualOrderDetail = async (req, res) => {
+const individualOrderDetail = async (req, res,next) => {
   try {
     const orderId = req.query.id;
 
@@ -62,11 +64,13 @@ const individualOrderDetail = async (req, res) => {
 
     res.render("adminOrderDetail", { order: order });
   } catch (error) {
-    console.log(error.message);
+    console.error("Error in logout:", error);
+    
+    next(error)
   }
 };
 
-const statusUpdating = async (req, res) => {
+const statusUpdating = async (req, res,next) => {
   try {
     const status = req.query.status;
     const orderid = req.query.orderid;
@@ -112,7 +116,7 @@ const statusUpdating = async (req, res) => {
           },
           { $inc: { totalAmount: -productPrice } }
         );
-        console.log(updateTotalAmount);
+        // console.log(updateTotalAmount);
 
         const checker = await orderModel.findOne({
           _id: new objectId(orderid),
@@ -136,7 +140,7 @@ const statusUpdating = async (req, res) => {
               $inc: { balance: checker.products[0].productPrice },
             }
           );
-          console.log("updatinf in if ", updating);
+          // console.log("updatinf in if ", updating);
         } else {
           const creating = await walletModel.create({
             userid: new objectId(order.user),
@@ -149,7 +153,7 @@ const statusUpdating = async (req, res) => {
               },
             ],
           });
-          console.log("creating in else", creating);
+          // console.log("creating in else", creating);
         }
       }
 
@@ -158,7 +162,9 @@ const statusUpdating = async (req, res) => {
       res.json({ success: false, message: "could n't update status" });
     }
   } catch (error) {
-    console.log(error.message);
+    console.error("Error in logout:", error);
+    
+    next(error)
   }
 };
 

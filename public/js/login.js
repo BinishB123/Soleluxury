@@ -36,17 +36,15 @@ emailid.addEventListener('blur',emailvalidate)
 
 regform.addEventListener('submit', function (e) {
 
-    console.log('Form submitted'); 
+    // console.log('Form submitted'); 
 
     emailvalidate();
     
-    console.log('After validation'); 
+    // console.log('After validation'); 
 
     if ( error2.innerHTML) {
-        console.log('Validation failed'); 
-        e.preventDefault();
-    } else {
-        console.log('Validation passed');
-    }
+        // console.log('Validation failed'); 
+       return e.preventDefault();
+    } 
 });
                      

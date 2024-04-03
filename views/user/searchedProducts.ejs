@@ -18,6 +18,8 @@
     <!-- Template CSS -->
     <link rel="stylesheet" href="/public/assets/css/maind134.css?v=3.4">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
 
 </head>
 
@@ -179,7 +181,7 @@
                         <div class="header-action-right">
                             <div class="header-action-2">
                                 <div class="header-action-icon-2">
-                                    <a href="shop-wishlist.html">
+                                    <a href="/wishlist">
                                         <img class="svgInject" alt="Evara" src="/public/assets/imgs/theme/icons/icon-heart.svg">
                                     </a>
                                 </div>
@@ -833,6 +835,8 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-3">
+                        <a class="btn btn-sm btn-dark text-center" href="/nav?clicked=shop" style="width: 100%; background-color: black;">clear filter</a>
+
                         <div class="widget-category mb-30">
                             <h5 class="section-title style-1 mb-30 wow fadeIn animated">Category</h5>
                             <ul class="categories">
@@ -878,6 +882,7 @@
                                        </li>
                                 
                             </ul>
+
                         </div>  
                         <!-- <div class="widget-category mb-30">
                             <h5 class="section-title style-1 mb-30 wow fadeIn animated">Price Range</h5>
@@ -929,7 +934,7 @@
                                                 </div>
                                                 <div class="product-action-1">
                                                     <!-- <a aria-label="Quick view" class="action-btn hover-up" data-bs-toggle="modal" data-bs-target="#quickViewModal"><i class="fi-rs-eye"></i></a> -->
-                                                    <a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
+                                                    <a aria-label="Add To Wishlist" class="action-btn hover-up" ><i class="fi-rs-heart" onclick="addToWishlist('<%=product[i]._id%>')"></i></a>
                                                     <!-- <a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i class="fi-rs-shuffle"></i></a> -->
                                                 </div>
                                                 <!-- <div class="product-badges product-badges-position product-badges-mrg">
@@ -951,7 +956,7 @@
                                                     <span class="old-price" style="color: black;">₹<%=product[i].regularPrice %></span>
                                                 </div>
                                                 <div class="product-action-1 show">
-                                                    <a aria-label="Add To Cart" class="action-btn hover-up" href="shop-cart.html"><i class="fi-rs-shopping-bag-add"></i></a>
+                                                    <!-- <a aria-label="Add To Cart" class="action-btn hover-up" href="shop-cart.html"><i class="fi-rs-shopping-bag-add"></i></a> -->
                                                 </div>
                                             </div>
                                         </div>
@@ -990,7 +995,7 @@
                         </div>
                         <% } %>
                     <% } else { %>
-                        <% console.log("okkk"); %>
+                        
                         <div class="pagination">
                             <% if (currentPage > 1) { %>
                                 <a class="btn btn-sm" href="<%= baseRoute %>?page=<%= currentPage - 1 %><%= additionalQueryParameter ? `&${additionalQueryParameter}` : '' %>" style="color: white; background-color: black;">Previous</a>
@@ -1159,7 +1164,42 @@
     <script src="/public/assets/js/maind134.js?v=3.4"></script>
     <script src="/public/assets/js/shopd134.js?v=3.4"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
     <script>
+ function addToWishlist(productId) {
+    const id = productId;
+    // console.log(id);
+    $.ajax({
+        url: `/addtowishlist?id=${id}`,
+        method: 'POST',
+        contentType: 'application/json',
+        success: function(response) {
+            if (response.status == false) {
+                Toastify({
+                    text: "product already added to wishlist",
+                    backgroundColor: "linear-gradient(to right, #ff7e5f, #feb47b)",
+                    duration: 3000,
+                    position: "center" 
+                 }).showToast();
+
+            }else{
+                Toastify({
+                    text: "product  added to wishlist",
+                    backgroundColor: "green",
+                    duration: 3000,
+                    position: "center" 
+                 }).showToast();
+
+            }
+        },
+        error: function(error) {
+            // Redirect to login page if there's an error
+            window.location.href = '/login';
+        }
+    });
+}
+
 
 // function priceFilter(clicked) {
 //     const productData = document.getElementById("productData").value;

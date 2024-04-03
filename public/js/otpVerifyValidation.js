@@ -5,7 +5,7 @@ function validateEmail(email) {
 }
 
 function otpSend() {
-    console.log("clicked send otp")
+    // console.log("clicked send otp")
     const emailInput = document.getElementById("newemail");
 
     let email = emailInput.value;
@@ -15,7 +15,7 @@ function otpSend() {
 
     
     const isValidEmail = validateEmail(emailInput.value);
-    console.log(isValidEmail)
+    // console.log(isValidEmail)
 
 
     if (!isValidEmail && emailInput.value !== '') {
@@ -35,7 +35,7 @@ function otpSend() {
 
 
     if (isValidEmail) {
-        console.log("otp sending")
+        // console.log("otp sending")
        
         $.ajax({
             url: `/sendotp`,
@@ -107,7 +107,7 @@ function verifyOTP() {
       const emailInput = document.getElementById("newemail");
 
       let email = emailInput.value;
-      console.log(email)
+      // console.log(email)
   
       $.ajax({
         url: "/verify",

@@ -6,7 +6,7 @@ const findOffer = (products) => {
     try {
       const date = new Date();
       const activeProducts = await   activeProductOffer(date)
-      console.log("activeproducts",activeProducts)
+      // console.log("activeproducts",activeProducts)
       const activeCategories = await activeCategoryOffer(date)
     //   console.log("active category",activeCategories)
       
@@ -160,7 +160,7 @@ const SearchfindOffer = (products) => {
       try {
         const date = new Date();
         const activeProducts = await   activeProductOffer(date)
-        console.log("activeproducts",activeProducts)
+        // console.log("activeproducts",activeProducts)
         const activeCategories = await activeCategoryOffer(date)
       //   console.log("active category",activeCategories)
         

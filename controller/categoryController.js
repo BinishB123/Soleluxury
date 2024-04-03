@@ -2,23 +2,25 @@ const Category = require('../model/categoryModel')
 const categoryModel = require('../model/categoryModel')
 
 
-const categoryPage =  async(req,res)=>{
+const categoryPage =  async(req,res,next)=>{
         
       try{
           const category= await categoryModel.find({})
-          console.log(category)
+          // console.log(category)
           const message = req.flash("message")
           res.render("categorylist",{category:category,message:message})
 
 
       }catch(error){
-        console.log(error.message)
+        console.error("Error in categorypage:", error);
+       
+        next(error)
       }
 
 }
 
 
-const categoryEditPage = async(req,res)=>{
+const categoryEditPage = async(req,res,next)=>{
   try {
 
       const id = req.query.id
@@ -27,16 +29,18 @@ const categoryEditPage = async(req,res)=>{
       res.render("editcategory",{category:category,message:message})
     
   } catch (error) {
-    console.log(error.message)
+    console.error("Error in categoryeditpage:", error);
+   
+    next(error)
     
   }
 }
 
-const updateCategory = async (req, res) => {
+const updateCategory = async (req, res,next) => {
   try {
     const id = req.params.id;
     const category = req.body;
-    console.log(id)
+    // console.log(id)
     const existingCategory = await categoryModel.findOne({ name: category.categoryName });
 
     if (!existingCategory||existingCategory._id.toString() === id) {
@@ -52,24 +56,27 @@ const updateCategory = async (req, res) => {
       res.redirect(`/admin/editCategory?id=${id}`);
     }
   } catch (error) {
-    console.error("Error updating category:", error.message);
-    req.flash("message", "Error updating category");
-    res.redirect("/admin/category");
+    console.error("Error in update category:", error);
+   
+    next(error)
+   
   }
 };
-const categoryAddPage = async(req,res)=>{
+const categoryAddPage = async(req,res,next)=>{
   try {
     const message = req.flash("message")
     res.render("addcategory",{message:message})
          
   } catch (error) {
-     console.log(error.message)
+    console.error("Error in categoryaddpage:", error);
+   
+    next(error)
   }
 }
 
-const addToCategory = async(req,res)=>{
+const addToCategory = async(req,res,next)=>{
   try {
-    console.log("now at add to category")
+    // console.log("now at add to category")
       const name = req.body.categoryName;
       const description = req.body.description
       
@@ -92,19 +99,21 @@ const addToCategory = async(req,res)=>{
        }
     
   } catch (error) {
-    console.log(error.message)
+    console.error("Error in addtocategory:", error);
+   
+    next(error)
   }
 }
 
 
 
-const unlistorlist = async (req, res) => {
+const unlistorlist = async (req, res,next) => {
   try {
-      console.log("req for list or unlist");
+      // console.log("req for list or unlist");
       const id = req.query.id;
-      console.log("/////" + id);
+      // console.log("/////" + id);
       const category = await categoryModel.findById(id);
-      console.log(category);
+      // console.log(category);
 
       if (category.islisted === true) {
           await categoryModel.findByIdAndUpdate(id, {
@@ -121,8 +130,9 @@ const unlistorlist = async (req, res) => {
 
       
   } catch (error) {
-      console.log(error.message);
-      res.json({ success: false, message: error.message }); 
+    console.error("Error in categorylistorunlist:", error);
+   
+    next(error)
   }
 };
 

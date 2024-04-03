@@ -1000,8 +1000,8 @@
 
  function sizeSelection(size, productId) {
     sizeClicked = size
-    console.log(sizeClicked)
-    console.log(productId)
+    // console.log(sizeClicked)
+    // console.log(productId)
     
     $.ajax({
         url: `/size/${productId}/${size}`,
@@ -1011,7 +1011,7 @@
             const messageDisplay = document.getElementById(`messageDisplay${productId}`);
           const size = response.message
               countOfProduct = size
-          console.log(size)
+        //   console.log(size)
          if(size!= undefined){
          if (response.message === 0) {
              
@@ -1056,7 +1056,7 @@
 
 
 function addToCart(productId){
-    console.log(sizeClicked)
+    // console.log(sizeClicked)
    
     if (sizeClicked===undefined) {
         Toastify({

@@ -1021,8 +1021,8 @@
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
   function removeProduct(productid,size) {
-    console.log("remove")
-    console.log(size)
+    // console.log("remove")
+    // console.log(size)
       let confirmationMessage 
        
            confirmationMessage = "Are you sure you want to Remove the product";
@@ -1037,7 +1037,7 @@
                 method: 'PATCH',
                 contentType: 'application/json',
                 success: function(data) {
-                    console.log(data.success)
+                    // console.log(data.success)
                     if (data.success===true) {
                        
                         const divToDelete = document.getElementById(productid)
@@ -1071,7 +1071,7 @@ qtyDownLink.forEach(el=>{
     el.addEventListener('click',()=>{
        const proid = el.dataset.proid
        const prosize = el.dataset.prosize
-       console.log(proid,prosize)
+    //    console.log(proid,prosize)
         inOrDec(proid, prosize, -1)
        
     })
@@ -1083,7 +1083,7 @@ qtyUpLink.forEach(el=>{
     el.addEventListener('click',()=>{
        const proid = el.dataset.proid
        const prosize = el.dataset.prosize
-       console.log(proid,prosize)
+    //    console.log(proid,prosize)
         inOrDec(proid, prosize, 1)
        
     })
@@ -1099,7 +1099,7 @@ function inOrDec(productid, productSize, quantity) {
         method: 'PATCH',
         contentType: 'application/json',
         success: function(data) {
-            console.log(data)
+            // console.log(data)
             if (data.success === true) {
                 
 

@@ -9,7 +9,9 @@ const placeOrder = (body, userId) => {
   return new Promise(async (resolve, reject) => {
     
     try {
-      console.log("im here at place order");
+      // console.log("im here at place order");
+      // console.log(body)
+      
       const couponId = body.couponId
       const userCart = await cartModel.findOne({ userId: userId });
       const user = await userModel.findOne({ _id: userId });
@@ -37,7 +39,7 @@ const placeOrder = (body, userId) => {
         let orginalprice  /// if any coupon applied and after calucluated with the prod price will assign to this
         if (couponId!=undefined) {
           const coupon=await couponModel.findOne({_id:couponId})
-          console.log("coupon kitti", coupon)
+          // console.log("coupon kitti", coupon)
           const discount=coupon.discount
           orginalprice=prod.salePrice-(prod.salePrice/100)*discount  
         }else{
@@ -98,7 +100,7 @@ const placeOrder = (body, userId) => {
        if (couponId!=undefined) {
         
          const addingCouponUsedUser = await couponHelper.addingCouponUsedUser(couponId,userId)
-         console.log("addd",addingCouponUsedUser)
+        //  console.log("addd",addingCouponUsedUser)
          if(addingCouponUsedUser){
            response.status = true;
   

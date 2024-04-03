@@ -60,18 +60,18 @@
                     </div>
                     <div class="col-md-2 col-6">
                         <p>custom Date</p>
-                        <input type="date" id="selectedDate" class="form-control" value="<%= locals.date ? date : '' %>">
+                        <input type="date" id="selectedDate" class="form-control" value="<%= locals.date ? date : '' %>" max="<%= latestDate ? latestDate.toISOString().split('T')[0] : '' %>">
                         
                     </div>
                     <div class="col-md-4 col-12">
                         <div class="row">
                             <div class="col-md-6 col-6 text-center"> <!-- Adjusted column class to make both text and input fields appear on the same line -->
                                 <p>Starting Date</p>
-                                <input type="date" id="startdate" class="form-control" value="<%= locals.startDate ? startDate : '' %>">
+                                <input type="date" id="startdate" class="form-control" value="<%= locals.startDate ? startDate : '' %>"  max="<%= latestDate ? latestDate.toISOString().split('T')[0] : '' %>">
                             </div>
                             <div class="col-md-6 col-6 text-center"> <!-- Adjusted column class to make both text and input fields appear on the same line -->
                                 <p>Ending Date</p>
-                                <input type="date" id="enddate" class="form-control" value="<%= locals.endDate ? endDate : '' %>">
+                                <input type="date" id="enddate" class="form-control" value="<%= locals.endDate ? endDate : '' %>" max="<%= latestDate ? latestDate.toISOString().split('T')[0] : '' %>">
                             </div>
                         </div>
                     </div>
@@ -161,7 +161,7 @@
         <div class="justify-content-center">
             <% let totalRevenue = 0; %>
             <% for (let i = 0; i < data.length; i++) { %>
-                <% console.log(data[i].products.productPrice); %> <!-- Add this line for debugging -->
+                
                 <% totalRevenue += data[i].products.productPrice; %>
             <% } %>
             <h4>Total revenue = ₹ <%= totalRevenue.toFixed(2) %></h4>
@@ -219,7 +219,7 @@ document.getElementById("enddate").addEventListener('change',function(){
 
     function downloadPdf() {
             const element = document.getElementById('myTable')
-            console.log(element);
+            // console.log(element);
             html2pdf().from(element).save();
             
         }

@@ -1,12 +1,12 @@
 const userModel = require("../model/userModel")
 
-const customerList = async (req, res) => {
+const customerList = async (req, res,next) => {
     try {
-        console.log("The request is in customerList");
+        // console.log("The request is in customerList");
 
        
         const userData = await userModel.find();
-        console.log(userData)
+        // console.log(userData)
     
 
         if (userData) {
@@ -23,13 +23,14 @@ const customerList = async (req, res) => {
             res.status(403).send("Access denied");
         }
     } catch (error) {
-        console.log("The error in customer list is: ", error);
-        res.status(500).send("Internal Server Error");
+        console.error("Error in customerlist:", error);
+       
+        next(error)
     }
 };
 
 
-const blockUser = async (req, res) => {
+const blockUser = async (req, res,next) => {
     try {
         const id = req.query.id;
 
@@ -41,12 +42,12 @@ const blockUser = async (req, res) => {
         delete req.session.user
         res.redirect('/admin/customerlist');
     } catch (error) {
-        console.error("Error blocking user:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        console.error("Error in blockuser:", error);
+       next(error)
     }
 };
 
-const UnblockUser = async (req, res) => {
+const UnblockUser = async (req, res,next) => {
     try {
         const id = req.query.id;
 
@@ -57,8 +58,8 @@ const UnblockUser = async (req, res) => {
         await userModel.updateOne({ _id: id }, { $set: { isActive: true } });
         res.redirect('/admin/customerlist');
     } catch (error) {
-        console.error("Error blocking user:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        console.error("Error in categoryaddpage:", error);
+        next(error)
     }
 };
 module.exports = { blockUser };

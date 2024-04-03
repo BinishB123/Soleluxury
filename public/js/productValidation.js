@@ -21,7 +21,7 @@ function submitFormData() {
         success: function(response) {
             if (response.errormessage && response.success === false) {
                 document.getElementById("errormessage").innerHTML = response.errormessage;
-                console.log(response.errormessage);
+                // console.log(response.errormessage);
                 Toastify({
                     text: response.errormessage,
                     backgroundColor: "red",
@@ -37,7 +37,7 @@ function submitFormData() {
             
             if (response.fileerrormessage && response.success === false) {
                 document.getElementById("fileerrormessage").innerHTML = response.fileerrormessage;
-                console.log(response.fileerrormessage);
+                // console.log(response.fileerrormessage);
                 
                 // Hide the error message after 5 seconds
                 setTimeout(function() {
