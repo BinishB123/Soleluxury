@@ -42,21 +42,24 @@ const updateCategory = async (req, res,next) => {
     const category = req.body;
     // console.log(id)
     const existingCategory = await categoryModel.findOne({ name: category.categoryName });
+    // console.log(existingCategory)
 
-    if (!existingCategory||existingCategory._id.toString() === id) {
+    if (!existingCategory&&existingCategory._id.toString() === id) {
+      const v =category.categoryName.trim()
       await categoryModel.findByIdAndUpdate(id, {
-        name: category.categoryName,
+        name: v,
         description: category.description,
       });
 
       req.flash("message", "Category updated successfully");
       res.redirect("/admin/category");
     } else {
+      // console.log("in else")
       req.flash("message", "Category with the same name already exists");
       res.redirect(`/admin/editCategory?id=${id}`);
     }
   } catch (error) {
-    console.error("Error in update category:", error);
+    console.error("Error in update category:", error.message);
    
     next(error)
    
@@ -82,10 +85,10 @@ const addToCategory = async(req,res,next)=>{
       
 
        const categoryExist = await categoryModel.findOne({name:name})
-       
+       const n = name.trim()
        if (!categoryExist) {
             const categoryadded = {
-              name:name,
+              name:n,
               description:description,
               islisted:true
             }   

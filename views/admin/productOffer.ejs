@@ -123,12 +123,12 @@
             </div>
             <div class="mb-3">
               <label for="recipient-name" class="col-form-label">Discount Amount</label>
-              <input type="text" class="form-control" name="discountAmount" id="discount">
+              <input type="text" class="form-control" name="discountAmount" id="discount" >
               <div id="discounterror"></div>
             </div>
             <div class="mb-3">
               <label for="recipient-name" class="col-form-label">Starting date</label>
-              <input type="date" class="form-control" name="startDate" id="startDate" placeholder="DD/MM/YYYY">
+                 <input type="date" class="form-control" name="startDate" id="startDate" placeholder="DD/MM/YYYY">
               <div id="errorstartdate"></div>
             </div>
             <div class="mb-3">
@@ -386,23 +386,14 @@ function validateDiscount() {
 }
 
 
-// Function to validate dates
 function validateDates() {
-    // console.log("Validating dates");
     const startDateParts = startDateInput.value.split('-');
     const endDateParts = endDateInput.value.split('-');
-    // console.log("Start Date Parts:", startDateParts);
-    // console.log("End Date Parts:", endDateParts);
     
-    // Construct Date objects for start and end dates
     const startDateValue = new Date(startDateParts[0], startDateParts[1] - 1, startDateParts[2]);
     const endDateValue = new Date(endDateParts[0], endDateParts[1] - 1, endDateParts[2]);
-    
-    // Get the current date
+  
     const currentDate = new Date(); 
-    
-    // console.log("Start Date Value:", startDateValue);
-    // console.log("End Date Value:", endDateValue);
     
     if (isNaN(startDateValue.getTime()) || isNaN(endDateValue.getTime())) {
         // Display error messages for invalid date format
@@ -412,21 +403,21 @@ function validateDates() {
         endDateError.style.display = "block";
         endDateError.innerHTML = "Invalid date format";
         endDateError.style.color = "red";
-    // } else if (startDateValue < currentDate) {
-    //     // Display error message if start date is in the past
-    //     startDateError.style.display = "block";
-    //     startDateError.innerHTML = "Start date must be greater than or equal to today's date.";
-    //     startDateError.style.color = "red";
-    //     endDateError.style.display = "none";
-    //     endDateError.innerHTML = "";
-    // } else if (startDateValue >= endDateValue) {
-    //     // Display error message if start date is greater than or equal to end date
-    //     startDateError.style.display = "block";
-    //     startDateError.innerHTML = "Start date should be less than end date.";
-    //     startDateError.style.color = "red";
-    //     endDateError.style.display = "block";
-    //     endDateError.innerHTML = "End date should be greater than start date.";
-    //     endDateError.style.color = "red";
+    } else if (startDateValue < currentDate.setHours(0,0,0,0)) {
+        // Display error message if start date is in the past
+        startDateError.style.display = "block";
+        startDateError.innerHTML = "Start date must be greater than or equal to today's date.";
+        startDateError.style.color = "red";
+        endDateError.style.display = "none";
+        endDateError.innerHTML = "";
+    } else if (startDateValue > endDateValue) {
+        // Display error message if start date is greater than or equal to end date
+        startDateError.style.display = "block";
+        startDateError.innerHTML = "Start date should be less than end date.";
+        startDateError.style.color = "red";
+        endDateError.style.display = "block";
+        endDateError.innerHTML = "End date should be greater than start date.";
+        endDateError.style.color = "red";
     } else {
         // Hide error messages if all validations pass
         startDateError.style.display = "none";
@@ -436,28 +427,34 @@ function validateDates() {
     }
 }
 
-// Event listeners  
+
+// Event listeners for input fields
 couponNameInput.addEventListener("blur", validateCouponName);
 discountInput.addEventListener("blur", validateDiscount);
 startDateInput.addEventListener("blur", validateDates);
 endDateInput.addEventListener("blur", validateDates);
 
-couponForm.addEventListener("submit", function (event) {
-    event.preventDefault(); // Prevent form submission
+// Event listener for form submission
+couponForm.addEventListener("submit", function(event) {
+    // Prevent form submission
+    event.preventDefault();
 
     // Perform validation
     validateCouponName();
     validateDiscount();
     validateDates();
 
-    // Log errors, if any
+    // Check if any error messages are displayed
     if (nameError.innerHTML || discountError.innerHTML || startDateError.innerHTML || endDateError.innerHTML) {
-        console.log("Validation failed");
+        // Validation failed, do not submit the form
+        console.log("Validation failed. Please correct the errors.");
     } else {
-        console.log("Validation passed");
-        couponForm.submit(); 
+        // Validation passed, submit the form
+        console.log("Validation passed. Submitting the form...");
+        couponForm.submit();
     }
 });
+
 
 
 
@@ -535,21 +532,28 @@ function validateDatesEdit() {
         endDateErrorEdit.style.display = "block";
         endDateErrorEdit.textContent = "Invalid date format";
         endDateErrorEdit.style.color = "red";
-    // } else if (startDateValueEdit < currentDateEdit) {
-    //     // Display error message if start date is in the past
-    //     startDateErrorEdit.style.display = "block";
-    //     startDateErrorEdit.textContent = "Start date must be greater than or equal to today's date.";
-    //     startDateErrorEdit.style.color = "red";
-    //     endDateErrorEdit.style.display = "none";
-    //     endDateErrorEdit.textContent = "";
-    // } else if (startDateValueEdit >= endDateValueEdit) {
-    //     // Display error message if start date is greater than or equal to end date
-    //     startDateErrorEdit.style.display = "block";
-    //     startDateErrorEdit.textContent = "Start date should be less than end date.";
-    //     startDateErrorEdit.style.color = "red";
-    //     endDateErrorEdit.style.display = "block";
-    //     endDateErrorEdit.textContent = "End date should be greater than start date.";
-    //     endDateErrorEdit.style.color = "red";
+    } else if (startDateValueEdit > endDateValueEdit) {
+        // Display error message if start date is greater than end date
+        startDateErrorEdit.style.display = "block";
+        startDateErrorEdit.textContent = "Start date should be less than end date.";
+        startDateErrorEdit.style.color = "red";
+        endDateErrorEdit.style.display = "block";
+        endDateErrorEdit.textContent = "End date should be greater than start date.";
+        endDateErrorEdit.style.color = "red";
+    } else if (startDateValueEdit < currentDateEdit.setHours(0,0,0,0)) {
+        // Display error message if start date is in the past
+        startDateErrorEdit.style.display = "block";
+        startDateErrorEdit.textContent = "Start date must be greater than or equal to today's date.";
+        startDateErrorEdit.style.color = "red";
+        endDateErrorEdit.style.display = "none";
+        endDateErrorEdit.textContent = "";
+    } else if (endDateValueEdit <= startDateValueEdit) {
+        // Display error message if end date is less than or equal to start date
+        startDateErrorEdit.style.display = "none";
+        startDateErrorEdit.textContent = "";
+        endDateErrorEdit.style.display = "block";
+        endDateErrorEdit.textContent = "End date must be greater than the start date.";
+        endDateErrorEdit.style.color = "red";
     } else {
         // Hide error messages if all validations pass
         startDateErrorEdit.style.display = "none";
@@ -559,7 +563,10 @@ function validateDatesEdit() {
     }
 }
 
+
 // Event listeners  
+
+
 editOfferNameInput.addEventListener("blur", validateOfferNameEdit);
 discountInputEdit.addEventListener("blur", validateDiscountEdit);
 startDateInputEdit.addEventListener("blur", validateDatesEdit);
@@ -577,10 +584,11 @@ editOfferForm.addEventListener("submit", function (event) {
     if (nameErrorEdit.textContent || discountErrorEdit.textContent || startDateErrorEdit.textContent || endDateErrorEdit.textContent) {
         console.log("Validation failed");
     } else {
-        // console.log("Validation passed");
+        console.log("Validation passed");
         editOfferForm.submit(); 
     }
 });
+
 
 
 

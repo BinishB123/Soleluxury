@@ -2,8 +2,12 @@ const order = require("../model/orderModel");
 const user = require("../model/userModel");
 const userModel = require("../model/userModel");
 const walletModel = require("../model/walletModel")
+const productModel = require("../model/productModel")
+const cartModel = require("../model/cartModel")
 const bcrypt = require("bcrypt");
-const Razorpay = require("razorpay")
+const { ObjectId } = require('mongodb');
+const Razorpay = require("razorpay");
+const { name } = require("ejs");
 var instance = new Razorpay({
   key_id: process.env.key_id,
   key_secret: process.env.key_secret ,
@@ -69,7 +73,7 @@ const doSignUp = (userData, verify, emailVerify) => {
   return new Promise(async (resolve, reject) => {
     try {
       const userExist = await userModel.findOne({
-        $or: [{ email: userData.email }, { mobile: userData.mobile }],
+        $or: [{ email: userData.email }]
       });
 
       const response = {};
@@ -232,10 +236,41 @@ function generateRandomString() {
 }
 
 
+const productQuantityChecker = async(req,res,next)=>{
+  try {
+   const user = req.session.user._id
+   const userCart = await cartModel.aggregate([
+   {$match: {userId:new ObjectId(user)}},
+  { $unwind:"$items"}
+  ])
+  //  console.log("usercart",userCart)
+   for(let cart of userCart){
+    
+    let [product] = await productModel.aggregate([
+      { $match: { _id: new ObjectId(cart.items.productId) } },
+      { $project: { size: `$size.${cart.items.size}.quantity`,name:"$productName" } }
+    ]);
+            if(product.size<cart.items.quantity){
+            return   res.json({success:false,mess:`${product.name} Quantity Exceeds ! `})
+            }else{
+              next()
+            }
+    
+   }
+  
+   
+    
+  } catch (error) {
+    console.log(error.message)
+  }
+  
+}
+
 
 module.exports = {
   doSignUp,
   loginHome,
   checkingUserBlockedOrNot,
-  generateRazorpay
+  generateRazorpay,
+  productQuantityChecker
 };

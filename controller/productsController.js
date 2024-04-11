@@ -145,6 +145,8 @@ const  blockOrUnblockproduct= async (req, res,next) => {
         if (!id || !product) {
             return res.status(400).json({ success: false, message: 'Invalid product ID' });
         }
+        // product.isBlocked = !product.isBlocked
+        // await productModel.save()
 
         if (product.isBlocked === false) {
             await productModel.updateOne({ _id: id }, { $set: { isBlocked: true } });

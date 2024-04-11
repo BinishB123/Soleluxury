@@ -1189,7 +1189,7 @@ function removeCoupon() {
 
    var addressId = $("input[name='address']:checked").val();
 
-function placeOrder() {
+   function placeOrder() {
     let addressId = $("input[name='address']:checked").val();
     let payment_method = $("input[name='payment_option']:checked").val(); // Assuming payment options are radio buttons
  
@@ -1211,16 +1211,15 @@ function placeOrder() {
             
             window.location.href = response.url;
             }
-            // else{
-        //     Toastify({
-        //         text: response.message,
-        //          backgroundColor: "red",
-        //      duration: 6000,
-        //      position: "center" 
-        //  }).showToast();
-        
-           
-           
+            else{
+                console.log(response.mess)
+            return   Toastify({
+                text: response.mess,
+                 backgroundColor: "red",
+             duration: 6000,
+             position: "center" 
+            }).showToast();
+            }
            
             if (response.status===true) {
             

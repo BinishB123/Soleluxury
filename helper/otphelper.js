@@ -19,6 +19,7 @@ function generateSixDigitNumber() {
       // console.log("Request came to send the OTP");   
   
       const otp = generateSixDigitNumber();
+      console.log(otp)
       req.session.otpExpiry = Date.now()+30*1000
       
       // console.log(otp, "OTP generated");

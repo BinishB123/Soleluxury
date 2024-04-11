@@ -211,7 +211,7 @@ function validateDates() {
         endDateError.style.display = "block";
         endDateError.innerHTML = "Invalid date format";
         endDateError.style.color = "red";
-    } else if (startDateValue < currentDate) {
+    } else if (startDateValue < currentDate.setHours(0,0,0,0)) {
         // Display error message if start date is in the past
         startDateError.style.display = "block";
         startDateError.innerHTML = "Start date must be greater than or equal to today's date.";

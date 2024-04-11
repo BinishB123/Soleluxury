@@ -18,6 +18,7 @@ const colorError = document.getElementById("color-error");
 const imageError = document.getElementById("image-error");
 const editproductForm = document.getElementById("editproductForm");
 
+
 function validateProductName() {
   const productName = productnameid.value.trim();
   if (productName === "") {
@@ -69,17 +70,19 @@ function validateDiscount() {
   discounterror.style.display="block"
   discounterror.innerHTML ="discount must be a positive number"
   discounterror.style.color="red"
-}else if(discount >=100){
+}else if(discounts >=100){
+  discounterror.style.display="block"
+  discounterror.innerHTML ="discount must be a less than 100"
+  discounterror.style.color="red"  
+}else{
   discounterror.style.display="none"
   discounterror.innerHTML =""
-  
-    
 }
 }
 
 function validateSmallSizeQuantity() {
   const smallSizeQuantity = parseInt(smallsize_quantityid.value);
-  if (isNaN(smallSizeQuantity) || smallSizeQuantity < 0) {
+  if (isNaN(smallSizeQuantity) || smallSizeQuantity <= 0) {
     smallError.style.display = "block";
     smallError.innerHTML =
       "Small Size Quantity must be a valid non-negative number";
@@ -92,10 +95,9 @@ function validateSmallSizeQuantity() {
 
 function validateMediumSizeQuantity() {
   const mediumSizeQuantity = parseInt(mediumsize_quantityid.value);
-  if (isNaN(mediumSizeQuantity) || mediumSizeQuantity < 0) {
+  if (isNaN(mediumSizeQuantity) || mediumSizeQuantity <= 0) {
     mediumError.style.display = "block";
-    mediumError.innerHTML =
-      "Medium Size Quantity must be a valid non-negative number";
+    mediumError.innerHTML ="Medium Size Quantity must be a valid non-negative number";
     mediumError.style.color = "red";
   } else {
     mediumError.style.display = "none";
@@ -105,10 +107,9 @@ function validateMediumSizeQuantity() {
 
 function validateLargeSizeQuantity() {
   const largeSizeQuantity = parseInt(largesize_quantityid.value);
-  if (isNaN(largeSizeQuantity) || largeSizeQuantity < 0) {
+  if (isNaN(largeSizeQuantity) || largeSizeQuantity <= 0) {
     largeError.style.display = "block";
-    largeError.innerHTML =
-      "Large Size Quantity must be a valid non-negative number";
+    largeError.innerHTML ="Large Size Quantity must be a valid non-negative number";
     largeError.style.color = "red";
   } else {
     largeError.style.display = "none";
@@ -154,29 +155,33 @@ largesize_quantityid.addEventListener("blur", validateLargeSizeQuantity);
 colorid.addEventListener("blur", validateColor);
 imageid.addEventListener("blur", validateImageCount);
 
-editproductForm.addEventListener("submit", function (event) {
+
+editproductForm.addEventListener("submit", function(event) {
+  // Validate all fields before submitting the form
   validateProductName();
   validateDescription();
   validateRegularPrice();
-  validateSalePrice();
+  validateDiscount();
   validateSmallSizeQuantity();
   validateMediumSizeQuantity();
   validateLargeSizeQuantity();
   validateColor();
   validateImageCount();
 
+  // Check if any error message is displayed
   if (
     productNameError.innerHTML !== "" ||
     descriptionError.innerHTML !== "" ||
     regularPriceError.innerHTML !== "" ||
-    salePriceError.innerHTML !== "" ||
+    discounterror.innerHTML !== "" ||
     smallError.innerHTML !== "" ||
     mediumError.innerHTML !== "" ||
     largeError.innerHTML !== "" ||
     colorError.innerHTML !== "" ||
     imageError.innerHTML !== ""
   ) {
-   return event.preventDefault();
-   
+    event.preventDefault(); // Prevent form submission
   }
 });
+
+

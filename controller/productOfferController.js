@@ -1,21 +1,27 @@
+const { now } = require("mongoose")
 const productModel = require("../model/productModel")
 const productOfferModel = require("../model/productOfferModel")
 
 
-const productOfferPage = async(req,res,next)=>{
-    try {
-        const offer = await productOfferModel.find({}).populate("productOffer.product")
-        // console.log(offer)
-        
-      const products= await productModel.find({isBlocked:false})
-      res.render("productOffer",{offers:offer,products :products })
-      
-    } catch (error) {
-      console.error("Error in productoffer:", error)
-   
-      next(error)
-    }
-  } 
+const productOfferPage = async (req, res, next) => {
+  try {
+    // Retrieve all product offers and populate associated products
+    const offer = await productOfferModel.find({}).populate("productOffer.product");
+
+    // Get the current date and time
+    const date = new Date();
+    
+    // Retrieve all products that are not blocked
+    const products = await productModel.find({ isBlocked: false });
+
+    // Render the product offer page, passing the offers, products, and date to the view
+    res.render("productOffer", { offers: offer, products: products, date: date });
+  } catch (error) {
+    // Handle errors
+    console.error("Error in productoffer:", error);
+    next(error);
+  }
+};
 
 const AddProductOffer = async(req,res,next)=>{
     try {

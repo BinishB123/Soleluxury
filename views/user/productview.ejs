@@ -820,7 +820,7 @@
 
 
                                                 <% } %>
-                                                                                                <a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
+                                                 <a aria-label="Add To Wishlist" class="action-btn hover-up" onclick="addToWishlist('<%=data._id%>')"><i class="fi-rs-heart"></i></a>
                                                 <a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i class="fi-rs-shuffle"></i></a>
                                             </div>
                             
@@ -1413,6 +1413,44 @@
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     
     <script>
+
+function addToWishlist(productId) {
+    const id = productId;
+    // console.log(id);
+    $.ajax({
+        url: `/addtowishlist?id=${id}`,
+        method: 'POST',
+        contentType: 'application/json',
+        success: function(response) {
+            if (response.status == false) {
+                Toastify({
+                    text: "product already added to wishlist",
+                    backgroundColor: "linear-gradient(to right, #ff7e5f, #feb47b)",
+                    duration: 3000,
+                    position: "center" 
+                 }).showToast();
+
+            }else{
+                Toastify({
+                    text: "product  added to wishlist",
+                    backgroundColor: "green",
+                    duration: 3000,
+                    position: "center" 
+                 }).showToast();
+
+            }
+        },
+        error: function(error) {
+            // Redirect to login page if there's an error
+            window.location.href = '/login';
+        }
+    });
+}
+
+
+
+
+
         // let addToCartButton = document.getElementById("addToCartButton")
         // let viewCartButton = document.getElementById("viewCart")
         // viewCartButton.disabled= false
@@ -1557,6 +1595,15 @@ function viewCart() {
         }
     });
 }
+
+
+
+
+
+
+
+
+
     </script>
 </body>
 

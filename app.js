@@ -8,7 +8,7 @@ const bodyParser = require('body-parser');
 const flash=require("express-flash");
 const noCache = require("nocache")
 const methodOverride = require("method-override")//in form used by input fields
- 
+  
    
 
  mongoose.connect(process.env.dbId)
@@ -36,7 +36,7 @@ const methodOverride = require("method-override")//in form used by input fields
  });
  app.use(noCache());
 
- 
+   
 
  app.use('/',useFeatRoute)
  app.use('/admin',adminRoute)

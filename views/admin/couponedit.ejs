@@ -141,8 +141,7 @@ function discountVal() {
 function validateDates() {
     const startDateParts = startDateInput.value.split('-');
     const endDateParts = endDateInput.value.split('-');
-    console.log("Start Date Parts:", startDateParts);
-    console.log("End Date Parts:", endDateParts);
+    
     
     // Construct Date objects for start and end dates
     const startDateValue = new Date(startDateParts[0], startDateParts[1] - 1, startDateParts[2]);
@@ -162,7 +161,7 @@ function validateDates() {
         endDateError.style.display = "block";
         endDateError.innerHTML = "Invalid date format";
         endDateError.style.color = "red";
-    } else if (startDateValue < currentDate) {
+    } else if (startDateValue < currentDate.setHours(0,0,0,0)) {
         // Display error message if start date is in the past
         startDateError.style.display = "block";
         startDateError.innerHTML = "Start date must be greater than or equal to today's date.";

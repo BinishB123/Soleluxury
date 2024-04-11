@@ -25,6 +25,7 @@ const placeOrder = async (req, res,next) => {
       if (placedOrder.status === true) {
         const cartCleared = await cartController.clearingCart(user);
         if (cartCleared) {
+          
           res.json({ success: true, url: "/orderplaced" });
         } else {
           res.json({ success: true, message: placedOrder.message });

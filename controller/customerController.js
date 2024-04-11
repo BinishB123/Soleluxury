@@ -54,15 +54,15 @@ const UnblockUser = async (req, res,next) => {
       
         if (!id) {
             return res.status(400).json({ error: "Invalid user ID" });
-        }
+        } 
         await userModel.updateOne({ _id: id }, { $set: { isActive: true } });
         res.redirect('/admin/customerlist');
     } catch (error) {
         console.error("Error in categoryaddpage:", error);
         next(error)
     }
-};
-module.exports = { blockUser };
+};     
+module.exports = { blockUser };     
 
 
 
