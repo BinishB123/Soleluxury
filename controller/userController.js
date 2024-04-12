@@ -271,7 +271,7 @@ const productView = async (req, res,next) => {
 const displaySize =async(req,res,next)=>{
   try {
 
-      if (req.session.user) {
+      
         
         const id = req.params.id;
        
@@ -293,9 +293,7 @@ const displaySize =async(req,res,next)=>{
             res.json({message:large})
          }
         
-      }else{
-        res.json({message:false})
-      }
+      
     
   } catch (error) {
     console.error("Error in  displaysize:", error);

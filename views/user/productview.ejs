@@ -145,7 +145,6 @@
                                     <div class="product-extra-link2">
                                         <button type="submit" class="button button-add-to-cart">Add to cart</button>
                                         <a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
-                                        <a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i class="fi-rs-shuffle"></i></a>
                                     </div>
                                 </div>
                                 <ul class="product-meta font-xs color-grey mt-50">
@@ -788,13 +787,13 @@
                                         <div class="short-desc mb-30">
                                             <p><%=data.description%></p>
                                         </div>
-                                        <div class="product_sort_info font-xs mb-30">
+                                        <!-- <div class="product_sort_info font-xs mb-30">
                                             <ul>
                                                 <li class="mb-10"><i class="fi-rs-crown mr-5"></i> 1 Year AL Jazeera Brand Warranty</li>
                                                 <li class="mb-10"><i class="fi-rs-refresh mr-5"></i> 30 Day Return Policy</li>
                                                 <li><i class="fi-rs-credit-card mr-5"></i> Cash on Delivery available</li>
                                             </ul>
-                                        </div>
+                                        </div> -->
                                         
                                         <div class="attr-detail attr-size">
                                             <strong class="mr-10">Size</strong>
@@ -820,8 +819,9 @@
 
 
                                                 <% } %>
+                                                <% if (locals.user) { %>
                                                  <a aria-label="Add To Wishlist" class="action-btn hover-up" onclick="addToWishlist('<%=data._id%>')"><i class="fi-rs-heart"></i></a>
-                                                <a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i class="fi-rs-shuffle"></i></a>
+                                                 <% } %>
                                             </div>
                             
                                         </div>
@@ -1422,6 +1422,9 @@ function addToWishlist(productId) {
         method: 'POST',
         contentType: 'application/json',
         success: function(response) {
+            
+           
+
             if (response.status == false) {
                 Toastify({
                     text: "product already added to wishlist",
@@ -1482,6 +1485,11 @@ if (countOfProduct > 0) {
         method: 'POST',
         contentType: 'application/json',
         success: function(response) {
+            if (!response.stay) {
+                console.log(response.url)
+          return   window.location.href = response.url;
+               }
+
             if (response.response) {
                location.reload()
             }
@@ -1551,6 +1559,7 @@ function viewCart() {
    
         sizeClicked = Size
         //  console.log(sizeClicked)
+        //  console.log(id)
          $.ajax({
         url: `/size/${id}/${Size}`,
         method: 'POST',
