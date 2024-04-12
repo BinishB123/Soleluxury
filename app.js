@@ -12,8 +12,15 @@ const methodOverride = require("method-override")//in form used by input fields
    
 
  mongoose.connect(process.env.dbId)
+ .then(() => { 
+  console.log('Connected to MongoDB');
+  // You can start using Mongoose models here 
+})
+.catch((error) => {
+  console.error('Error connecting to MongoDB:', error);
+});
  const useFeatRoute = require("./router.js/userFeat")
- const adminRoute = require("./router.js/adminRoute")
+ const adminRoute = require("./router.js/adminRoute") 
 
  app.use(bodyParser.json());
  app.use(express.urlencoded({extended:true}))

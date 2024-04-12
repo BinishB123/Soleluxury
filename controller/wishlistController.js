@@ -91,11 +91,12 @@ const removeWishlist = async (req, res,next) => {
     next(error)
   }
 };
-
+ 
 const wishlistController = {
   whistlistPage,
   addToWishlist,
-  removeWishlist,
+  removeWishlist,  
 };
 
 module.exports = wishlistController;
+  

@@ -54,7 +54,7 @@ const placeOrder = (body, userId) => {
 
         
         const changeProductQuantity = await productModel.findOne({
-          _id: i.productId,
+          _id: i.productId,  
         });
         changeProductQuantity.size[i.size].quantity -= i.quantity;
         await changeProductQuantity.save();

@@ -37,14 +37,14 @@ userRoute.post("/categoryFilter",userController.categoryFilter)
 
 
 
-
+  
 //product views
 userRoute.get('/productview/:id',userController.productView)
 userRoute.post("/size/:id/:size",userController.displaySize)
 userRoute.get('/prodcutwithsizecartcheck',userHelper.checkingUserBlockedOrNot,cartController.sizeproductChecker)
 
    
- //cart views
+ //cart views 
  userRoute.get("/cart",userHelper.checkingUserBlockedOrNot,userController.viewCart) 
  userRoute.post("/addtocart",userHelper.checkUserBlockOrNo,cartController.addToCart) 
  userRoute.patch("/removeProductfromthecart",userHelper.checkingUserBlockedOrNot,cartController.removeProductFromTheCart)

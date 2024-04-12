@@ -31,10 +31,10 @@ const addToCart = async (req, res,next) => {
                 }
             });  
 
-            if (productAlreadyInTheCart) {
-                res.json({response:false,errorMessage:"product already in cart"})
-                return
-            }
+            // if (productAlreadyInTheCart) {
+            //     res.json({response:false,errorMessage:"product already in cart"})
+            //     return
+            // }
             
             
               
@@ -42,7 +42,7 @@ const addToCart = async (req, res,next) => {
                 await cartModel.updateOne({userId:userId},
                     { $push: { items: cartItems } }
                  );
-                 res.json({ response: true });
+                 return res.json({ yes: true });
                 
              } else{
     
@@ -51,7 +51,8 @@ const addToCart = async (req, res,next) => {
                 userId: userId,
                 items: [cartItems]
             });
-            res.json({ response: true });
+            return res.json({ yes: true });
+
 
             }
 

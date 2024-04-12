@@ -987,7 +987,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <!--single-comment -->
+                                                    --single-comment -->
                                                     <!-- <div class="single-comment justify-content-between d-flex">
                                                         <div class="user justify-content-between d-flex">
                                                             <div class="thumb text-center">
@@ -1463,58 +1463,51 @@ function addToWishlist(productId) {
  let countOfProduct
  
 
-function addToCart(productid) {
-     
-     
-     if (sizeClicked === null) {
+ function addToCart(productid) {
+    if (sizeClicked === null) {
         console.error("Please select a size before adding to cart");
         Toastify({
-                        text: "Please select a size before adding to cart",
-                        backgroundColor: "red",
-                        duration: 3000,
-                        position: "center" 
-                    }).showToast();
-
+            text: "Please select a size before adding to cart",
+            backgroundColor: "red",
+            duration: 3000,
+            position: "center"
+        }).showToast();
         return;
-     }
+    }
 
-
-if (countOfProduct > 0) {
-    $.ajax({
-        url: `/addtocart?id=${productid}&size=${sizeClicked}`,
-        method: 'POST',
-        contentType: 'application/json',
-        success: function(response) {
-            if (!response.stay) {
-                console.log(response.url)
-          return   window.location.href = response.url;
-               }
-
-            if (response.response) {
-               location.reload()
+    if (countOfProduct > 0) {
+        $.ajax({
+            url: `/addtocart?id=${productid}&size=${sizeClicked}`,
+            method: 'POST',
+            contentType: 'application/json',
+            success: function(response) {
+                if (response.yes) {
+                    location.reload();
+                } else if (!response.stay) {
+                    console.log("oke", response.url);
+                    window.location.href = response.url;
+                } else if (!response.response) {
+                    redirectToLogin();
+                }
+            },
+            error: function(error) {
+                redirectToLogin();
             }
-           
-            if (!response.response) {
-            window.location.href = '/login';
-        }
-            
-        },
-        error: function(error) {
-            window.location.href = '/login';
-        }
-    });
-    
-}else{
-    Toastify({
-                        text: "cannot add to cart product out of stock ",
-                        backgroundColor: "red",
-                        duration: 3000,
-                        position: "center" 
-                    }).showToast();
+        });
+    } else {
+        Toastify({
+            text: "Cannot add to cart: product out of stock",
+            backgroundColor: "red",
+            duration: 3000,
+            position: "center"
+        }).showToast();
+    }
 }
-     
-    
+
+function redirectToLogin() {
+    window.location.href = '/login';
 }
+
 
   function isProductWithThisSize(productid,sizeClicked){
    

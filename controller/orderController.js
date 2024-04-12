@@ -19,6 +19,7 @@ const placeOrder = async (req, res,next) => {
   try {
     const body = req.body;
     const user = req.session.user._id;
+    let flag = false
 
     if (req.body.paymentMethod === "cashOnDelivery") {
       const placedOrder = await placeOrderHelper.placeOrder(body, user);
@@ -50,14 +51,20 @@ const placeOrder = async (req, res,next) => {
       const userCart = await cartModel.findOne({ userId: user });
       const totalAmount = userCart.totalPrice;
       const checker = await userHelper.generateRazorpay(user, totalAmount);
+      // console.log(checker)
       if (checker.success === true) {
+        // console.log("ok")
         res.json({ status: true, order: checker.order });
+        // flag= true
       } else {
+        
         res.json({ status: false });
       }
+
+     
     }
   } catch (error) {
-    console.error("Error in placeorder:", error);
+    console.error("Error in placeorder:", error.message);
    
     next(error)
   }

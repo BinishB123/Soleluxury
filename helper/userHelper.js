@@ -259,6 +259,7 @@ const productQuantityChecker = async(req,res,next)=>{
   { $unwind:"$items"}
   ])
   //  console.log("usercart",userCart)
+  let f = false
    for(let cart of userCart){
     
     let [product] = await productModel.aggregate([
@@ -266,11 +267,17 @@ const productQuantityChecker = async(req,res,next)=>{
       { $project: { size: `$size.${cart.items.size}.quantity`,name:"$productName" } }
     ]);
             if(product.size<cart.items.quantity){
+              // console.log("kk");
             return   res.json({success:false,mess:`${product.name} Quantity Exceeds ! `})
             }else{
-              next()
+               f= true
+              
             }
     
+   }
+
+   if(f===true){
+    return next()
    }
   
    

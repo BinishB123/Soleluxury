@@ -149,6 +149,7 @@ const  blockOrUnblockproduct= async (req, res,next) => {
         // await productModel.save()
 
         if (product.isBlocked === false) {
+            // console.log("came")
             await productModel.updateOne({ _id: id }, { $set: { isBlocked: true } });
             return res.json({ success: true, flag: 1 });
         } else { 

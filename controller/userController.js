@@ -13,6 +13,7 @@ const bcrypt= require("bcrypt")
 const cartHelper = require("../helper/cartHelper");
 const product = require("../model/productModel");
 const { parse } = require("dotenv");
+const {ObjectId} = require('mongodb')
 //loginuser start//
 
 
@@ -228,8 +229,9 @@ const logout = (req,res,next)=>{
 const productView = async (req, res,next) => {
   try {
       const id = req.params.id
-
+  // console.log(id)
       const product = await productModel.findOne({ _id: id })
+      // console.log(product)
       // const discountPrice = Math.round(
       //     product.regularPrice - (product.regularPrice * product.discount) / 100
       // );
@@ -259,7 +261,7 @@ const productView = async (req, res,next) => {
       }
 
   } catch (error) {
-    console.error("Error in  productview:", error);
+    console.error("Error in  productview:", error.message);
    
     next(error)
 

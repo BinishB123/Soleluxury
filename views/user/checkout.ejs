@@ -928,7 +928,7 @@
                             
                         </div>
                     </div>
-                    <a href="#" class="btn btn-fill-out btn-block mt-30" style="background-color: rgb(0, 76, 255);"    onclick="placeOrder()">Place Order</a>
+                    <button  class="btn btn-fill-out btn-block mt-30" style="background-color: rgb(0, 76, 255);"    onclick="placeOrder()">Place Order</button>
                 </div>
             </div>
         </div>
@@ -1189,7 +1189,7 @@ function removeCoupon() {
 
    var addressId = $("input[name='address']:checked").val();
 
-   function placeOrder() {
+   function placeOrder(e) {
     let addressId = $("input[name='address']:checked").val();
     let payment_method = $("input[name='payment_option']:checked").val(); // Assuming payment options are radio buttons
  
@@ -1199,32 +1199,31 @@ function removeCoupon() {
         couponId:couponId
     };
     
-
     $.ajax({
         url: '/placeorder',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(data), // Convert data object to JSON string
         success: function(response) {
-           
+           console.log(response)
            if (response.success==true) {
-            
             window.location.href = response.url;
             }
-            else{
-                console.log(response.mess)
-            return   Toastify({
-                text: response.mess,
-                 backgroundColor: "red",
-             duration: 6000,
-             position: "center" 
-            }).showToast();
-            }
+            // else{
+            //     console.log("kkkgcgfdd");
+            //     console.log(response.mess)
+            // return   Toastify({
+            //     text: response.mess,
+            //      backgroundColor: "red",
+            //  duration: 6000,
+            //  position: "center" 
+            // }).showToast();
+            // }
            
-            if (response.status===true) {
-            
+            if (response.status==true) {
+           
             const order = response.order
-           
+                console.log("kkkkkkkk");
              razorPayment(order)
             
            }else{
@@ -1241,6 +1240,7 @@ function removeCoupon() {
 
         },
         error: function(error) {
+            // console.log(error.message);
             // Redirect to login page if there's an error
             window.location.href = '/login';
         }
