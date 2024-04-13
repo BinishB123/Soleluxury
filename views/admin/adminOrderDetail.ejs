@@ -113,17 +113,17 @@
                                                     <span class="badge" style="background-color: red;"><%= element.products.status %></span>
                                                 <% } else if (element.products.status === "pending") { %>
                                                     <span class="badge" style="background-color: rgb(0, 149, 255);"><%= element.products.status %></span>
-                                                <% } else if (element.products.status === "processing") { %>
+                                                <% } else if (element.products.status === "Processing") { %>
                                                     <span class="badge" style="background-color: rgb(255, 179, 0);"><%= element.products.status %></span>
-                                                <% } else if (element.products.status === "confirmed") { %>
+                                                <% } else if (element.products.status === "Confirmed") { %>
                                                     <span class="badge" style="background-color: rgb(255, 208, 0);"><%= element.products.status %></span>
-                                                <% } else if (element.products.status === "shipped") { %>
+                                                <% } else if (element.products.status === "Shipped") { %>
                                                     <span class="badge" style="background-color: rgb(179, 212, 15);"><%= element.products.status %></span>
-                                                <% } else if (element.products.status === "delivered") { %>
+                                                <% } else if (element.products.status === "Delivered") { %>
                                                     <span class="badge" style="background-color: rgb(8, 230, 45);"><%= element.products.status %></span>
-                                                <% } else if (element.products.status === "return pending") { %>
+                                                <% } else if (element.products.status === "return Pending") { %>
                                                     <span class="badge" style="background-color: rgb(220, 152, 17);"><%= element.products.status %></span>
-                                                <% } else if (element.products.status === "outForDelivery") { %>
+                                                <% } else if (element.products.status === "OutForDelivery") { %>
                                                     <span class="badge" style="background-color: rgb(31, 229, 17);"><%= element.products.status %></span>
                                                 <% } else if (element.products.status === "return Pending") { %>
                                                     <span class="badge" style="background-color: rgb(17, 137, 229);"><%= element.products.status %></span>
@@ -142,12 +142,12 @@
                                                             <% } else { %>
                                                                 <option>Change status</option>
                                                                 <option value="pending">pending</option>
-                                                                <option value="shipped">Shipped</option>
-                                                                <option value="processing">Processing</option>
-                                                                <option value="confirmed">Confirmed</option>
-                                                                <option value="outForDelivery">OutForDelivery</option>
-                                                                <option value="delivered">Delivered</option>
-                                                                <option value="return pending">Return Pending</option>
+                                                                <option value="Shipped">Shipped</option>
+                                                                <option value="Processing">Processing</option>
+                                                                <option value="Confirmed">Confirmed</option>
+                                                                <option value="OutForDelivery">OutForDelivery</option>
+                                                                <option value="Delivered">Delivered</option>
+                                                                <option value="return Pending">Return Pending</option>
                                                                 <option value="Returned">Returned</option>
                                                             <% } %>
                                                         </select>

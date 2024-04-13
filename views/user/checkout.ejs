@@ -1209,21 +1209,19 @@ function removeCoupon() {
            if (response.success==true) {
             window.location.href = response.url;
             }
-            // else{
-            //     console.log("kkkgcgfdd");
-            //     console.log(response.mess)
-            // return   Toastify({
-            //     text: response.mess,
-            //      backgroundColor: "red",
-            //  duration: 6000,
-            //  position: "center" 
-            // }).showToast();
-            // }
+            if( response.mess){
+              Toastify({
+                text: response.mess,
+                 backgroundColor: "red",
+             duration: 6000,
+             position: "center" 
+            }).showToast();
+            }
            
             if (response.status==true) {
            
             const order = response.order
-                console.log("kkkkkkkk");
+                // console.log("kkkkkkkk");
              razorPayment(order)
             
            }else{

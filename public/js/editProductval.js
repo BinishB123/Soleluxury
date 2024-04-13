@@ -82,7 +82,7 @@ function validateDiscount() {
 
 function validateSmallSizeQuantity() {
   const smallSizeQuantity = parseInt(smallsize_quantityid.value);
-  if (isNaN(smallSizeQuantity) || smallSizeQuantity <= 0) {
+  if (isNaN(smallSizeQuantity) || smallSizeQuantity < 0) {
     smallError.style.display = "block";
     smallError.innerHTML =
       "Small Size Quantity must be a valid non-negative number";
@@ -95,7 +95,7 @@ function validateSmallSizeQuantity() {
 
 function validateMediumSizeQuantity() {
   const mediumSizeQuantity = parseInt(mediumsize_quantityid.value);
-  if (isNaN(mediumSizeQuantity) || mediumSizeQuantity <= 0) {
+  if (isNaN(mediumSizeQuantity) || mediumSizeQuantity < 0) {
     mediumError.style.display = "block";
     mediumError.innerHTML ="Medium Size Quantity must be a valid non-negative number";
     mediumError.style.color = "red";
@@ -107,7 +107,7 @@ function validateMediumSizeQuantity() {
 
 function validateLargeSizeQuantity() {
   const largeSizeQuantity = parseInt(largesize_quantityid.value);
-  if (isNaN(largeSizeQuantity) || largeSizeQuantity <= 0) {
+  if (isNaN(largeSizeQuantity) || largeSizeQuantity < 0) {
     largeError.style.display = "block";
     largeError.innerHTML ="Large Size Quantity must be a valid non-negative number";
     largeError.style.color = "red";

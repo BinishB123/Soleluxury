@@ -291,7 +291,7 @@ const verifyPayment = async (req, res,next) => {
 
     if (generatedSignature === payment.razorpay_signature) {
       // console.log("Payment is successful");
-      const placedOrder = await placeOrderHelper.placeOrder(body, user);
+      const placedOrder = await placeOrderHelper.razoPlaceOrder(body, user);
       // console.log("placed");
       if (placedOrder.status === true) {
         // console.log("placedOrder", placeOrder);

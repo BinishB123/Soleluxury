@@ -117,7 +117,7 @@ const adminhome = async (req, res,next) => {
       { $unwind: "$products" },
       {
         $match: {
-          "products.status": "delivered",
+          "products.status": "Delivered",
           $expr: {
             $eq: [{ $year: "$orderedOn" }, currentYear],
           },
@@ -134,7 +134,7 @@ const adminhome = async (req, res,next) => {
 
     const yearlyReport = await orderModel.aggregate([
       { $unwind: "$products" },
-      { $match: { "products.status": "delivered" } },
+      { $match: { "products.status": "Delivered" } },
       {
         $group: {
           _id: { $year: "$orderedOn" },
@@ -146,7 +146,7 @@ const adminhome = async (req, res,next) => {
 
     const bestSellingProduct = await orderModel.aggregate([
       { $unwind: "$products" },
-      { $match: { "products.status": "delivered" } },
+      { $match: { "products.status": "Delivered" } },
       {
         $lookup: {
           from: "products",

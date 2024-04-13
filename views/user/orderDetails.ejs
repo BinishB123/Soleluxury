@@ -766,26 +766,26 @@
                     <span class="badge" style="background-color: red;"><%= order[i].products.status %></span>
                 <% } else if(order[i].products.status === "pending") { %>
                     <span class="badge" style="background-color: rgb(0, 149, 255);"><%= order[i].products.status %></span>
-                <% } else if(order[i].products.status === "processing") { %>
+                <% } else if(order[i].products.status === "Processing") { %>
                     <span class="badge" style="background-color: rgb(255, 179, 0);"><%= order[i].products.status %></span>
-                <% } else if(order[i].products.status === "confirmed") { %>
+                <% } else if(order[i].products.status === "Confirmed") { %>
                     <span class="badge" style="background-color: rgb(255, 208, 0);"><%= order[i].products.status %></span>
-                <% } else if(order[i].products.status === "shipped") { %>
+                <% } else if(order[i].products.status === "Shipped") { %>
                     <span class="badge" style="background-color: rgb(179, 212, 15);"><%= order[i].products.status %></span>
-                <% } else if(order[i].products.status === "delivered") { %>
+                <% } else if(order[i].products.status === "Delivered") { %>
                     <span class="badge" style="background-color: rgb(8, 230, 45);"><%= order[i].products.status %></span>
                 <% } else if(order[i].products.status === "return Pending") { %>
                     <span class="badge" style="background-color: rgb(220, 152, 17);"><%= order[i].products.status %></span>
-                <% } else if(order[i].products.status === "outForDelivery") { %>
+                <% } else if(order[i].products.status === "OutForDelivery") { %>
                     <span class="badge" style="background-color: rgb(31, 229, 17);"><%= order[i].products.status %></span>
                 <% } else if(order[i].products.status === "Returned") { %>
                     <span class="badge" style="background-color: rgb(18, 52, 15);"><%= order[i].products.status %></span>
                 <% } %>
             </td>
             <td class="action" data-title="Action">
-                <% if(order[i].products.status === "cancelled") { %>
+                <% if(order[i].products.status === "Cancelled") { %>
                     <span style="background-color: rgb(255, 255, 255); color: rgb(235, 19, 19);">Cancelled</span>
-                <% } else if (order[i].products.status === "delivered") { %>
+                <% } else if (order[i].products.status === "Delivered") { %>
                     <a href="#" id="" class="btn btn-sm" style="background-color: rgb(0, 132, 255); color: white;" onclick="returnOrder('<%= order[i]._id %>', '<%= order[i].products._id %>')">Return</a>
                     <a class="btn btn-sm" onclick="dldInvoice('<%= order[i]._id %>', '<%= order[i].products._id %>')" style="background-color: black;">Download invoice</a>
                 <% } else if(order[i].products.status === "return Pending") { %>

@@ -40,11 +40,12 @@ const updateCategory = async (req, res,next) => {
   try {
     const id = req.params.id;
     const category = req.body;
-    // console.log(id)
-    const existingCategory = await categoryModel.findOne({ name: category.categoryName });
-    // console.log(existingCategory)
+    console.log(category)
+    const existingCategory = await categoryModel.findOne({ name: category.categoryName.trim() });
+    const cat = await categoryModel.findOne({_id:id})
+    console.log(existingCategory)
 
-    if (!existingCategory&&existingCategory._id.toString() === id) {
+    if (!existingCategory&&cat._id.toString() === id) {
       const v =category.categoryName.trim()
       await categoryModel.findByIdAndUpdate(id, {
         name: v,

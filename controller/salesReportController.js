@@ -222,7 +222,7 @@ async function fetchOrdersWithoutDay() {
 }
 
 function filterOrders(orders) {
-  return orders.filter((order) => order.products.status === "delivered");
+  return orders.filter((order) => order.products.status === "Delivered");
 }
 
 function paginateData(data, page) {
