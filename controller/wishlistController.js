@@ -2,6 +2,7 @@ const offerHelper = require("../helper/offerHelper");
 const product = require("../model/productModel");
 const { findById } = require("../model/userModel");
 const wishlistModel = require("../model/wishlistModel");
+const ObjectId = require("mongoose").Types.ObjectId;
 
 const whistlistPage = async (req, res,next) => {
   try {
@@ -35,7 +36,7 @@ const addToWishlist = async (req, res,next) => {
   try {
     const productId = req.query.id;
     const userId = req.session.user._id;
-
+ 
     const productAlreadyInWishlist = await wishlistModel.findOne({
       userid: userId,
       items: {
@@ -44,6 +45,7 @@ const addToWishlist = async (req, res,next) => {
         },
       },
     });
+    // console.log(productAlreadyInWishlist)
     if (productAlreadyInWishlist) {
       res.json({ status: false });
       return;
@@ -54,11 +56,13 @@ const addToWishlist = async (req, res,next) => {
     });
 
     if (!productAlreadyInWishlist && userAlreadyHavewishlist) {
+      // console.log("ok")
       await wishlistModel.updateOne({
         $push: { items: { product: productId } },
       });
       res.json({ status: true });
     } else {
+      // console.log("ok2")
       await wishlistModel.create({
         userid: userId,
         items: [{ product: productId }],
