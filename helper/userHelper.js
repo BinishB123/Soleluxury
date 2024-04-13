@@ -4,7 +4,7 @@ const userModel = require("../model/userModel");
 const walletModel = require("../model/walletModel")
 const productModel = require("../model/productModel")
 const cartModel = require("../model/cartModel")
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { ObjectId } = require('mongodb');
 const Razorpay = require("razorpay");
 const { name } = require("ejs");
@@ -72,6 +72,7 @@ const loginHome = (userData)=>{
 const doSignUp = (userData, verify, emailVerify) => {
   return new Promise(async (resolve, reject) => {
     try {
+      let u = fale
       const userExist = await userModel.findOne({
         $or: [{ email: userData.email }]
       });
@@ -99,6 +100,7 @@ const doSignUp = (userData, verify, emailVerify) => {
                 $inc: { balance: 100 },
               }
             );
+            u = true
             // console.log("updating in if ", updating);
           } else {
             const creating = await walletModel.create({
@@ -142,7 +144,7 @@ const doSignUp = (userData, verify, emailVerify) => {
               const createdUser = await userModel.create(newUser);
 
               // console.log("User created:", createdUser);
-              response.user = createdUser
+              response.user = u
               response.status = true;
               response.message = "Signed Up Successfully";
               resolve(response);
