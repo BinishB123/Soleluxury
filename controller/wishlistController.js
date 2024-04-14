@@ -7,9 +7,10 @@ const ObjectId = require("mongoose").Types.ObjectId;
 const whistlistPage = async (req, res,next) => {
   try {
     // console.log("ok")
-    // const userid = req.session.user
+     const userid = req.session.user._id
+      // console.log(userid)
     const wishlist = await wishlistModel.aggregate([
-      // {$match:{userid:userid}},
+       {$match:{userid:new ObjectId( userid)}},
       { $unwind: "$items" },
       {
         $lookup: {
@@ -21,12 +22,10 @@ const whistlistPage = async (req, res,next) => {
       },
       { $unwind: "$product" },
     ]);
-
+  //  console.log(wishlist)
     
     const products = await offerHelper.secondfindOffer(wishlist)
-    // for(let i =0;i< products.length;i++){
-    //   console.log("wishlist",products[i])
-    // }
+    
     res.render("wishlist", { wishlist: products });
   } catch (error) {
     console.error("Error in  wishlist:", error);

@@ -783,7 +783,7 @@
                 <% } %>
             </td>
             <td class="action" data-title="Action">
-                <% if(order[i].products.status === "Cancelled") { %>
+                <% if(order[i].products.status === "cancelled") { %>
                     <span style="background-color: rgb(255, 255, 255); color: rgb(235, 19, 19);">Cancelled</span>
                 <% } else if (order[i].products.status === "Delivered") { %>
                     <a href="#" id="" class="btn btn-sm" style="background-color: rgb(0, 132, 255); color: white;" onclick="returnOrder('<%= order[i]._id %>', '<%= order[i].products._id %>')">Return</a>
