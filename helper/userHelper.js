@@ -72,19 +72,21 @@ const loginHome = (userData)=>{
 const doSignUp = (userData, verify, emailVerify) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let u = fale
+      let u = false
       const userExist = await userModel.findOne({
         $or: [{ email: userData.email }]
       });
 
       const response = {};
+      console.log(userData.referralcode);
 
       if (userData.referralcode) {
         const userWithReferralcode = await userModel.findOne({ referalCode: userData.referralcode });
-
+        console.log(userWithReferralcode)
+        
         if (userWithReferralcode) {
           const userHaveWallet = await walletModel.findOne({ userid: userWithReferralcode._id });
-
+          // console.log("no mach",userHaveWallet)
           if (userHaveWallet) {
             // Assuming checker object and userid are defined somewhere
             const updating = await walletModel.updateOne(
@@ -100,7 +102,9 @@ const doSignUp = (userData, verify, emailVerify) => {
                 $inc: { balance: 100 },
               }
             );
+            // console(updating)
             u = true
+            // console.log(u)
             // console.log("updating in if ", updating);
           } else {
             const creating = await walletModel.create({
@@ -114,7 +118,8 @@ const doSignUp = (userData, verify, emailVerify) => {
                 },
               ],
             });
-            // console.log("creating in else", creating);
+            u = true
+            console.log("creating in else", creating);
           }
         }
       }
@@ -143,10 +148,13 @@ const doSignUp = (userData, verify, emailVerify) => {
 
               const createdUser = await userModel.create(newUser);
 
-              // console.log("User created:", createdUser);
-              response.user = u
+              console.log("User created:", createdUser);
+              console.log(u)
+              response.user = createdUser
+              response.u = u
               response.status = true;
               response.message = "Signed Up Successfully";
+              console.log(response)
               resolve(response);
             } else {
               response.status = false;
@@ -169,7 +177,7 @@ const doSignUp = (userData, verify, emailVerify) => {
         resolve(response);
       }
     } catch (error) {
-      console.error("Error during sign up:", error);
+      console.error("Error during sign up:", error.message);
       reject(error);
     }
   });
@@ -291,11 +299,28 @@ const productQuantityChecker = async(req,res,next)=>{
 }
 
 
+const addresChecker = async(req,res,next)=>{
+  try {
+    console.log(req.body.addressId)
+    const address = req.body.addressId
+    if(address){
+      next()
+    }else{
+      return   res.json({success:false,mess:`Add Address`})
+    }
+    
+  } catch (error) {
+    console.log(error.message)
+  }
+}
+
+
 module.exports = {
   doSignUp,
   loginHome,
   checkingUserBlockedOrNot,
   generateRazorpay,
   productQuantityChecker,
-  checkUserBlockOrNo
+  checkUserBlockOrNo,
+  addresChecker
 };

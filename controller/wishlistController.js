@@ -6,7 +6,10 @@ const ObjectId = require("mongoose").Types.ObjectId;
 
 const whistlistPage = async (req, res,next) => {
   try {
+    // console.log("ok")
+    // const userid = req.session.user
     const wishlist = await wishlistModel.aggregate([
+      // {$match:{userid:userid}},
       { $unwind: "$items" },
       {
         $lookup: {
@@ -45,6 +48,7 @@ const addToWishlist = async (req, res,next) => {
         },
       },
     });
+    
     // console.log(productAlreadyInWishlist)
     if (productAlreadyInWishlist) {
       res.json({ status: false });
@@ -57,9 +61,11 @@ const addToWishlist = async (req, res,next) => {
 
     if (!productAlreadyInWishlist && userAlreadyHavewishlist) {
       // console.log("ok")
-      await wishlistModel.updateOne({
-        $push: { items: { product: productId } },
-      });
+      await wishlistModel.findOneAndUpdate(
+        { userid: userId },
+        { $addToSet: { items: { product: productId } } },
+        { new: true, upsert: true }
+      );
       res.json({ status: true });
     } else {
       // console.log("ok2")
@@ -80,9 +86,10 @@ const removeWishlist = async (req, res,next) => {
   try {
     const productid = req.query.id;
     const userId = req.session.user._id;
-    const removed = await wishlistModel.updateOne(
+    const removed = await wishlistModel.findOneAndUpdate(
       { userid: userId },
-      { $pull: { items: { product: productid } } }
+      { $pull: { items: { product: productid} } },
+      { new: true }
     );
     if (removed.modifiedCount > 0) {
       res.json({ success: true });

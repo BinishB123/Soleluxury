@@ -106,6 +106,7 @@ const sizeproductChecker = async(req,res,next)=>{
 
 const removeProductFromTheCart = async(req,res,next)=>{
     try {
+        console.log("ok")
         const productid = req.query.id;
        
         const size =req.query.size

@@ -74,7 +74,7 @@ userRoute.get('/prodcutwithsizecartcheck',userHelper.checkingUserBlockedOrNot,ca
 
 
  //user_order
- userRoute.post("/placeorder",userHelper.checkingUserBlockedOrNot,userHelper.productQuantityChecker,orderController.placeOrder)
+ userRoute.post("/placeorder",userHelper.checkingUserBlockedOrNot,userHelper.productQuantityChecker,userHelper.addresChecker,orderController.placeOrder)
  userRoute.get("/orderplaced",userHelper.checkingUserBlockedOrNot,orderController.orderPlacedCnfrm)
  userRoute.get("/orders",userHelper.checkingUserBlockedOrNot,orderController.orders)
  userRoute.get("/orderdetails",userHelper.checkingUserBlockedOrNot,orderController.orderdetails)

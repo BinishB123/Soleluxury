@@ -11,7 +11,7 @@ const methodOverride = require("method-override")//in form used by input fields
   
    
 
- mongoose.connect(process.env.dbId)
+ mongoose.connect(process.env.dbId)      
  .then(() => { 
   console.log('Connected to MongoDB');
   // You can start using Mongoose models here 
@@ -31,7 +31,7 @@ const methodOverride = require("method-override")//in form used by input fields
     secret:"y1r13t1t3rt77t7g8y3e67",
     resave:false,
     saveUninitialized:true
- }))
+ })) 
 
  app.use(methodOverride("_method"))
  //Flash middleware
@@ -60,7 +60,7 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render("error", { layout: false });
 });
-
+ 
 
   
   const port = 3009;
@@ -68,3 +68,4 @@ app.use(function (err, req, res, next) {
 app.listen(port, () => {
   console.log(`http://localhost:${port}`,`http://localhost:${port}/admin`);   
 });
+    

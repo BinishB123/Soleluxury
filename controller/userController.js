@@ -128,7 +128,7 @@ const insertUser = async (req, res,next) => {
       req.flash("message", message);
       return res.redirect("/signup");
     } else {
-      if (response.user) {
+      if (response.u) {
         // Assuming userHaveWallet variable is defined somewhere
         const userHaveWallet = await walletModel.findOne({ userid: response.user._id });
 
@@ -146,7 +146,8 @@ const insertUser = async (req, res,next) => {
               $inc: { balance: 100 },
             }
           );
-          // console.log("updating in if ", updating); 
+          req.flash("message", response.message);
+          res.redirect("/login");
         } else {
           const creating = await walletModel.create({
             userid: response.user._id,
@@ -166,8 +167,8 @@ const insertUser = async (req, res,next) => {
 
     req.flash("message", response.message);
     res.redirect("/login");
-  } catch (err) {
-    console.error("Error in  insertuser:", error);
+  } catch (error) {
+    console.error("Error in  insertuser:", error.message);
    
     next(error)
   }
@@ -231,12 +232,8 @@ const productView = async (req, res,next) => {
       const id = req.params.id
   // console.log(id)
       const product = await productModel.findOne({ _id: id })
-      // console.log(product)
-      // const discountPrice = Math.round(
-      //     product.regularPrice - (product.regularPrice * product.discount) / 100
-      // );
+      
       const item = await offerHelper.productViewOffer(product)
-      // console.log("item.saleprice myree pooffvftbyg8",item.salePrice)
       if (req.session.user) {
           const userId = req.session.user._id
           const productAlreadyInTheCart = await cartModel.findOne({
@@ -248,7 +245,7 @@ const productView = async (req, res,next) => {
   
           res.render("productview", {
               data: product,
-              user: req.session.user,
+              user: userId,
               productAlreadyInCart: productAlreadyInTheCart,
               discountPrice: item.salePrice // Pass the discounted price to the view
           });

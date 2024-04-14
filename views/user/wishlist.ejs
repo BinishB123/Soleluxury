@@ -804,7 +804,7 @@
                                                     
                                                     <div class="text-center mt-3">
                                                         <div class="d-inline-block">
-                                                            <button class="btn btn-sm btn-primary" style="width: 70px; margin-bottom: 30px; background-color: black; color: white;"  onclick="addToCart('<%=wishlist[i].product._id %>')">Add</button>
+                                                            <button class="btn btn-sm btn-primary" id="addtocart" style="width: 70px; margin-bottom: 30px; background-color: black; color: white;"  onclick="addToCart('<%=wishlist[i].product._id %>')">Add</button>
                                                         </div>
                                                     </div>
                                                     
@@ -1057,9 +1057,9 @@
 
 function addToCart(productId){
     // console.log(sizeClicked)
-   
+       
     if (sizeClicked===undefined) {
-        Toastify({
+       return Toastify({
                         text: "Please select a size before adding to cart",
                         backgroundColor: "red",
                         duration: 3000,
@@ -1067,7 +1067,7 @@ function addToCart(productId){
                     }).showToast();
             
     }else if (countOfProduct === 0) {
-        Toastify({
+      return  Toastify({
                         text: "product not available",
                         backgroundColor: "red",
                         duration: 3000,
