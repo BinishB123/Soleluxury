@@ -192,6 +192,7 @@ const clearingCart = (userId)=>{
     return new Promise(async(resolve, reject) => {
         try {
             const result = await cartModel.deleteOne({userId:userId});
+            console.log(result)
             resolve(result)
         } catch (error) {
             console.error("Error in clearingcart:", error);

@@ -324,7 +324,9 @@ const guestUser = async(req,res,next)=>{
 
 const viewCart = async(req, res,next) => {
   try {
+    
       if (req.session.user) {
+        // console.log("okkk")
           const id = req.session.user._id
 
           const userCart = await cartModel.findOne({ userId: id })
@@ -352,12 +354,12 @@ const viewCart = async(req, res,next) => {
               }
              
                const totalPrice = await cartHelper.subtotal(products,id) 
-
+                // console.log("yeshh",id)
              
                res.render("cart", { products: products,totalPrice:totalPrice,user:id})
               
              }else{
-              res.render("cart")
+              res.render("cart",{user:id})
              }
           
 

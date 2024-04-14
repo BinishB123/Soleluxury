@@ -368,7 +368,7 @@ const orderdetails =  async(req,res,next)=>{
     ]);
     // console.log(products)
     res.render("orderDetails",
-    {order:products})
+    {order:products,user:req.session.user._id})
     
   } catch (error) {
     console.error("Error in orderdetail:", error);
