@@ -240,9 +240,9 @@ const productUpdate = async (req, res,next) => {
                 images.push(req.files[i].filename);
             }
         }
-
+     const n =   data.productName.trim()
         // Check if a product with the same name exists
-        const duplicate = await productModel.findOne({ productName: data.productName,_id:{$ne:id} });
+        const duplicate = await productModel.findOne({ productName: n,_id:{$ne:id} });
        
             if (req.files.length>0) {
                 
