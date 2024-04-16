@@ -214,7 +214,7 @@ const cancelIndividualproductOrder = async (req, res,next) => {
                   paymentMethod: checker.paymentMethod, // Set the payment method
                 },
               },
-              $inc: { balance: checker.products.productPrice },
+              $inc: { balance: checker.products.productPrice *checker.products.quantity},
             }
           );
           // console.log("updatinf in if ", updating);
@@ -224,7 +224,7 @@ const cancelIndividualproductOrder = async (req, res,next) => {
             balance: checker.products.productPrice,
             walletDatas: [
               {
-                amount: checker.products.productPrice,
+                amount: checker.products.productPrice *checker.products.quantity,
                 date: new Date(),
                 paymentMethod: checker.paymentMethod,
               },
