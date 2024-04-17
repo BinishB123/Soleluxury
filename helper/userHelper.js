@@ -252,7 +252,7 @@ const generateRazorpay = (userId,totalAmount)=>{
 
 function generateRandomString() {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  console.log("change for git ")
+  console.log("change for git new change ")
   let result = '';
   for (let i = 0; i < 15; i++) {
       const randomIndex = Math.floor(Math.random() * characters.length);
