@@ -780,8 +780,11 @@
                     <span class="badge" style="background-color: rgb(31, 229, 17);"><%= order[i].products.status %></span>
                 <% } else if(order[i].products.status === "Returned") { %>
                     <span class="badge" style="background-color: rgb(18, 52, 15);"><%= order[i].products.status %></span>
+                <% } else if(order[i].products.status === "payment pending") { %>
+                    <span class="badge" style="background-color: rgb(159, 33, 92);"><%= order[i].products.status %></span>
                 <% } %>
             </td>
+            
             <td class="action" data-title="Action">
                 <% if(order[i].products.status === "cancelled") { %>
                     <span style="background-color: rgb(255, 255, 255); color: rgb(235, 19, 19);">Cancelled</span>
@@ -792,7 +795,8 @@
                     <span class="badge" style="color: rgb(133, 133, 133);">Return pending</span>
                 <% } else if(order[i].products.status === "Returned") { %>
                     <span class="badge" style="color: rgb(13, 42, 184);">Returned</span>
-                <% } else { %>
+                
+                <%}else { %>
                     <a href="#" id="" class="btn btn-sm" style="background-color: red; color: white;" onclick="cancelOrder('<%= order[i]._id %>', '<%= order[i].products._id %>','<%=order[i].products.quantity%>','<%=order[i].products.size%>','<%=order[i].product._id%>')">Cancel</a>
                 <% } %>
             </td>
@@ -803,8 +807,11 @@
 
 <div class="text-end">
     <div class="cart-action">
-        <a class="btn" href="/home" style="background-color: rgb(0, 89, 255);"><i class="fi-rs-shopping-bag mr-10"></i>Continue Shopping</a>
-        <a href="/orders" class="btn btn-primary" style="background-color: black;">Go to Order Details</a>
+        <%  if (order[0].currentstatus==="payment pending") {%>
+            <a href="#" id="retryPaymentButton" class="btn btn-sm" style="background-color: rgb(160, 23, 101); color: white;" onclick="retryPayment('<%=order[0]._id%>', '<%=order[0].totalAmount%>')">Retry payment</a>
+            <% } %>
+    
+        
     </div>
     <div class="form-group text-end"></div>
 </div>
@@ -1037,9 +1044,102 @@
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="https://cdn.jsdelivr.net/npm/easyinvoice/dist/easyinvoice.min.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 
 </body>
 <script>
+ function retryPayment(id,amount){
+    console.log(amount)
+    $.ajax({
+    url: '/retry-payment',
+    method: 'POST',
+    data: {id:id,amount:amount},
+    success: function(response) {
+        if (response.status==true) {
+           
+           const order = response.order
+              
+            razorPayment(order,id)
+           }
+    },
+    error: function(xhr, status, error) {
+      swal("Error", "Failed to download invoice. Please try again later.", "error");
+      console.error('Error downloading invoice:', error);
+    }
+  });
+ }
+
+ function razorPayment(order,id){
+   
+    var options = {
+    "key": "rzp_test_EEotY5tKE8Vqxh", // Enter the Key ID generated from the Dashboard
+    "amount": 100000, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    "currency": "INR",
+    "name": "Soleluxury", //your business name
+    "description": "Test Transaction",
+    "image": "https://example.com/your_logo",
+    "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    "handler": function (response){
+    
+       verifyPayment(response,order,id)
+    },
+    "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
+        "name": "Gaurav Kumar", //your customer's name
+        "email": "gaurav.kumar@example.com", 
+        "contact": "9000090000"  //Provide the customer's phone number for better conversion rates 
+    },
+    "notes": {
+        "address": "Razorpay Corporate Office"
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+var rzp1 = new Razorpay(options);
+rzp1.open();
+
+
+   }
+
+   function verifyPayment(payment,order,id){
+    // console.log(payment)
+    // console.log(order)
+   
+    $.ajax({
+        url: '/verify-failure',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({payment:payment , order: order ,orderdocid:id}),
+        success: function(response) {
+            // console.log(response)
+           if (response.success) {
+          window.location.reload()
+           }else{
+            Toastify({
+                text: response.message,
+                 backgroundColor: "red",
+             duration: 6000,
+             position: "center" 
+         }).showToast();
+
+           }
+
+
+        },
+        error: function(error) {
+            
+            window.location.href = '/login';
+        }
+    });
+      
+   }
+
+
+
+
+
+
   function dldInvoice(orderid, productDocid) {
   $.ajax({
     url: '/invoicedownload',
@@ -1176,6 +1276,19 @@ function returnOrder(orderid,productDocid){
         }
     });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 </script>
 
 

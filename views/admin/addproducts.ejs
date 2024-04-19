@@ -166,6 +166,10 @@
                                         <img src="assets/imgs/theme/upload.svg" alt="">
                                         <input class="form-control border" name="images" id="imageInput" type="file" multiple>
                                         <span id="fileerrormessage" class="text-center w-50 mx-auto" style="display: block;color: red; "></span>
+                                        <!-- <div id="error6" style="display: none;" class="alert alert-danger err"> -->
+                                        </div>
+                                        </p>
+                                        <div id="previewContainer" style="height:5%;"></div>
                                     </div>
                                 </div>
                             </div>
@@ -174,6 +178,24 @@
 
 
                             </div>
+                            <input type="hidden" id="hiddenField1" name="hiddenField1" value="">
+                            <input type="hidden" id="hiddenField2" name="hiddenField2" value="">
+                            <input type="hidden" id="hiddenField3" name="hiddenField3" value="">
+                            <input type="hidden" id="hiddenField4" name="hiddenField4" value="">
+                            <input type="hidden" id="hiddenField5" name="hiddenField5" value="">
+            
+                            <div id="myModal" class="modal">
+                                <span class="close">&times;</span>
+                                <!-- <img class="modal-content" height="100%" id="img01"> -->
+                                <div class="modal-content img-container">
+                                    <img id='image' src="" alt="">
+                                </div>
+                                <button id="btn-crop" type="button">Crop</button>
+                                <div class="cropped-container">
+                                    <img id="output" src="" alt="">
+                                </div>
+                            </div>
+
                         </form>
                 
                 </div> <!-- card-body end// -->
@@ -204,11 +226,18 @@
     <script src="/public/admin-assets/js/vendors/jquery.fullscreen.min.js"></script>
      <script src="/public/js/productValidation.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <!-- <script src="/public/cropperjs/cropper.js"></script> -->
     
    
     <!-- Main Script -->
     <script src="/public/admin-assets/js/main.js" type="text/javascript"></script>
     <script>
+        const hidden1 = document.getElementById('hiddenField1')
+        const hidden2 = document.getElementById('hiddenField2')
+       const hidden3 = document.getElementById('hiddenField3')
+          const hidden4 = document.getElementById('hiddenField4')
+         const hidden5 = document.getElementById('hiddenField5')
+          const fileerrormessage= document.getElementById('fileerrormessage')
         $(document).ready(function () {
             $('#customerlist').DataTable();
         })
@@ -218,49 +247,157 @@
         document.getElementById('imageInput').addEventListener("change", handleFileSelect)
     
         function handleFileSelect(event) {
+            // console.log(event.target)
+            let  selectedFiles = []
             const addedImagesContainer = document.getElementById("addedImagesContainer")
             addedImagesContainer.innerHTML = " ";
-    
+            
             const files = event.target.files;
-    
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                selectedImages.push(file);
-    
-                const thumbnail = document.createElement('div');
-                thumbnail.classList.add("thumbnail");
-    
-                const img = document.createElement('img');
-                img.src = URL.createObjectURL(file);
-                img.alt = "thumbnail";
-                img.style.width = "50px";
-                img.style.height = "auto";
-    
-                const removeIcon = document.createElement("span");
-                removeIcon.classList.add("remove-icon");
-                removeIcon.innerHTML = "&times";
-    
-                removeIcon.addEventListener("click", function () {
-                    const index = selectedImages.indexOf(file);
-                    if (index >= 0) {
-                        selectedImages.splice(index, 1);
-                    }
-                    thumbnail.remove();
-                });
-    
-                thumbnail.appendChild(img);
-                thumbnail.appendChild(removeIcon);
-                addedImagesContainer.appendChild(thumbnail);
+            if (files.length>5) {
+                return  fileerrormessage.innerHTML = "please add 5 images only"
+            }else{
+                fileerrormessage.innerHTML = ""
             }
-        }
+            selectedFiles = Array.from(files);
+            for (var i = 0; i < selectedFiles.length; i++) {
+                
+              var file = selectedFiles[i];
+              let ind =i
+              if (!file.type.startsWith('image/')) {
+                return  fileerrormessage.innerHTML = "please add images only"
+              }else{
+                fileerrormessage.innerHTML = ""
+              }
+
+        var reader = new FileReader();
+       
+        const imageInput =document.getElementById("imageInput")
+        reader.onload = (function (currentFile) {
+            return function (e) {
+                var previewImage = document.createElement('img');
+                previewImage.className = 'preview-image';
+                previewImage.src = e.target.result;
+                previewImage.title = currentFile.name;
+
+                const deleteButton = document.createElement('button');
+                deleteButton.innerHTML = 'Delete';
+                deleteButton.type = 'button';
+                deleteButton.addEventListener('click', function () {
+                           
+                                       const container = deleteButton.parentNode;
+                       container.parentNode.removeChild(container);
+                   
+                       // Remove the file from the selectedFiles array
+                       selectedFiles.splice(ind, 1);
+                   
+                       // Create a new FileList with the remaining files
+                       const remainingFileList = new DataTransfer();
+                       selectedFiles.forEach(file => {
+                           remainingFileList.items.add(file);
+                       });
+                   
+                       // Assign the new FileList to the file input field
+                       imageInput.files = remainingFileList.files;
+                   
+                       // Update the length property of the file input field
+                       imageInput.files.length = selectedFiles.length;
+                });
+
+            
+                var viewButton = document.createElement('button');
+                viewButton.innerHTML = 'View';
+                viewButton.id = `view${ind}`
+                viewButton.type = 'button'
+                viewButton.onclick = function() {
+                    var modal = document.getElementById('myModal');
+                    var modalImg = document.getElementById('img01');
+                    modal.style.display = 'block';
+                    // modalImg.src = e.target.result;
 
 
+                    const image = document.getElementById('image');
+                    image.src = e.target.result
+                    const cropper = new Cropper(image, {
+                        aspectRatio: 1/1,
+                        viewMode:3
+                    
+                    });
+
+                    document.querySelector('#btn-crop').addEventListener('click',async function(){
+                        var croppedImage = await cropper.getCroppedCanvas().toDataURL("image/png");
+                        let dimensions = cropper.getData()
+                        // console.log(ind);
+                        // console.log(dimensions);
+                        previewImage.src= croppedImage
+                        let x=dimensions.x
+                        let y=dimensions.y
+
+                        let height=dimensions.height
+
+                        let width=dimensions.width
+
+                        const imagedata="index= "+ind+" x= "+x+" y= "+y+" width= "+width+" height= "+height
+                        // console.log(imagedata);
+
+                        if(ind == 0){
+                            hidden1.value = imagedata
+                        }
+                        if(ind == 1){
+                            hidden2.value = imagedata
+                        }
+                        if(ind == 2){
+                            hidden3.value = imagedata
+                        }
+                        if(ind == 3){
+                            hidden4.value = imagedata
+                        }
+                        if(ind == 4){
+                            hidden5.value = imagedata
+                        }
+
+                     
+                        document.querySelector(".cropped-container").style.display = 'none';
+                         modal.style.display = 'none';
+                        cropper.destroy()
+                    })
+                };
+
+           
+             
+            
+
+                var container = document.createElement('div');
+                container.appendChild(previewImage);
+                container.appendChild(viewButton);
+                container.appendChild(deleteButton);
+                addedImagesContainer.appendChild(container);
+                // previewContainer.appendChild(container);
+            };
+        })(file);
+
+        reader.readAsDataURL(file);
+    }
+} 
         
+
+document.getElementsByClassName('close')[0].onclick = function() {
+    document.getElementById('myModal').style.display = 'none';
+
+};
+
+// Close modal when clicking anywhere outside the modal
+window.onclick = function(event) {
+    var modal = document.getElementById('myModal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+};
+
+
         
     </script>
     
 </body>
 
 
-<!-- Mirrored from wp.alithemes.com/html/evara/evara-backend/page-products-list.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:33:12 GMT -->
 </html>

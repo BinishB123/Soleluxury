@@ -48,7 +48,7 @@ const methodOverride = require("method-override")//in form used by input fields
  app.use('/',useFeatRoute)
  app.use('/admin',adminRoute)
  app.use(function (req, res, next) {
-  next(createError(404));
+  next(createError(404));   
 });
 
 app.use(function (err, req, res, next) {

@@ -75,6 +75,7 @@ userRoute.get('/prodcutwithsizecartcheck',userHelper.checkingUserBlockedOrNot,ca
 
  //user_order
  userRoute.post("/placeorder",userHelper.checkingUserBlockedOrNot,userHelper.productQuantityChecker,userHelper.addresChecker,orderController.placeOrder)
+ userRoute.post("/paymentFailure",orderController.paymentFaliure)
  userRoute.get("/orderplaced",userHelper.checkingUserBlockedOrNot,orderController.orderPlacedCnfrm)
  userRoute.get("/orders",userHelper.checkingUserBlockedOrNot,orderController.orders)
  userRoute.get("/orderdetails",userHelper.checkingUserBlockedOrNot,orderController.orderdetails)
@@ -82,6 +83,9 @@ userRoute.get('/prodcutwithsizecartcheck',userHelper.checkingUserBlockedOrNot,ca
  userRoute.patch("/cancelOrder",userHelper.checkingUserBlockedOrNot,orderController.cancelIndividualproductOrder)
  userRoute.patch("/returnOrder",userHelper.checkingUserBlockedOrNot,orderController.returnOrder)
  userRoute.post("/verify-payment",userHelper.checkingUserBlockedOrNot,orderController.verifyPayment)
+ userRoute.get("/paymentFailOrder",orderController.paymentFailOrder)
+ userRoute.post("/retry-payment",orderController.retrypayment)
+ userRoute.post("/verify-failure",orderController.verifyfailure)
 
 
  //USER COUPON

@@ -9,7 +9,7 @@ const productOfferPage = async (req, res, next) => {
     const offer = await productOfferModel.find({}).populate("productOffer.product");
 
     // Get the current date and time
-    const date = new Date();
+    const date = new Date(); 
     
     // Retrieve all products that are not blocked
     const products = await productModel.find({ isBlocked: false });
@@ -46,12 +46,12 @@ const AddProductOffer = async(req,res,next)=>{
 
 const editProductOffer = async (req, res,next) => {
     try {
-        
+        // console.log("okkk")
         const id = req.params.id;
         const offer = await productOfferModel.findOne({ _id: id }).lean();
         offer.formattedStartingDate = formatDate(offer.startingDate);
         offer.formattedEndingDate = formatDate(offer.endingDate);
-
+  
         res.json(offer); // Sending the formatted offer as a JSON response
     } catch (error) {
       console.error("Error in editproductoffer:", error);

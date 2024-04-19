@@ -6,7 +6,9 @@ const brand = require("../model/brandModel")
 const { findOne } = require("../model/adminModel")
 const fs = require("fs")
 const path = require("path")
+const sharp = require("sharp")
 const product = require("../model/productModel")
+const { File } = require("buffer")
 
 const productsLoad =async (req,res)=>{
     
@@ -62,80 +64,130 @@ const createProductPage = async(req,res,next)=>{
 }
 
 
-const addproducts = async (req, res,next) => {
+const addproducts = async (req, res, next) => {
     try {
-      
         const product = req.body;
-        let productName = req.body.productName
-         productName = productName.trim()
-        // console.log(product)
+        let productName = req.body.productName.trim();
+        const { hiddenField1, hiddenField2, hiddenField3, hiddenField4, hiddenField5 } = req.body;
 
-       
         const productExist = await productModel.findOne({ productName: productName });
-       
+
         if (productExist) {
-            const message="cannot add duplicate product , product  exist with same name ";
-            return res.json({status:false,message:message})
+            const message = "Cannot add duplicate product, product exists with the same name";
+            return res.json({ status: false, message: message });
         }
-      
 
-        if (!productExist) {
-            // console.log("product does not exist");
-        
-            const images = [];
-        
-            if (req.files && req.files.length > 0) {
-                // Image validation
-                for (let i = 0; i < req.files.length; i++) {
-                    const file = req.files[i];
-                    // Check if the file is an image
-                    if (!file.mimetype.startsWith('image/')) {
-                        // console.log("File MIME Type:", file.mimetype);
+        const images = [];
 
-                        const errormessage ="Cannot Add product please upload images only";
-                        return res.json({ success: false, fileerrormessage:errormessage }); 
-
-                    }
-                    // Add filename to the images array
-                    images.push(file.filename);
+        if (req.files && req.files.length > 0) {
+            // Image validation
+            for (let i = 0; i < req.files.length; i++) {
+                const file = req.files[i];
+                // Check if the file is an image
+                if (!file.mimetype.startsWith('image/')) {
+                    const errormessage = "Cannot add product, please upload images only";
+                    return res.json({ success: false, fileerrormessage: errormessage });
                 }
+                images.push(file.filename);
             }
-        
-            const productAdding = {
-                id: Date.now(),
-                brand: product.brand,
-                productImage: images,
-                productName: productName,
-                description: product.description,
-                category: product.category,
-                size: {
-                    s: { quantity: product.smallsize },
-                    m: { quantity: product.mediumsize },
-                    l: { quantity: product.largesize }
-                },
-                regularPrice: product.regularPrice,
-                discount: product.discount,
-                color: product.color,
-                createdOn: Date.now()
-            };
-        
-            await productModel.create(productAdding);
-            
-            const message="product added successfully";
-            return res.json({success:true,message:message}) // Terminate function execution
-        } else {
-            // Product already exists
-            const errormessage ="Cannot Add product Already exist";
-             return res.json({ success: false, errormessage:errormessage }); // 
         }
-        
+
+        const productAdding = {
+            id: Date.now(),
+            brand: product.brand,
+            productImage: images,
+            productName: productName,
+            description: product.description,
+            category: product.category,
+            size: {
+                s: { quantity: product.smallsize },
+                m: { quantity: product.mediumsize },
+                l: { quantity: product.largesize }
+            },
+            regularPrice: product.regularPrice,
+            discount: product.discount,
+            color: product.color,
+            createdOn: Date.now()
+        };
+
+        const newProduct = await productModel.create(productAdding);
+
+        // Array to store promises for cropping operations
+        const cropPromises = [];
+
+        // Define cropImage function
+        async function cropImage(hiddenfield) {
+            return new Promise((resolve, reject) => {
+                let parts = hiddenfield.split(" ");
+                let ind = parseInt(parts[1]);
+                let x = parseInt(parts[3]);
+                let y = parseInt(parts[5]);
+                let width = parseInt(parts[7]);
+                let height = parseInt(parts[9]);
+
+                let filename = newProduct.productImage[ind];
+                let inputPath = path.join(__dirname, `../public/photos/productImages/${filename}`);
+                let outputPath = path.join(__dirname, `../public/photos/productImages/cropped_${filename}`);
+
+                sharp(inputPath)
+                    .extract({ left: x, top: y, width: width, height: height })
+                    .toFile(outputPath, (err) => {
+                        if (err) {
+                            console.error("Error cropping image:", err);
+                            reject(err);
+                        } else {
+                            // Update the product image path with the cropped image
+                            let croppedFilename = `cropped_${filename}`;
+                            newProduct.productImage[ind] = croppedFilename;
+
+                            // Unlink the original image file
+                            fs.unlinkSync(inputPath);
+
+                            // console.log("Image cropped successfully");
+                            resolve();
+                        }
+                    });
+            });
+        }
+
+        // Push crop promises to array
+        if (hiddenField1) {
+            cropPromises.push(cropImage(hiddenField1));
+        }
+        if (hiddenField2) {
+            cropPromises.push(cropImage(hiddenField2));
+        }
+        if (hiddenField3) {
+            cropPromises.push(cropImage(hiddenField3));
+        }
+        if (hiddenField4) {
+            cropPromises.push(cropImage(hiddenField4));
+        }
+        if (hiddenField5) {
+            cropPromises.push(cropImage(hiddenField5));
+        }
+
+        // Wait for all crop promises to resolve
+        await Promise.all(cropPromises);
+
+        // Save the updated product after all cropping operations
+        await newProduct.save();
+
+        const message = "Product added successfully";
+        return res.json({ success: true, message: message });
+
     } catch (error) {
         console.error("Error in addproducts:", error);
-   
-    next(error)
+        next(error);
     }
 };
 
+
+
+
+
+
+ 
 
 const  blockOrUnblockproduct= async (req, res,next) => {
     try {

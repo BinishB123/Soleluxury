@@ -73,7 +73,7 @@ function submitFormData() {
         },
         error: function(error) {
             // Handle error response
-            console.error(xhr.responseText);
+            console.error(error.responseText);
             // Display error message or handle the error accordingly
         }
     });
@@ -106,6 +106,8 @@ function validateForm() {
     const ssizeq = document.getElementById("ssizeq").value.trim();
     const msizeq = document.getElementById("msizeq").value.trim();
     const lsizeq = document.getElementById("lsizeq").value.trim();
+    const fileerrormessage= document.getElementById('fileerrormessage')
+
 
 
 
@@ -163,6 +165,10 @@ function validateForm() {
     if (color === "") {
         displayErrorMessage("color-error", "Color is required");
         isValid = false;
+    } 
+    if (fileerrormessage) {
+        isValid = false
+        console.log(isValid)
     }
 
     return isValid;

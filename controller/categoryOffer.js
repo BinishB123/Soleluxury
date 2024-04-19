@@ -26,7 +26,7 @@ const editcategoryOffer = async (req, res,next) => {
         const offer = await categoryOfferModel.findOne({ _id: id }).lean();
         offer.formattedStartingDate = formatDate(offer.startingDate);
         offer.formattedEndingDate = formatDate(offer.endingDate);
-        //  console.log(offer)
+    
         res.json(offer); // Sending the formatted offer as a JSON response
     } catch (error) {
         console.error("Error in editcategorypage:", error);

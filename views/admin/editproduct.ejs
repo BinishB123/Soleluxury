@@ -145,7 +145,20 @@
                                                 <div class="mb-4" style="display: inline-block;">
                                                     <img class="rounded" style="width: 50px; height: 60px;" src="/public/photos/productImages/<%= product.productImage[i] %>" alt="image" data-filename="<%= product.productImage[i] %>" id="imgCount">
                                                     <span class="delete-icon" onclick="deleteImage('<%= product._id %>', '<%= product.productImage[i] %>')">❌</span>
+                                                    <span class="btn-sm" onclick="view('<%= i%>')">View</span>
                                                 </div>
+                                                <div id="myModal<%= i %>" class="modal">
+                                                    <span class="close">&times;</span>
+                                                    <div class="modal-content img-container">
+                                                        <img id="modalImage<%=i%>" src="/public/photos/productImages/<%= product.productImage[i] %>" alt="">
+                                                    </div>
+                                                    <button id="btn-crop" type="button">Crop</button>
+                                                    <div class="cropped-container">
+                                                        <img id="output" src="" alt="">
+                                                    </div>
+                                                </div>
+                                                
+                                                
                                             <% } %>
                                         </div>
                                         
@@ -162,6 +175,16 @@
                                     <div>
                                         <button class="btn btn-md rounded font-sm " id="updatebtn" type="submit"  style="background-color: rgb(0, 153, 255);">Update</button>
                                     </div>
+                                              <input type="hidden" id="hiddenField1" name="hiddenField1" value="">
+                                               <input type="hidden" id="hiddenField2" name="hiddenField2" value="">
+                                              <input type="hidden" id="hiddenField3" name="hiddenField3" value="">
+                                              <input type="hidden" id="hiddenField4" name="hiddenField4" value="">
+                                              <input type="hidden" id="hiddenField5" name="hiddenField5" value="">
+                    
+                                    <!-- Modal HTML -->
+                                           
+
+                                    
                 
                                 </form>
                             </div>
@@ -202,6 +225,22 @@
             //   const imgclass = document.querySelectorAll('.rounded')  
             //   const lenimg = imgclass.length - 1
             //     console.log(lenimg)
+            function view(i) {
+                console.log(i)
+           var modal = document.getElementById(`myModal${i}`);
+           var modalImage = document.getElementById(`modalImage${i}`);
+   // Retrieve the src attribute of the modal image
+
+    modal.style.display = 'block'; // Display the modal
+    modal.style.display ="block"
+}
+
+
+
+            
+
+
+
 
   function deleteImage(productId, productImage) {
     deleteSingleImage(productId, productImage);

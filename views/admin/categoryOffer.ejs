@@ -309,12 +309,13 @@ function deleteCategoryOffer(offerid){
 
 
    function editOffer(id){
-        //  console.log("click cheythu")
-        //  console.log(id)
+         console.log("click cheythu")
+         console.log(id)
     $.ajax({
         url:`/admin/categoryEditOffer/${id}`,
         method:"GET",
         success:function(res){
+          console.log(res)
              document.getElementById("productName").value = res.categoryOffer.category
             //  console.log(document.getElementById("productName").value)
             document.getElementById('editofferName').value = res.name; // Corrected ID to 'editofferName'

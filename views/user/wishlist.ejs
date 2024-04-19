@@ -775,7 +775,7 @@
                                                     </div>
                                                     <div class="modal-body text-center">
                                                         <div class="btn-group">
-                                                            <button class="btn btn-sm btn-dark sizeBtn mr-2" data-size="s" onclick="sizeSelection('s','<%=wishlist[i].product._id%>')">S</button>
+                                                            <button class="btn btn-sm btn-dark sizeBtn mr-2" data-size="s"    onclick="sizeSelection('s','<%=wishlist[i].product._id%>')">S</button>
                                                             <button class="btn btn-sm btn-dark sizeBtn mr-2" data-size="m"   onclick="sizeSelection('m','<%=wishlist[i].product._id%>')">M</button>
                                                             <button class="btn btn-sm btn-dark sizeBtn" data-size="l"   onclick="sizeSelection('l','<%=wishlist[i].product._id%>')">L</button>
                                                         </div>
@@ -1002,14 +1002,16 @@
     sizeClicked = size
     // console.log(sizeClicked)
     // console.log(productId)
+    isProductWithThisSize(productId,size)
     
     $.ajax({
         url: `/size/${productId}/${size}`,
         method: 'POST',
         contentType: 'application/json',
         success: function(response) {
-            const messageDisplay = document.getElementById(`messageDisplay${productId}`);
-          const size = response.message
+            
+             const messageDisplay = document.getElementById(`messageDisplay${productId}`);
+             const size = response.message
               countOfProduct = size
         //   console.log(size)
          if(size!= undefined){
@@ -1046,6 +1048,7 @@
            
 
         }
+       
            
         },
         error: function(error) {
@@ -1057,7 +1060,18 @@
 
 function addToCart(productId){
     // console.log(sizeClicked)
-       
+  if (isProductWithThisSize(productId,sizeClicked) ) {
+    const addToCartButton = document.getElementById("addtocart");
+    addToCartButton.disabled = true;
+
+    return Toastify({
+    text: "Product Already in cart",
+    backgroundColor: "linear-gradient(to right, #ff416c, #ff4b2b)",
+    duration: 3000,
+    position: "center" 
+}).showToast();
+
+  }   
     if (sizeClicked===undefined) {
        return Toastify({
                         text: "Please select a size before adding to cart",
@@ -1068,7 +1082,7 @@ function addToCart(productId){
             
     }else if (countOfProduct === 0) {
       return  Toastify({
-                        text: "product not available",
+                       text: "product not available",
                         backgroundColor: "red",
                         duration: 3000,
                         position: "center" 
@@ -1080,9 +1094,16 @@ function addToCart(productId){
         method: 'POST',
         contentType: 'application/json',
         success: function(response) {
-            if (response.response) {
-               closeSizeMode(productId)
-            }
+            if (response.yes === true) {
+            // console.log("okkkk");
+             Toastify({
+                 text: "Product added to cart",
+                 backgroundColor: "green",
+                 duration: 3000,
+                 position: "center" 
+             }).showToast();
+}
+
             
             if (response.response===false) {
                 Toastify({
@@ -1104,6 +1125,44 @@ function addToCart(productId){
 
     }
 }
+
+
+function isProductWithThisSize(productid,sizeClicked){
+   
+   $.ajax({
+       url: `/prodcutwithsizecartcheck?id=${productid}&size=${sizeClicked}`,
+       method: 'GET',
+       contentType: 'application/json',
+       success: function(response) {
+           
+           if (response.success===true) {
+            const addToCartButton = document.getElementById("addtocart");
+             addToCartButton.disabled = true;
+            Toastify({
+                        text: "product already in cart",
+                        backgroundColor: "red",
+                        duration: 3000,
+                        position: "center" 
+                    }).showToast();
+                return true
+           }else{
+            const addToCartButton = document.getElementById("addtocart");
+            addToCartButton.disabled = false;
+           }
+          
+          
+       },
+       error: function(error) {
+           window.location.href = '/login';
+       }
+   });
+}
+
+
+
+
+
+
 
 
 function removeFromWishlist(productId) {

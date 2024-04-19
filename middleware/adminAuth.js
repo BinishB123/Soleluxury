@@ -16,9 +16,12 @@ const  adminLogged = (req,res,next)=>{
 }
 
 
+
+
 const adminAuth = {
     adminIsLogin,
-    adminLogged
+    adminLogged,
+   
 }
 
 

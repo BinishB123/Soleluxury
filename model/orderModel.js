@@ -22,7 +22,7 @@ const orderSchema = new mongoose.Schema({
         },
         status:{
             type:String,
-             enum:["pending","Proccessing","Confirmed","OutForDelivery","Shipped","Delivered","cancelled","return Pending","Return","Returned"],
+             enum:["pending","Proccessing","Confirmed","OutForDelivery","Shipped","Delivered","cancelled","return Pending","Return","Returned","payment pending"],
             // default:"pending",
           }
 
@@ -41,7 +41,8 @@ const orderSchema = new mongoose.Schema({
         mobile:Number
     },
     paymentMethod:{
-        type:String
+        type:String,
+        required:true
     },
     orderedOn:{
         type:Date,
@@ -50,10 +51,10 @@ const orderSchema = new mongoose.Schema({
     deliveredOn:{
         type:Date
     },
-    status:{
+   currentstatus:{
         type:String,
-        enum:["pending","proccessing","confirmed","outForDelivery","shipped","delivered","cancelled","return Pending","return"],
-        // default:"pending"
+        enum:["payment pending","confirm"],
+          default:"confirm"
     },
     orderId:{
         type:Number,

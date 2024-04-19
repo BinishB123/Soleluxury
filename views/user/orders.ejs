@@ -747,7 +747,11 @@
     <tr class="text-center">
         <td><%= order[i].orderId %></td>
         <td><%= order[i].orderedOn.toLocaleDateString() %></td> 
-        <td><%= order[i].totalAmount %></td>
+        <td><%= order[i].totalAmount %>
+            <% if(order[i].currentstatus==="payment pending") {%>
+                <div><h5 style="color: red;">payment pending</h5></div>
+                <% } %>
+        </td>
         <td><a href="/orderdetails?id=<%=order[i]._id  %>" class="btn-sm" style="background-color: black ;color: white;">View</a></td>
         
         

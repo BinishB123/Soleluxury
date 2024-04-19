@@ -60,7 +60,7 @@
                                     <th>Category</th>
                                     <th>regular Price</th>
                                     <th>Discount</th>
-                                    <th>Quantity</th>
+                                    <!-- <th>Quantity</th> -->
                                     <th>Edit</th>
                                     <th>List/Unlist</th>
                                     
@@ -97,10 +97,7 @@
                                         <span class=""> <%= data[i].discount %>%
                                             </span>
                                     </td>
-                                    <td>
-                                        <span class=""><%= data[i].totalQuantity %>
-                                            </span>
-                                    </td>
+                                    
                                     <td>
                                         <a href='/admin/editproduct?id=<%=data[i].id %>' class="btn btn-sm font-sm rounded" style="background-color: rgb(46, 239, 12);color: white;">EDIT</a>
                                     </td>

@@ -822,7 +822,12 @@
                         </table>
                     </div>
                     <div class="form-group col-lg-6">
+                        
                         <button class="btn  btn-sm" id="couponusing" style="background-color: black;" data-toggle="modal" data-target="#couponModal"><i class="fi-rs-label mr-10"></i>use Available coupons</button>
+                        <!-- 
+                            <button class="btn  btn-sm" id="couponusing" style="background-color: rgb(146, 245, 7);"><i class="fi-rs-label mr-10"></i>Purchase Above 500 Rupees use Coupons</button>
+
+                             -->
                     </div>
                     
                       
@@ -854,7 +859,25 @@
                                     <td><%= coupons[i].name %></td>
                                     
                                     <td><%= coupons[i].discount %>%</td>
-                                    <td><a class="btn btn-sm" style="background-color: rgb(11, 11, 11);color: white;" onclick="useCoupon('<%=coupons[i]._id%>')">use</a></td>
+                                    <% if (locals.cart <= 200 && coupons[i].discount <= 6) { %>
+                                        <td><a class="btn btn-sm" style="background-color: rgb(11, 11, 11); color: white;" onclick="useCoupon('<%= coupons[i]._id %>')">use</a></td>
+                                    <% } else if (locals.cart < 500 && coupons[i].discount <= 10 && locals.cart >= 200) { %>
+                                        <td><a class="btn btn-sm" style="background-color: rgb(11, 11, 11); color: white;" onclick="useCoupon('<%= coupons[i]._id %>')">use</a></td>
+                                    <% } else if (locals.cart >= 1000 && coupons[i].discount <= 15) { %>
+                                        <td><a class="btn btn-sm" style="background-color: rgb(11, 11, 11); color: white;" onclick="useCoupon('<%= coupons[i]._id %>')">use</a></td>
+                                    <% } else if (locals.cart >= 1500 && coupons[i].discount <= 20 && locals.cart < 1000) { %>
+                                        <td><a class="btn btn-sm" style="background-color: rgb(11, 11, 11); color: white;" onclick="useCoupon('<%= coupons[i]._id %>')">use</a></td>
+                                    <% } else if (locals.cart >= 2500 && coupons[i].discount <= 30 && locals.cart < 1500) { %>
+                                        <td><a class="btn btn-sm" style="background-color: rgb(11, 11, 11); color: white;" onclick="useCoupon('<%= coupons[i]._id %>')">use</a></td>
+                                    <% } else if (locals.cart >= 3000 && coupons[i].discount <= 40 && locals.cart < 2500) { %>
+                                        <td><a class="btn btn-sm" style="background-color: rgb(11, 11, 11); color: white;" onclick="useCoupon('<%= coupons[i]._id %>')">use</a></td>
+                                    <% } else if (locals.cart >= 10000 && coupons[i].discount <= 50 && locals.cart < 3000) { %>
+                                        <td><a class="btn btn-sm" style="background-color: rgb(11, 11, 11); color: white;" onclick="useCoupon('<%= coupons[i]._id %>')">use</a></td>
+                                    <% } else { %>
+                                        <td><p style="color: rgb(19, 19, 206);">cannot use for this amount</p></td>
+                                    <% } %>
+                                    
+                                            
                                   </tr>
                                   
                                   <% } %>
@@ -1274,6 +1297,50 @@ function removeCoupon() {
 };
 var rzp1 = new Razorpay(options);
 rzp1.open();
+rzp1.on("payment.failed", function (response) {
+            console.log("okkkkk")
+            handleFailure(order);
+        });
+
+   }
+
+   function handleFailure(order){
+
+    let payment_method = $("input[name='payment_option']:checked").val();
+    const data = {
+        addressId: addressId,
+        paymentMethod : payment_method,
+        couponId:couponId
+    };
+    // console.log(data)
+    // console.log("placing order")
+    $.ajax({
+        url: '/paymentFailure',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({  order: order ,data:data}),
+        success: function(response) {
+            
+           if (response.success) {
+            window.location.href = response.url;
+           }
+        //    }else{
+        //     Toastify({
+        //         text: response.message,
+        //          backgroundColor: "red",
+        //      duration: 6000,
+        //      position: "center" 
+        //  }).showToast();
+
+           
+
+
+        },
+        error: function(error) {
+            console.log(error.message)
+            window.location.href = '/login';
+        }
+    });
    }
 
 

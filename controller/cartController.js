@@ -44,15 +44,20 @@ const addToCart = async (req, res,next) => {
                  );
                  return res.json({ yes: true });
                 
-             } else{
-    
-            
+             } 
+     
+
+             if(userAlreadyHaveCart){
+                await cartModel.updateOne({userId:userId},
+                    { $push: { items: cartItems } }
+                 );
+                 return res.json({ yes: true });
+             }else{
             const addingToCart = await cartModel.create({
                 userId: userId,
                 items: [cartItems]
-            });
+            })
             return res.json({ yes: true });
-
 
             }
 
@@ -104,33 +109,31 @@ const sizeproductChecker = async(req,res,next)=>{
 
 
 
-const removeProductFromTheCart = async(req,res,next)=>{
+const removeProductFromTheCart = async (req, res, next) => {
     try {
-        console.log("ok")
         const productid = req.query.id;
-       
-        const size =req.query.size
-        
-        const userId =req.session.user._id
+        const size = req.query.size;
+        const userId = req.session.user._id;
 
         const result = await cartModel.updateOne(
             { userId: userId },
             { $pull: { items: { productId: productid, size: size } } }
         );
-        
 
-          if (result.modifiedCount>0) {
-            res.json({success:true})
-          }else{
-            res.json({success:false})
-          }
-
+        if (result && result.modifiedCount > 0) {
+            res.json({ success: true, message: "Product removed from the cart successfully" });
+        } else if (result && result.matchedCount === 0) {
+            res.status(404).json({ success: false, message: "User cart not found" });
+        } else {
+            res.status(404).json({ success: false, message: "Product not found in the cart" });
+        }
     } catch (error) {
-        console.error("Error in logout:", error);
-   
-    next(error)
+        console.error("Error in removeProductFromTheCart:", error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+        next(error);
     }
 }
+
 
 const quantityIncrementOrDecrement = async (req, res,next) => {
     try {

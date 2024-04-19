@@ -42,7 +42,7 @@
                             <div class="input-group">
                                 <label for="discount" class="form-label d-block">Discount</label>
                                 <div class="d-flex flex-row align-items-center">
-                                    <input type="text" name="Discount" id="discount" placeholder="1-100%" class="form-control" />
+                                    <input type="text" name="Discount" id="discount" placeholder="1-50%" class="form-control" />
                                     <span class="input-group-text">%</span>
                                 </div>
                                 <div id="discounterror" class="error-message"></div>
@@ -175,9 +175,9 @@ function discountVal() {
         discounterror.style.display = "block";
         discounterror.innerHTML = "Discount must be a number";
         discounterror.style.color = "red"; 
-    } else if (parseInt(discountValue) <= 0 || parseInt(discountValue) >= 100) {
+    } else if (parseInt(discountValue) <= 0 || parseInt(discountValue) > 50) {
         discounterror.style.display = "block";
-        discounterror.innerHTML = "Discount must be between 0 and 100";
+        discounterror.innerHTML = "Discount allowed only below 50%";
         discounterror.style.color = "red"; 
     } else {
         discounterror.style.display = "none";
