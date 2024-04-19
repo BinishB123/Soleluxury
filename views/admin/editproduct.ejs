@@ -143,20 +143,11 @@
                                         <div id="addedImagesContainer" class="col-md-6" style="display: flex;">
                                             <% for (let i = 0; i < product.productImage.length; i++) { %>
                                                 <div class="mb-4" style="display: inline-block;">
-                                                    <img class="rounded" style="width: 50px; height: 60px;" src="/public/photos/productImages/<%= product.productImage[i] %>" alt="image" data-filename="<%= product.productImage[i] %>" id="imgCount">
+                                                    <img class="rounded" style="width: 50px; height: 60px;" src="/public/photos/productImages/<%= product.productImage[i] %>" alt="image" data-filename="<%= product.productImage[i] %>" id="imgCount<%=i%>">
                                                     <span class="delete-icon" onclick="deleteImage('<%= product._id %>', '<%= product.productImage[i] %>')">❌</span>
-                                                    <span class="btn-sm" onclick="view('<%= i%>')">View</span>
+                                                    <span class="btn-sm" onclick="view('/public/photos/productImages/<%= product.productImage[i] %>','<%=i%>')">View</span>
                                                 </div>
-                                                <div id="myModal<%= i %>" class="modal">
-                                                    <span class="close">&times;</span>
-                                                    <div class="modal-content img-container">
-                                                        <img id="modalImage<%=i%>" src="/public/photos/productImages/<%= product.productImage[i] %>" alt="">
-                                                    </div>
-                                                    <button id="btn-crop" type="button">Crop</button>
-                                                    <div class="cropped-container">
-                                                        <img id="output" src="" alt="">
-                                                    </div>
-                                                </div>
+                                                
                                                 
                                                 
                                             <% } %>
@@ -182,7 +173,7 @@
                                               <input type="hidden" id="hiddenField5" name="hiddenField5" value="">
                     
                                     <!-- Modal HTML -->
-                                           
+
 
                                     
                 
@@ -192,6 +183,16 @@
                     </div>
                 </div>
                 
+                <div id="myModal" class="modal">
+                    <span class="close">&times;</span>
+                    <div class="modal-content img-container">
+                        <img id="modalImage" src="" alt="">
+                    </div>
+                    <button id="btn-crop" type="button">Crop</button>
+                    <!-- <div class="cropped-container">
+                        <img id="output" src="" alt="">
+                    </div> -->
+                </div>
         </section> <!-- content-main end// -->
         <footer class="main-footer font-xs">
             <div class="row pb-30 pt-15">
@@ -225,14 +226,55 @@
             //   const imgclass = document.querySelectorAll('.rounded')  
             //   const lenimg = imgclass.length - 1
             //     console.log(lenimg)
-            function view(i) {
-                console.log(i)
-           var modal = document.getElementById(`myModal${i}`);
-           var modalImage = document.getElementById(`modalImage${i}`);
-   // Retrieve the src attribute of the modal image
+        
+            function view(image,ind) {
+             const hidden1 = document.getElementById('hiddenField1')
+           const hidden2 = document.getElementById('hiddenField2')
+           const hidden3 = document.getElementById('hiddenField3')
+          const hidden4 = document.getElementById('hiddenField4')
+         const hidden5 = document.getElementById('hiddenField5')
+    const modal = document.getElementById('myModal');
+    const modalImage = document.getElementById('modalImage');
 
+    modalImage.src = image;
     modal.style.display = 'block'; // Display the modal
-    modal.style.display ="block"
+
+    // Initialize Cropper.js
+    let cropper = new Cropper(modalImage, {
+        aspectRatio: 1 / 1,
+        viewMode: 3
+    });
+
+    // Event listener for the "Crop" button
+    document.querySelector('#btn-crop').addEventListener('click', async function() {
+        var croppedImage = await cropper.getCroppedCanvas().toDataURL("image/png");
+        let dimensions = cropper.getData();
+        document.getElementById(`imgCount${ind}`).src = croppedImage
+        // Update hidden input based on 'ind' value
+        const imagedata = `index=${ind} x=${dimensions.x} y=${dimensions.y} width=${dimensions.width} height=${dimensions.height}`;
+        // Update hidden input based on 'ind' value
+        if (ind == 0) {
+            hidden1.value = imagedata;
+        } else if (ind == 1) {
+            hidden2.value = imagedata;
+        } else if (ind == 2) {
+            hidden3.value = imagedata;
+        } else if (ind == 3) {
+            hidden4.value = imagedata;
+        } else if (ind == 4) {
+            hidden5.value = imagedata;
+        }
+
+        // Hide the cropping container and modal, and destroy Cropper instance
+        modal.style.display = 'none';
+        cropper.destroy();
+    });
+
+    // Event listener for closing the modal
+    document.getElementsByClassName('close')[0].onclick = function() {
+        modal.style.display = 'none';
+        cropper.destroy();
+    };
 }
 
 

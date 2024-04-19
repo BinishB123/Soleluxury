@@ -110,12 +110,12 @@ const statusUpdating = async (req, res,next) => {
           },
         ]);
 
-        const updateTotalAmount = await orderModel.updateOne(
-          {
-            _id: new objectId(orderid),
-          },
-          { $inc: { totalAmount: -productPrice } }
-        );
+        // const updateTotalAmount = await orderModel.updateOne(
+        //   {
+        //     _id: new objectId(orderid),
+        //   },
+        //   { $inc: { totalAmount: -productPrice } }
+        // );
         // console.log(updateTotalAmount);
 
         const checker = await orderModel.findOne({

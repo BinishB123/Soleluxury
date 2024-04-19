@@ -78,16 +78,19 @@ adminRoute.post("/updateCoupon",adminMiddleware.adminLogged,couponController.upd
 
 // AdmiN ProductOffer
 adminRoute.get("/product-Offer",adminMiddleware.adminLogged,productOfferController.productOfferPage)
+adminRoute.get("/addproductOffer",adminMiddleware.adminLogged,productOfferController.addproductOfferPage)
 adminRoute.post("/Add-productOffer",adminMiddleware.adminLogged,productOfferController.AddProductOffer)
-adminRoute.get("/productEditOffer/:id",adminMiddleware.adminLogged,productOfferController.editProductOffer)
+adminRoute.get("/editprodoffpage",adminMiddleware.adminLogged,productOfferController.editprodoffpage)
+// adminRoute.get("/productEditOffer/:id",adminMiddleware.adminLogged,productOfferController.editProductOffer)
 adminRoute.post("/productEditOffer",adminMiddleware.adminLogged,productOfferController.productEditOffer)
 adminRoute.delete("/deleteoffer",adminMiddleware.adminLogged,productOfferController.deleteOffer)
 
 
 // Admin category 
 adminRoute.get("/categoryOffer",adminMiddleware.adminLogged,categoryOfferController.categoryOfferPage)
-adminRoute.post("/addcategoryoffer",adminMiddleware.adminLogged,categoryOfferController.AddCategoryOffer)
-adminRoute.get("/categoryEditOffer/:id",adminMiddleware.adminLogged,categoryOfferController.editcategoryOffer)
+adminRoute.get("/addcategoryOffer",adminMiddleware.adminLogged,categoryOfferController.AddCategoryOfferPage)
+adminRoute.post("/addcategoryoffer",adminMiddleware.adminLogged,categoryOfferController.addcategoryoffer)
+adminRoute.get("/categoryEditOffer",adminMiddleware.adminLogged,categoryOfferController.editcategoryOffer)
 adminRoute.post("/categoryEditOffer",adminMiddleware.adminLogged,categoryOfferController.categoryEditOffer)
 adminRoute.delete("/deleteCategoryoffer",adminMiddleware.adminLogged,categoryOfferController.deleteOffer)
 

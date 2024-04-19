@@ -4,11 +4,12 @@ const categoryModel = require("../model/categoryModel")
 
 const categoryOfferPage = async(req,res,next)=>{
     try {
-       
+         const message = req.flash("message")
+        
                 const offer = await categoryOfferModel.find({}).populate("categoryOffer.category")
               const category= await categoryModel.find({islisted:true})
 
-              res.render("categoryOffer",{offers:offer,category :category })
+              res.render("categoryOffer",{offers:offer,category :category ,message:message})
            
     } catch (error) {
         console.error("Error in categoryofferpage:", error);
@@ -18,38 +19,35 @@ const categoryOfferPage = async(req,res,next)=>{
     }
 }
 
-const editcategoryOffer = async (req, res,next) => {
+const editcategoryOffer = async (req, res, next) => {
     try {
-        
-        const id = req.params.id;
-        // console.log(id)
-        const offer = await categoryOfferModel.findOne({ _id: id }).lean();
+        const id = req.query.id;
+        const offer = await categoryOfferModel.findOne({ _id: id });
+
+        const category = await categoryModel.find({ islisted: true });
+
         offer.formattedStartingDate = formatDate(offer.startingDate);
         offer.formattedEndingDate = formatDate(offer.endingDate);
-    
-        res.json(offer); // Sending the formatted offer as a JSON response
+        const date = new Date();
+
+        res.render("editcatoff", { offer: offer, date: date, category: category });
     } catch (error) {
         console.error("Error in editcategorypage:", error);
-   
-    next(error)
+        next(error);
     }
 }
 
 
-const AddCategoryOffer = async(req,res,next)=>{
-    try {
-        
 
-            const offerCreating = await categoryOfferModel.create({
-                name:req.body.offerName,
-                startingDate:req.body.startDate,
-                endingDate:req.body.endDate,
-                "categoryOffer.category":req.body.productName,
-                "categoryOffer.discount":req.body.discountAmount,
-                "categoryOffer.offerStatus":true
-            })
-            // console.log(offerCreating)
-      res.redirect("/admin/categoryOffer")
+const AddCategoryOfferPage = async(req,res,next)=>{
+    try {
+       const errormessage = req.flash("errormessage")
+        
+        const category= await categoryModel.find({islisted:true})
+         const date = new Date()
+        res.render("addcatoff",{category:category,date:date,errormessage:errormessage})
+
+   
         
     } catch (error) {
         console.error("Error in addcategoryoffer:", error);
@@ -61,6 +59,11 @@ const AddCategoryOffer = async(req,res,next)=>{
 const categoryEditOffer = async(req,res,next)=>{
     try {
         // console.log(req.body);
+        const name = req.body.editofferName.trim()
+        const offerexistname = await categoryOfferModel.findOne({name:name})
+        if (offerexistname) {
+            res.redirect("/admin/categoryOffer")
+        }else{
         const updated = await categoryOfferModel.updateOne({_id:req.body.offerId},
             {$set:{
                 name:req.body.editofferName,
@@ -71,6 +74,7 @@ const categoryEditOffer = async(req,res,next)=>{
                 "categoryOffer.offerStatus":true
             }})
             res.status(200).redirect("/admin/categoryOffer")
+        }
     } catch (error) {
         console.error("Error in categoryeditoffer:", error);
    
@@ -110,11 +114,41 @@ function formatDate(dateString) {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   }
+
+
+const addcategoryoffer = async(req,res)=>{
+    try {
+        const name = req.body.offerName.trim()
+        const offernameexist = await categoryOfferModel.findOne({name:name})
+        if (offernameexist) {
+            const errormessage = "categoryoffer same name exist cannot add";
+            console.log(errormessage)
+             req.flash("message", errormessage);
+            res.redirect("/admin/addcategoryOffer")
+        }else{
+        const offerCreating = await categoryOfferModel.create({
+            name:name,
+            startingDate:req.body.startDate,
+            endingDate:req.body.endDate,
+            "categoryOffer.category":req.body.productName,
+            "categoryOffer.discount":req.body.discountAmount,
+            "categoryOffer.offerStatus":true
+        })
+        const message = "Categoryoffer addded";
+        req.flash("message", message);
+      res.redirect("/admin/categoryOffer")
+    } 
+    } catch (error) {
+       console.log(error.message) 
+       next(error)
+    }
+}
 const categoryOfferController = {
     categoryOfferPage,
-    AddCategoryOffer,
+    AddCategoryOfferPage,
     editcategoryOffer,
     categoryEditOffer,
-    deleteOffer
+    deleteOffer,
+    addcategoryoffer
 }
 module.exports = categoryOfferController

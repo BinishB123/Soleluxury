@@ -1,0 +1,281 @@
+<%- include("../partials/adminHeader") %>
+        <section class="content-main" style="background-color: white;">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Edit Product Offer</h2>
+                    <% if(locals.errormessage){%>
+                    <span class="text-center w-50 mx-auto" style=" display: block;  color: rgb(200, 14, 14);" id="errormessage"><%=locals.errormessage  %></span>
+                    <% } %>
+                   
+                </div>
+             
+                   
+                    
+               
+                
+                   
+                
+                
+                <div>
+                    <!-- <a href="#" class="btn btn-light rounded font-md">Export</a>
+                    <a href="#" class="btn btn-light rounded  font-md">Import</a> -->
+                </div>
+            </div>
+            <div class="card mb-4">
+                <header class="card-header">
+                    <!-- <div class="row align-items-center">
+                        <div class="col col-check flex-grow-0">
+                            <div class="form-check ms-2">
+                                <input class="form-check-input" type="checkbox" value="">
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
+                            <select class="form-select">
+                                <option selected>All category</option>
+                                <option>Electronics</option>
+                                <option>Clothes</option>
+                                <option>Automobile</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-6">
+                            <input type="date" value="02.05.2021" class="form-control">
+                        </div>
+                        <div class="col-md-2 col-6">
+                            <select class="form-select">
+                                <option selected>Status</option>
+                                <option>Active</option>
+                                <option>Disabled</option>
+                                <option>Show all</option>
+                            </select>
+                        </div>
+                    </div> -->
+                </header> <!-- card-header end// -->
+                <div class="card-body">
+                    <div class="card-body">
+                        <form action="/admin/productEditOffer?id=<%=offer._id%>" method="post" id="editoffer">
+                            <div class="mb-3">
+                              <label for="recipient-name" class="col-form-label">Offer Name</label>
+                              <input type="text" class="form-control" name="editofferName" id="editofferName" value="<%=offer.name%>">
+                              <div id="editnameerror"></div>
+                            </div>
+                            <div class="mb-3">
+                              <label for="recipient-name" class="col-form-label">Product</label>
+                              <select name="productName" id="productName" class="form-select">
+                                <% for(let i = 0; i < products.length; i++) { %>
+                                    <option class="form-option" value="<%= products[i]._id %>" <% if(offer && offer.productOffer.product.toString() === products[i]._id.toString()) { %> selected <% } %>>
+                                        <%= products[i].productName %>
+                                    </option>
+                                <% } %>
+                            </select>
+                            
+                
+                            </div>
+                            <!-- <div class="mb-3">
+                                        <label for="recipient-name" class="col-form-label">Coupon Code</label>
+                                        <input type="text" class="form-control" name="couponCode" id="couponCode">
+                                    </div> -->
+                            <div class="mb-3">
+                              <label for="recipient-name" class="col-form-label">Discount Amount</label>
+                              <input type="text" class="form-control" name="discountAmount" id="editdiscount" value="<%=offer.productOffer.discount  %>">
+                              <div id="editdiscounterror"></div>
+                            </div>
+                            <div class="mb-3">
+                              <label for="recipient-name" class="col-form-label">Starting Date (YYYY/MM/DD)</label>
+                              <input type="date" class="form-control" name="startDate" id="editstartDate" value="<%=offer.formattedStartingDate%>">
+                              <div id="editstartdateerror"></div>
+                            </div>
+                            <div class="mb-3">
+                              <label for="recipient-name" class="col-form-label">Ending Date (YYYY/MM/DD)</label>
+                              <input type="date" class="form-control" name="editendDate" id="end" value="<%=offer.formattedEndingDate%>">
+                              <div id="editenddate"></div>
+                            </div>
+                            <div class="mb-3">
+                              <input type="hidden" class="form-control" id="offerId" name="offerId" />
+                            </div>
+                
+                            <div class="modal-footer">
+                              <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
+                              <button type="submit" class="btn btn-primary" style="background-color: black;">Update Offer</button>
+                            </div>
+                
+                          </form>
+                          
+                
+                </div> <!-- card-body end// -->
+                
+                
+                
+            </div> <!-- card end// -->
+        </section> <!-- content-main end// -->
+        <footer class="main-footer font-xs">
+            <div class="row pb-30 pt-15">
+                <div class="col-sm-6">
+                    <script>
+                    document.write(new Date().getFullYear())
+                    </script> ©, Evara - HTML Ecommerce Template .
+                </div>
+                <div class="col-sm-6">
+                    <div class="text-sm-end">
+                        All rights reserved
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+    <script src="/public/admin-assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="/public/admin-assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="/public/admin-assets/js/vendors/select2.min.js"></script>
+    <script src="/public/admin-assets/js/vendors/perfect-scrollbar.js"></script>
+    <script src="/public/admin-assets/js/vendors/jquery.fullscreen.min.js"></script>
+     <script src="/public/js/productValidation.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <!-- <script src="/public/cropperjs/cropper.js"></script> -->
+    
+   
+    <!-- Main Script -->
+    <script src="/public/admin-assets/js/main.js" type="text/javascript"></script>
+    <script>
+      
+      const editOfferNameInput = document.getElementById("editofferName");
+const endDate = document.getElementById("end");
+const startDateInputEdit = document.getElementById("editstartDate");
+const discountInputEdit = document.getElementById("editdiscount");
+const nameErrorEdit = document.getElementById("editnameerror");
+const discountErrorEdit = document.getElementById("editdiscounterror");
+const endDateErrorEdit = document.getElementById("editenddate");
+const startDateErrorEdit = document.getElementById("editstartdateerror");
+const editOfferForm = document.getElementById("editoffer");
+
+// Function to validate offer name
+function validateOfferNameEdit() {
+    // console.log("Validating offer name");
+    const offerNameEdit = editOfferNameInput.value.trim();
+    const nameRegex = /^[a-zA-Z\s]+$/;
+  
+    if (offerNameEdit === "") {
+        nameErrorEdit.style.display = "block";
+        nameErrorEdit.textContent = "Name is required";
+        nameErrorEdit.style.color = "red"; 
+    } else if (!offerNameEdit.match(nameRegex)) {
+        nameErrorEdit.style.display = "block";
+        nameErrorEdit.textContent = "Invalid name";
+        nameErrorEdit.style.color = "red"; 
+    } else {
+        nameErrorEdit.style.display = "none";
+        nameErrorEdit.textContent = ""; 
+    }
+}
+
+// Function to validate discount
+function validateDiscountEdit() {
+    const discountValueEdit = discountInputEdit.value.trim();
+    const numberRegex = /^[0-9]+$/;
+    
+    if (discountValueEdit === "") {
+        discountErrorEdit.style.display = "block";
+        discountErrorEdit.textContent = "Discount is required";
+        discountErrorEdit.style.color = "red"; 
+    } else if (!discountValueEdit.match(numberRegex)) {
+        discountErrorEdit.style.display = "block";
+        discountErrorEdit.textContent = "Discount must be a number";
+        discountErrorEdit.style.color = "red"; 
+    } else if (parseInt(discountValueEdit) <= 0 || parseInt(discountValueEdit) >= 100) {
+        discountErrorEdit.style.display = "block";
+        discountErrorEdit.textContent = "Discount must be between 0 and 100";
+        discountErrorEdit.style.color = "red"; 
+    } else {
+        discountErrorEdit.style.display = "none";
+        discountErrorEdit.textContent = ""; 
+    }
+}
+
+// Function to validate dates
+function validateDatesEdit() {
+    const startDatePartsEdit = startDateInputEdit.value.split('-');
+    const endDatePartsEdit = endDate.value.split('-');
+    
+    // Construct Date objects for start and end dates
+    const startDateValueEdit = new Date(startDatePartsEdit[0], startDatePartsEdit[1] - 1, startDatePartsEdit[2]);
+    const endDateValueEdit = new Date(endDatePartsEdit[0], endDatePartsEdit[1] - 1, endDatePartsEdit[2]);
+    
+    // Get the current date
+    const currentDateEdit = new Date(); 
+    
+    if (isNaN(startDateValueEdit.getTime()) || isNaN(endDateValueEdit.getTime())) {
+        // Display error messages for invalid date format
+        startDateErrorEdit.style.display = "block";
+        startDateErrorEdit.textContent = "Invalid date format";
+        startDateErrorEdit.style.color = "red";
+        endDateErrorEdit.style.display = "block";
+        endDateErrorEdit.textContent = "Invalid date format";
+        endDateErrorEdit.style.color = "red";
+    } else if (startDateValueEdit > endDateValueEdit) {
+        // Display error message if start date is greater than end date
+        startDateErrorEdit.style.display = "block";
+        startDateErrorEdit.textContent = "Start date should be less than end date.";
+        startDateErrorEdit.style.color = "red";
+        endDateErrorEdit.style.display = "block";
+        endDateErrorEdit.textContent = "End date should be greater than start date.";
+        endDateErrorEdit.style.color = "red";
+    } else if (startDateValueEdit < currentDateEdit.setHours(0,0,0,0)) {
+        // Display error message if start date is in the past
+        startDateErrorEdit.style.display = "block";
+        startDateErrorEdit.textContent = "Start date must be greater than or equal to today's date.";
+        startDateErrorEdit.style.color = "red";
+        endDateErrorEdit.style.display = "none";
+        endDateErrorEdit.textContent = "";
+    } else if (endDateValueEdit <= startDateValueEdit) {
+        // Display error message if end date is less than or equal to start date
+        startDateErrorEdit.style.display = "none";
+        startDateErrorEdit.textContent = "";
+        endDateErrorEdit.style.display = "block";
+        endDateErrorEdit.textContent = "End date must be greater than the start date.";
+        endDateErrorEdit.style.color = "red";
+    } else {
+        // Hide error messages if all validations pass
+        startDateErrorEdit.style.display = "none";
+        startDateErrorEdit.textContent = "";
+        endDateErrorEdit.style.display = "none";
+        endDateErrorEdit.textContent = "";
+    }
+}
+
+
+// Event listeners  
+
+
+editOfferNameInput.addEventListener("blur", validateOfferNameEdit);
+discountInputEdit.addEventListener("blur", validateDiscountEdit);
+startDateInputEdit.addEventListener("blur", validateDatesEdit);
+endDate.addEventListener("blur", validateDatesEdit);
+
+editOfferForm.addEventListener("submit", function (event) {
+    event.preventDefault(); // Prevent form submission
+
+    // Perform validation
+    validateOfferNameEdit();
+    validateDiscountEdit();
+    validateDatesEdit();
+
+    // Log errors, if any
+    if (nameErrorEdit.textContent || discountErrorEdit.textContent || startDateErrorEdit.textContent || endDateErrorEdit.textContent) {
+        console.log("Validation failed");
+    } else {
+        console.log("Validation passed");
+        editOfferForm.submit(); 
+    }
+});
+
+
+
+setTimeout(function() {
+            document.getElementById('errormessage').style.display = 'none';
+        }, 5000); // 5000 milliseconds = 5 seconds
+
+        
+    </script>
+    
+</body>
+
+
+</html>

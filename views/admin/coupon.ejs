@@ -28,14 +28,14 @@
                             <div>
                                 <label for="startingDate" class="form-label">Start Date</label>
                                 <input type="date" name="startDate"  class="form-control" required="true"
-                                    id="startDate" />
+                                    id="startDate" min="<%= date.toISOString().split('T')[0] %>"/>
                                 <div id="errorstartdate" class="error-message"></div>
                             </div>
 
                             <div>
                                 <label for="expiringDate" class="form-label">End Date</label>
                                 <input type="date" name="endDate" class="form-control" id="endDate"
-                                    required="true" />
+                                    required="true"  min="<%= date.toISOString().split('T')[0] %>" />
                                 <div id="errorenddate" class="error-message"></div>
                             </div>
 

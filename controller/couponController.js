@@ -7,8 +7,8 @@ const couponPage = async (req, res,next) => {
     const errorMessage = req.flash("error");
 
     const coupons = await couponModel.find().sort({ createdOn: -1 });
-
-    res.render("coupon", { errorMessage: errorMessage, coupons: coupons });
+  const date = new Date()
+    res.render("coupon", { errorMessage: errorMessage, coupons: coupons ,date:date });
   } catch (error) {
     console.error("Error in couponpage:", error);
    
