@@ -124,11 +124,11 @@ const addproducts = async (req, res, next) => {
                 let y = parseInt(parts[5]);
                 let width = parseInt(parts[7]);
                 let height = parseInt(parts[9]);
-
+        
                 let filename = newProduct.productImage[ind];
                 let inputPath = path.join(__dirname, `../public/photos/productImages/${filename}`);
                 let outputPath = path.join(__dirname, `../public/photos/productImages/cropped_${filename}`);
-
+        
                 sharp(inputPath)
                     .extract({ left: x, top: y, width: width, height: height })
                     .toFile(outputPath, (err) => {
@@ -139,16 +139,23 @@ const addproducts = async (req, res, next) => {
                             // Update the product image path with the cropped image
                             let croppedFilename = `cropped_${filename}`;
                             newProduct.productImage[ind] = croppedFilename;
-
-                            // Unlink the original image file
-                            fs.unlinkSync(inputPath);
-
-                            // console.log("Image cropped successfully");
+        
+                            // try {
+                            //     // Attempt to unlink the file
+                            //     fs.unlinkSync(inputPath);
+                            //     console.log('File unlinked successfully');
+                            // } catch (err) {
+                            //     // Handle the error
+                            //     console.error('Error unlinking file:', err);
+                            //     // You can take further action here, such as retrying or notifying the user
+                            // }
+                            // // Resolve the promise
                             resolve();
                         }
                     });
             });
         }
+        
 
         // Push crop promises to array
         if (hiddenField1) {
@@ -278,76 +285,98 @@ const deleteImage = async(req,res,next)=>{
 
 
 
-const productUpdate = async (req, res,next) => {
+const productUpdate = async (req, res, next) => {
     try {
-        // console.log("req now in productUpdate ");
         const id = req.params.id;
-        // console.log(id)
+        const { hiddenField1, hiddenField2, hiddenField3, hiddenField4, hiddenField5 } = req.body;
         const data = req.body;
+
         const images = [];
-        // console.log(data.productName)
 
         if (req.files && req.files.length > 0) {
             for (let i = 0; i < req.files.length; i++) {
                 images.push(req.files[i].filename);
             }
         }
-     const n =   data.productName.trim()
+
+        const productName = data.productName.trim();
+
         // Check if a product with the same name exists
-        const duplicate = await productModel.findOne({ productName: n,_id:{$ne:id} });
-       
-            if (req.files.length>0) {
-                
-                const prodata = await productModel.findById({_id:id})
-                prodata.productImage.push(...images)
-                prodata.save()
-                // console.log(prodata.productImage);
-            }
+        const duplicate = await productModel.findOne({ productName: productName, _id: { $ne: id } });
+        const prodata = await productModel.findById(id);
 
+        if (req.files.length > 0) {
+           
+            prodata.productImage.push(...images);
+            await prodata.save();
+        }
 
-
-            
-
+        // Update product data if no duplicate or same product
         if (!duplicate || duplicate._id.toString() === id) {
-             
-            // Allow updating if it's the same product or the name doesn't exist
-            // console.log("Yes product name available or it's the same product.");
+            const updateData = {
+                productName: data.productName,
+                description: data.description,
+                brand: data.brand,
+                category: data.category,
+                regularPrice: data.regularPrice,
+                discount: data.discount,
+                size: {
+                    s: { quantity: data.ssize },
+                    m: { quantity: data.msize },
+                    l: { quantity: data.lsize },
+                },
+                color: data.color,
+            };
+
+            // Crop images asynchronously
+            const cropPromises = [];
+
+            const cropFields = [hiddenField1, hiddenField2, hiddenField3, hiddenField4, hiddenField5];
+            cropFields.forEach(async (field, index) => {
+                if (field) {
+                    cropPromises.push(cropImage(req, id, field, prodata.productImage[index]));
+                }
+            });
+
+            // Wait for all crop promises to resolve
+            await Promise.all(cropPromises);
+            await prodata.save
 
             // Update product data
-            await productModel.findByIdAndUpdate(
-                id,
-                {
-                    productName: data.productName,
-                    description: data.description,
-                    brand: data.brand,
-                    category: data.category,
-                    regularPrice: data.regularPrice,
-                    discount: data.discount,
-                    size: {
-                        s: { quantity: data.ssize },
-                        m: { quantity: data.msize },
-                        l: { quantity: data.lsize },
-                    },
-                    color: data.color,
-                  
-                },
-                { new: true }
-            );
+            await productModel.findByIdAndUpdate(id, updateData, { new: true });
 
-           
-            req.flash("message", "Product Edit successfully");
+            req.flash("message", "Product edited successfully");
             res.redirect("/admin/products");
         } else {
-            req.flash("message", "Product exists with the same name. Please choose a different name.");
+            req.flash("message", "A product with the same name already exists. Please choose a different name.");
             res.redirect(`/admin/editproduct?id=${duplicate.id}`);
         }
     } catch (error) {
-        console.error("Error in  block or productupdate:", error);
-   
-    next(error)
-
+        console.error("Error in productUpdate:", error.message);
+        next(error);
     }
 };
+
+// Function to crop an image
+async function cropImage(req, productId, hiddenField, filename) {
+    const parts = hiddenField.split(" ");
+    const x = Math.round(parseFloat(parts[3]));
+    const y = Math.round(parseFloat(parts[5]));
+    const width = Math.round(parseFloat(parts[7]));
+    const height = Math.round(parseFloat(parts[9]));
+
+    const inputPath = path.join(__dirname, `../public/photos/productImages/${filename}`);
+    const outputPath = path.join(__dirname, `../public/photos/productImages/cropped_${filename}`);
+
+    try {
+        await sharp(inputPath)
+            .extract({ left: x, top: y, width: width, height: height })
+            .toFile(outputPath);
+        console.log("Image cropped successfully");
+    } catch (err) {
+        console.error("Error cropping image:", err.message);
+    }
+}
 
 
 

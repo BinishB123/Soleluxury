@@ -62,6 +62,8 @@ const categoryEditOffer = async(req,res,next)=>{
         const name = req.body.editofferName.trim()
         const offerexistname = await categoryOfferModel.findOne({name:name})
         if (offerexistname) {
+            const errormessage = "cannot edit given offer name exist";
+            req.flash("message", errormessage);
             res.redirect("/admin/categoryOffer")
         }else{
         const updated = await categoryOfferModel.updateOne({_id:req.body.offerId},
@@ -73,6 +75,8 @@ const categoryEditOffer = async(req,res,next)=>{
                 "categoryOffer.discount":req.body.discountAmount,
                 "categoryOffer.offerStatus":true
             }})
+            const message = "Categoryoffer addded";
+           req.flash("message", message);
             res.status(200).redirect("/admin/categoryOffer")
         }
     } catch (error) {
@@ -122,9 +126,9 @@ const addcategoryoffer = async(req,res)=>{
         const offernameexist = await categoryOfferModel.findOne({name:name})
         if (offernameexist) {
             const errormessage = "categoryoffer same name exist cannot add";
-            console.log(errormessage)
+            // console.log(errormessage)
              req.flash("message", errormessage);
-            res.redirect("/admin/addcategoryOffer")
+            res.redirect("/admin/categoryOffer")
         }else{
         const offerCreating = await categoryOfferModel.create({
             name:name,

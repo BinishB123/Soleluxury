@@ -166,9 +166,9 @@ function validateForm() {
         displayErrorMessage("color-error", "Color is required");
         isValid = false;
     } 
-    if (fileerrormessage) {
+    if (fileerrormessage.innerHTML) {
         isValid = false
-        console.log(isValid)
+        console.log("from here",isValid,fileerrormessage)
     }
 
     return isValid;
@@ -179,6 +179,7 @@ function validateForm() {
     
         function displayErrorMessage(elementId, message) {
             var errorElement = document.getElementById(elementId);
+            console.log(message)
             errorElement.innerText = message;
             errorElement.style.display = "block";
             errorElement.style.color = "red";
