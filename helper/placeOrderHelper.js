@@ -12,7 +12,7 @@ const placeOrder = (body, userId) => {
       // console.log("im here at place order");
       // console.log(body)
       
-      const couponId = body.couponId
+      const couponId = body.data.couponId
       const userCart = await cartModel.findOne({ userId: userId });
       const user = await userModel.findOne({ _id: userId });
       const orderAddress = user.address.find((address) => {
@@ -131,7 +131,7 @@ const razoPlaceOrder = (body, userId) => {
       // console.log("im here at place order");
       // console.log(body)
       
-      const couponId = body.couponId
+      const couponId = body.data.couponId
       const userCart = await cartModel.findOne({ userId: userId });
       const user = await userModel.findOne({ _id: userId });
       const orderAddress = user.address.find((address) => {
@@ -247,7 +247,7 @@ const paymentFailure = (body, userId) => {
     try {
       // console.log("Entered paymentFailure function");
       
-      const couponId = body.couponId;
+      const couponId = body.data.couponId;
       // console.log("Coupon ID:", couponId);
       
       const userCart = await cartModel.findOne({ userId: userId });

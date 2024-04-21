@@ -101,6 +101,8 @@ const orders = async (req, res,next) => {
         },
       },
       { $unwind: "$user" },
+      
+
     ]);
     //  console.log("userOrders",userOrders)
     // const products = await orderModel.aggregate([
@@ -352,6 +354,7 @@ const invoiceDownload = async(req,res,next)=>{
 const orderdetails =  async(req,res,next)=>{
   try {
     const id = req.query.id
+    // console.log("okkk",id)
      const products = await orderModel.aggregate([
       { $match: { _id: new ObjectId(id) } },
       { $sort: { orderedOn: -1 } },
@@ -364,9 +367,18 @@ const orderdetails =  async(req,res,next)=>{
           as: "product",
         },
       },
-      {$unwind:"$product"}
+      {$unwind:"$product"},
+      {
+        $lookup: {
+          from: "coupons",
+          localField: "coupon",
+          foreignField: "_id",
+          as: "co",
+        },
+      },
+      {$unwind:"$co"}
     ]);
-    // console.log(products)
+    // console.log("orderdetails",products)
     res.render("orderDetails",
     {order:products,user:req.session.user._id})
     

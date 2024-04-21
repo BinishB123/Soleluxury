@@ -47,7 +47,7 @@
                     <div class="col-lg-8 mx-auto">
                         <div class="card mb-4">
                             <div class="card-body">
-                                <form method="post" action="/admin/editProduct/<%=product._id%>"  enctype="multipart/form-data" id="editproductForm" >
+                                <form method="post" action="/admin/editProduct/<%=product._id%>"  enctype="multipart/form-data" id="editproductsubmit" >
                 
                                     <!-- Product Name -->
                                     <div class="mb-4">
@@ -168,7 +168,7 @@
                 
                                     <!-- Update Button -->
                                     <div>
-                                        <button class="btn btn-md rounded font-sm " id="updatebtn" type="submit"  style="background-color: rgb(0, 153, 255);">Update</button>
+                                        <button class="btn btn-md rounded font-sm " id="updatebtn"   style="background-color: rgb(0, 153, 255);">Update</button>
                                     </div>
                                               <input type="hidden" id="hiddenField1" name="hiddenField1" value="">
                                                <input type="hidden" id="hiddenField2" name="hiddenField2" value="">
@@ -213,12 +213,13 @@
             </div>
         </footer>
     </main>
+    <script src="/public/js/editProductval.js"></script>
+
     <script src="/public/admin-assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="/public/admin-assets/js/vendors/bootstrap.bundle.min.js"></script>
     <script src="/public/admin-assets/js/vendors/select2.min.js"></script>
     <script src="/public/admin-assets/js/vendors/perfect-scrollbar.js"></script>
     <script src="/public/admin-assets/js/vendors/jquery.fullscreen.min.js"></script>
-    <script src="/public/js/editProductval.js"></script>
    
     <!-- Main Script -->
     <script src="/public/admin-assets/js/main.js" type="text/javascript"></script>
@@ -565,6 +566,9 @@ function removeImage(filename) {
             insertmessage.style.display = "none";
         }, 5000)
 
+
+
+        
 
     </script>
 </body>

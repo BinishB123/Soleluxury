@@ -304,9 +304,8 @@ const productUpdate = async (req, res, next) => {
         // Check if a product with the same name exists
         const duplicate = await productModel.findOne({ productName: productName, _id: { $ne: id } });
         const prodata = await productModel.findById(id);
-
+        let k = prodata.productImage.length
         if (req.files.length > 0) {
-           
             prodata.productImage.push(...images);
             await prodata.save();
         }
@@ -332,15 +331,43 @@ const productUpdate = async (req, res, next) => {
             const cropPromises = [];
 
             const cropFields = [hiddenField1, hiddenField2, hiddenField3, hiddenField4, hiddenField5];
-            cropFields.forEach(async (field, index) => {
+            let j=0
+            for (let i = 0; i < cropFields.length; i++) {
+                const field = cropFields[i];
                 if (field) {
-                    cropPromises.push(cropImage(req, id, field, prodata.productImage[index]));
+                    const parts = field.split(" ");
+                    const x = Math.round(parseFloat(parts[3]));
+                    const y = Math.round(parseFloat(parts[5]));
+                    const width = Math.round(parseFloat(parts[7]));
+                    const height = Math.round(parseFloat(parts[9]));
+
+                    const filename =  images [i];
+                    const inputPath = path.join(__dirname, `../public/photos/productImages/${filename}`);
+                    const outputPath = path.join(__dirname, `../public/photos/productImages/cropped_${filename}`);
+
+                    const cropPromise = sharp(inputPath)
+                        .extract({ left: x, top: y, width: width, height: height })
+                        .toFile(outputPath)
+                        .then(() => {
+                            // console.log("Image cropped successfully:", filename);
+                            // Update the productImage array with the new file path
+                            prodata.productImage[k+j] = `cropped_${filename}`;
+                            j++
+                        })
+                        .catch(err => {
+                            console.error("Error cropping image:", err.message);
+                        });
+
+                    cropPromises.push(cropPromise);
+                    
                 }
-            });
+            }
 
             // Wait for all crop promises to resolve
             await Promise.all(cropPromises);
-            await prodata.save
+
+            // Save the updated product data
+            await prodata.save();
 
             // Update product data
             await productModel.findByIdAndUpdate(id, updateData, { new: true });
@@ -357,26 +384,8 @@ const productUpdate = async (req, res, next) => {
     }
 };
 
-// Function to crop an image
-async function cropImage(req, productId, hiddenField, filename) {
-    const parts = hiddenField.split(" ");
-    const x = Math.round(parseFloat(parts[3]));
-    const y = Math.round(parseFloat(parts[5]));
-    const width = Math.round(parseFloat(parts[7]));
-    const height = Math.round(parseFloat(parts[9]));
 
-    const inputPath = path.join(__dirname, `../public/photos/productImages/${filename}`);
-    const outputPath = path.join(__dirname, `../public/photos/productImages/cropped_${filename}`);
 
-    try {
-        await sharp(inputPath)
-            .extract({ left: x, top: y, width: width, height: height })
-            .toFile(outputPath);
-        console.log("Image cropped successfully");
-    } catch (err) {
-        console.error("Error cropping image:", err.message);
-    }
-}
 
 
 

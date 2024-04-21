@@ -871,7 +871,7 @@
                                         <td><a class="btn btn-sm" style="background-color: rgb(11, 11, 11); color: white;" onclick="useCoupon('<%= coupons[i]._id %>')">use</a></td>
                                     <% } else if (locals.cart >= 3000 && coupons[i].discount <= 40 && locals.cart < 2500) { %>
                                         <td><a class="btn btn-sm" style="background-color: rgb(11, 11, 11); color: white;" onclick="useCoupon('<%= coupons[i]._id %>')">use</a></td>
-                                    <% } else if (locals.cart >= 10000 && coupons[i].discount <= 50 && locals.cart < 3000) { %>
+                                    <% } else if (locals.cart <= 10000 && coupons[i].discount <= 50 && locals.cart > 3000) { %>
                                         <td><a class="btn btn-sm" style="background-color: rgb(11, 11, 11); color: white;" onclick="useCoupon('<%= coupons[i]._id %>')">use</a></td>
                                     <% } else { %>
                                         <td><p style="color: rgb(19, 19, 206);">cannot use for this amount</p></td>

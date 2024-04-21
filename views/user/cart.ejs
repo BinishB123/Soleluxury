@@ -836,7 +836,7 @@
                                             <tbody>
                                                 <tr>
                                                     <td class="cart_total_label">Cart Subtotal</td>
-                                                    <td class="cart_total_amount"><span class="font-lg fw-900 text-brand" id="firstotal">₹<%=totalPrice %></span></td>
+                                                    <td class="cart_total_amount"><span class="font-lg fw-900 text-brand" id="firstSubtotal">₹<%=totalPrice %></span></td>
                                                 </tr>
                                                 <tr>
                                                     <td class="cart_total_label">Shipping</td>
@@ -844,7 +844,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td class="cart_total_label">Total</td>
-                                                    <td class="cart_total_amount"><strong><span class="font-xl fw-900 text-brand"  id="secondtotal">₹<%=totalPrice %></span></strong></td>
+                                                    <td class="cart_total_amount"><strong><span class="font-xl fw-900 text-brand"  id="secondSubtotal">₹<%=totalPrice %></span></strong></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -1020,6 +1020,9 @@
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
+
+
+
   function removeProduct(productid,size) {
     // console.log("remove")
     // console.log(size)
@@ -1099,16 +1102,19 @@ function inOrDec(productid, productSize, quantity) {
         method: 'PATCH',
         contentType: 'application/json',
         success: function(data) {
-            // console.log(data)
+            console.log(data)
             if (data.success === true) {
                 
+               const qtupdate = document.getElementById(`qtyData${data.productId},${data.size}`)
+               console.log(qtupdate);
+               qtupdate.innerHTML = data.quantity 
 
-               document.getElementById(`qtyData${data.productid},${data.prosize}`).innerHTML = data.quantity 
-
-                const totalprice1 = document.getElementById("firstotal");
-                const totalPrice2 = document.getElementById("secondtotal");
-                totalprice1.innerHTML = '₹' + data.newquatityPrice.toFixed(2);
-                totalPrice2.innerHTML = '₹' + data.newquatityPrice.toFixed(2);
+                const totalprice1 = document.getElementById("firstSubtotal");
+                // console.log('totalprice1')
+                const totalPrice2 = document.getElementById("secondSubtotal");
+                totalprice1.innerHTML = '₹' + data.newQuantityPrice.toFixed(2);
+                totalPrice2.innerHTML = '₹' + data.newQuantityPrice.toFixed(2);
+                // console.log(totalprice1.value)
             }else{
                 function toast(){
                     Toastify({

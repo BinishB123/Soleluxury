@@ -16,7 +16,9 @@ const mediumError = document.getElementById("m-error");
 const largeError = document.getElementById("l-error");
 const colorError = document.getElementById("color-error");
 const imageError = document.getElementById("image-error");
-const editproductForm = document.getElementById("editproductForm");
+const editproductForm = document.getElementById("editproductsubmit");
+
+
 
 
 function validateProductName() {
@@ -48,6 +50,7 @@ function validateDescription() {
 }
 
 function validateRegularPrice() {
+  // console.log(editproductForm);
   const regularPrice = parseFloat(regularPriceid.value);
   if (isNaN(regularPrice) || regularPrice <= 0) {
     regularPriceError.style.display = "block";
@@ -58,6 +61,7 @@ function validateRegularPrice() {
     regularPriceError.style.display = "none";
     regularPriceError.innerHTML = "";
   }
+  // console.log(regularPriceError.innerHTML)
 }
 
 function validateDiscount() {
@@ -82,7 +86,7 @@ function validateDiscount() {
 
 function validateSmallSizeQuantity() {
   const smallSizeQuantity = parseInt(smallsize_quantityid.value);
-  if (isNaN(smallSizeQuantity) || smallSizeQuantity < 0) {
+  if (isNaN(smallSizeQuantity) || smallSizeQuantity <= 0) {
     smallError.style.display = "block";
     smallError.innerHTML =
       "Small Size Quantity must be a valid non-negative number";
@@ -95,7 +99,7 @@ function validateSmallSizeQuantity() {
 
 function validateMediumSizeQuantity() {
   const mediumSizeQuantity = parseInt(mediumsize_quantityid.value);
-  if (isNaN(mediumSizeQuantity) || mediumSizeQuantity < 0) {
+  if (isNaN(mediumSizeQuantity) || mediumSizeQuantity <= 0) {
     mediumError.style.display = "block";
     mediumError.innerHTML ="Medium Size Quantity must be a valid non-negative number";
     mediumError.style.color = "red";
@@ -107,7 +111,7 @@ function validateMediumSizeQuantity() {
 
 function validateLargeSizeQuantity() {
   const largeSizeQuantity = parseInt(largesize_quantityid.value);
-  if (isNaN(largeSizeQuantity) || largeSizeQuantity < 0) {
+  if (isNaN(largeSizeQuantity) || largeSizeQuantity <= 0) {
     largeError.style.display = "block";
     largeError.innerHTML ="Large Size Quantity must be a valid non-negative number";
     largeError.style.color = "red";
@@ -139,10 +143,13 @@ function validateImageCount() {
     imageError.style.display = "block";
     imageError.innerHTML = "Only 5 images can be uploaded";
     imageError.style.color = "red";
+
   } else {
     imageError.style.display = "none";
     imageError.innerHTML = "";
   }
+  
+
 }
 
 productnameid.addEventListener("blur", validateProductName);
@@ -154,7 +161,6 @@ mediumsize_quantityid.addEventListener("blur", validateMediumSizeQuantity);
 largesize_quantityid.addEventListener("blur", validateLargeSizeQuantity);
 colorid.addEventListener("blur", validateColor);
 imageid.addEventListener("blur", validateImageCount);
-
 
 editproductForm.addEventListener("submit", function(event) {
   // Validate all fields before submitting the form
@@ -170,18 +176,19 @@ editproductForm.addEventListener("submit", function(event) {
 
   // Check if any error message is displayed
   if (
-    productNameError.innerHTML !== "" ||
-    descriptionError.innerHTML !== "" ||
-    regularPriceError.innerHTML !== "" ||
-    discounterror.innerHTML !== "" ||
-    smallError.innerHTML !== "" ||
-    mediumError.innerHTML !== "" ||
-    largeError.innerHTML !== "" ||
-    colorError.innerHTML !== "" ||
-    imageError.innerHTML !== ""
+      productNameError.innerHTML !== "" ||
+      descriptionError.innerHTML !== "" ||
+      regularPriceError.innerHTML !== "" ||
+      discounterror.innerHTML !== "" ||
+      smallError.innerHTML !== "" ||
+      mediumError.innerHTML !== "" ||
+      largeError.innerHTML !== "" ||
+      colorError.innerHTML !== "" ||
+      imageError.innerHTML !== ""
   ) {
-    event.preventDefault(); // Prevent form submission
+      console.log("Validation failed");
+      event.preventDefault(); // Prevent form submission
+  } else {
+      console.log("Validation succeeded");
   }
 });
-
-

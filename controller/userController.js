@@ -322,60 +322,49 @@ const guestUser = async(req,res,next)=>{
 }
 
 
-const viewCart = async(req, res,next) => {
+const viewCart = async (req, res, next) => {
   try {
-    
-      if (req.session.user) {
-        // console.log("okkk")
-          const id = req.session.user._id
+    if (req.session.user) {
+      const id = req.session.user._id;
+      const userCart = await cartModel.findOne({ userId: id });
+      let products = [];
 
-          const userCart = await cartModel.findOne({ userId: id })
-          let products = []
-          
-          
-             if (userCart) {
-              for (let i = 0; i < userCart.items.length; i++) {
-              const product = await productModel.findById(userCart.items[i].productId)
-              const size = userCart.items[i].size
-              const quantity = userCart.items[i].quantity
-               const finalProduct = Object.assign({},product.toObject(),{
-                size:size
-               },
-               {quantity:quantity})
-              if (product) {
-                  products.push(finalProduct)
-              }
-               }
-               for (let i = 0; i < products.length; i++) {
-                products[i].salePrice = Math.round(
-                  products[i].regularPrice -
-                    (products[i].regularPrice * products[i].discount) / 100
-                );
-              }
-             
-               const totalPrice = await cartHelper.subtotal(products,id) 
-                // console.log("yeshh",id)
-             
-               res.render("cart", { products: products,totalPrice:totalPrice,user:id})
-              
-             }else{
-              res.render("cart",{user:id})
-             }
-          
+      if (userCart) {
+        for (let i = 0; i < userCart.items.length; i++) {
+          const product = await productModel.findById(userCart.items[i].productId);
+          if (product) {
+            const size = userCart.items[i].size;
+            const quantity = userCart.items[i].quantity;
+            const finalProduct = Object.assign({}, product.toObject(), {
+              size: size,
+            }, {
+              quantity: quantity
+            });
+            products.push(finalProduct);
+          }
+        }
 
-        
-          
+        for (let i = 0; i < products.length; i++) {
+          products[i].salePrice = Math.round(
+            products[i].regularPrice -
+            (products[i].regularPrice * products[i].discount) / 100
+          );
+        }
+      //  console.log(products);
+        const totalPrice = await cartHelper.subtotal(products, id);
+        res.render("cart", { products: products, totalPrice: totalPrice, user: id });
       } else {
-          res.redirect('/login')
+        res.render("cart", { user: id });
       }
-
+    } else {
+      res.redirect('/login');
+    }
   } catch (error) {
-    console.error("Error in  viewcart:", error);
-   
-    next(error)
-
+    console.error("Error in viewcart:", error.message);
+    next(error);
   }
-}
+};
+
 
 
 

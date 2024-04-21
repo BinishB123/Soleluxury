@@ -135,60 +135,56 @@ const removeProductFromTheCart = async (req, res, next) => {
 }
 
 
-const quantityIncrementOrDecrement = async (req, res,next) => {
+const quantityIncrementOrDecrement = async (req, res, next) => {
     try {
         const productId = req.query.productid;
         const size = req.query.productSize;
         const quantityToDo = req.query.quantity;
         const userId = req.session.user._id;
         const quantityUpdated = await cartHelper.quantityIncrementOrDecrement(userId, productId, quantityToDo, size);
-       
-     
-        
-            const userCart = await cartModel.findOne({ userId: userId });
-            let products = [];
-            
-                for (let i = 0; i < userCart.items.length; i++) {
-                    const product = await productModel.findById(userCart.items[i].productId);
-                    const size = userCart.items[i].size;
-                    const quantity = userCart.items[i].quantity;
-                    const finalProduct = Object.assign({}, product.toObject(), {
-                        size: size
-                    }, {
-                        quantity: quantity
-                    });
-                    if (product) {
-                        products.push(finalProduct);
-                    }
-                }
-                // for (let i = 0; i < products.length; i++) {
-                    
-                //     products[i].salePrice = Math.round(
-                //       products[i].regularPrice -
-                //         (products[i].regularPrice * products[i].discount) / 100
-                //     );
-                //   }
 
-                  products = await offerHelper.findOffer(products)
-                 const newQuantityprice = await cartHelper.subtotal(products,userId)
-                 
+        const userCart = await cartModel.findOne({ userId: userId });
+        let products = [];
 
-               if (quantityUpdated) {
-                res.json({ success: true, newquatityPrice: newQuantityprice ,quantity:quantityUpdated,productid:productId,prosize:size});
-               }else{
-                const oldqty = await productModel.aggregate([{$match:{_id:new ObjectId(productId)}}])
-                const carqtychange = await cartModel.findOneAndUpdate({userId:userId,'items.productId':productId,'items.size':size},{$set:{'items.$.quantity':oldqty[0].size[size].quantity}})
-                res.json({success:false ,newquatityPrice:newQuantityprice ,quantity:oldqty[0].size[size].quantity,productid:productId,prosize:size})
-               }
-                
-            
-        
+        for (let i = 0; i < userCart.items.length; i++) {
+            const userCartItem = userCart.items[i];
+            const product = await productModel.findById(userCartItem.productId);
+            // console.log("product",product);
+            if (product) {
+                const productData = product.toObject();
+                const finalProduct = {
+                    ...productData,
+                    size: userCartItem.size,
+                    quantity: userCartItem.quantity
+                };
+                products.push(finalProduct);
+            }
+        }
+
+        // Calculate salePrice for each product
+        for (let i = 0; i < products.length; i++) {
+            products[i].salePrice = Math.round(
+                products[i].regularPrice - (products[i].regularPrice * products[i].discount) / 100
+            );
+        }
+
+        // Calculate new total price
+        const newQuantityPrice = await cartHelper.subtotal(products, userId);
+        // console.log("newQuantityPrice",newQuantityPrice)
+
+        if (quantityUpdated) {
+            res.json({ success: true, newQuantityPrice: newQuantityPrice, quantity: quantityUpdated, productId: productId, size: size });
+        } else {
+            const oldQty = await productModel.aggregate([{ $match: { _id: new ObjectId(productId) } }]);
+            const cartQtyChange = await cartModel.findOneAndUpdate({ userId: userId, 'items.productId': productId, 'items.size': size }, { $set: { 'items.$.quantity': oldQty[0].size[size].quantity } });
+            res.json({ success: false, newQuantityPrice: newQuantityPrice, quantity: oldQty[0].size[size].quantity, productId: productId, size: size });
+        }
     } catch (error) {
-        console.error("qtydec:", error);
-      
-       next(error)
+        console.error("Error in quantityIncrementOrDecrement:", error.message);
+        next(error);
     }
 };
+
 
 
 const clearingCart = (userId)=>{

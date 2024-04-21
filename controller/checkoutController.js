@@ -18,9 +18,11 @@ const checkoutPage = async (req, res,next) => {
     let qty=[]
     if (userCart) {
       for (let i = 0; i < userCart.items.length; i++) {
+        console.log("userCart.items[i].productId",userCart.items[i].productId);
         const product = await productModel.findOne({
           _id: userCart.items[i].productId,
         });
+        console.log("product checkout ",product)
         const item = await offerHelper.productViewOffer(product)
         
         
@@ -56,7 +58,7 @@ const checkoutPage = async (req, res,next) => {
     const walletAmount = await walletModel.findOne({userid:userId})
     
     let balance =0
-    console.log(walletAmount)
+    // console.log(walletAmount)
     if (walletAmount) {
        balance = walletAmount.balance
     }else{
