@@ -5,11 +5,12 @@ const categoryModel = require("../model/categoryModel")
 const categoryOfferPage = async(req,res,next)=>{
     try {
          const message = req.flash("message")
+         const errormessage = req.flash("errormessage")
         
                 const offer = await categoryOfferModel.find({}).populate("categoryOffer.category")
               const category= await categoryModel.find({islisted:true})
 
-              res.render("categoryOffer",{offers:offer,category :category ,message:message})
+              res.render("categoryOffer",{offers:offer,category :category ,message:message,errormessage:errormessage})
            
     } catch (error) {
         console.error("Error in categoryofferpage:", error);
@@ -63,7 +64,7 @@ const categoryEditOffer = async(req,res,next)=>{
         const offerexistname = await categoryOfferModel.findOne({name:name})
         if (offerexistname) {
             const errormessage = "cannot edit given offer name exist";
-            req.flash("message", errormessage);
+            req.flash("errormessage", errormessage);
             res.redirect("/admin/categoryOffer")
         }else{
         const updated = await categoryOfferModel.updateOne({_id:req.body.offerId},
@@ -127,7 +128,7 @@ const addcategoryoffer = async(req,res)=>{
         if (offernameexist) {
             const errormessage = "categoryoffer same name exist cannot add";
             // console.log(errormessage)
-             req.flash("message", errormessage);
+             req.flash("errormessage", errormessage);
             res.redirect("/admin/categoryOffer")
         }else{
         const offerCreating = await categoryOfferModel.create({

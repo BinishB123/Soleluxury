@@ -65,7 +65,7 @@
                             <tbody>
                                 <% for( let i = 0; i < order.length; i++ ) { %>
                                 
-                               
+                               <% if(order[i].currentstatus!="payment pending") {%>
                                 <tr>
                                     <td>
                                         <div class="itemside">
@@ -105,6 +105,7 @@
                                      
                                   
                                 </tr>
+                                <% } %>
                                 <% } %>
                             </tbody>
                         </table>

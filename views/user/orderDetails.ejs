@@ -872,8 +872,10 @@
                                                     <td class="cart_total_label">Total</td>
                                                     <td class="cart_total_amount"><strong><span class="font-xl fw-900 text-brand"  id="secondtotal">₹<%=order[0].totalAmount  %></span></strong></td>
                                                 </tr>
-                                                <% if (order[0].co && order[0].co.discount) { %>
-                                                    <h5 style="color: blue;">Coupon applied: <%= order[0].co.discount %>% discount</h5>
+                                                <% if(locals.prod.length>=1) {%>
+                                                <% if (prod[0].co && prod[0].co.discount) { %>
+                                                    <h5 style="color: blue;">Coupon applied: <%= prod[0].co.discount %>% discount</h5>
+                                                <% } %>
                                                 <% } %>
                                                 
                                             </tbody>

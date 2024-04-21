@@ -2,7 +2,15 @@
     <section class="content-main">
     <div class="content-header">
       <h2 class="content-title">Category-Offer Management</h2>
+      <% if (locals.message) { %>
+        <span><p style="color: green;"  id="message"><%=locals.message  %></p></span>
+         <% } %>
+         <% if (locals.errormessage) {%>
+          <span><p style="color: rgb(233, 15, 15);"  id="error-message"><%=locals.errormessage %></p></span>
+
+       <%  } %>
       <div>
+
 
         <a class="btn-sm" style="background-color: black;"  href="/admin/addcategoryOffer">Add Offer +</a>
         

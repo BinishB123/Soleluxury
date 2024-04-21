@@ -1298,7 +1298,7 @@ function removeCoupon() {
 var rzp1 = new Razorpay(options);
 rzp1.open();
 rzp1.on("payment.failed", function (response) {
-            console.log("okkkkk")
+           // console.log("okkkkk")
             handleFailure(order);
         });
 

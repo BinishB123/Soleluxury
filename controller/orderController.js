@@ -368,6 +368,29 @@ const orderdetails =  async(req,res,next)=>{
         },
       },
       {$unwind:"$product"},
+      // {
+      //   $lookup: {
+      //     from: "coupons",
+      //     localField: "coupon",
+      //     foreignField: "_id",
+      //     as: "co",
+      //   },
+      // },
+      // {$unwind:"$co"}
+    ]);
+    const prod = await orderModel.aggregate([
+      { $match: { _id: new ObjectId(id) } },
+      { $sort: { orderedOn: -1 } },
+      {$unwind:"$products"},
+      {
+        $lookup: {
+          from: "products",
+          localField: "products.product",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      {$unwind:"$product"},
       {
         $lookup: {
           from: "coupons",
@@ -378,9 +401,9 @@ const orderdetails =  async(req,res,next)=>{
       },
       {$unwind:"$co"}
     ]);
-    // console.log("orderdetails",products)
+    //  console.log("orderdetails",prod)
     res.render("orderDetails",
-    {order:products,user:req.session.user._id})
+    {order:products,user:req.session.user._id,prod:prod})
     
   } catch (error) {
     console.error("Error in orderdetail:", error);
