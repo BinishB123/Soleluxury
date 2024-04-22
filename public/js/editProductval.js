@@ -160,10 +160,13 @@ smallsize_quantityid.addEventListener("blur", validateSmallSizeQuantity);
 mediumsize_quantityid.addEventListener("blur", validateMediumSizeQuantity);
 largesize_quantityid.addEventListener("blur", validateLargeSizeQuantity);
 colorid.addEventListener("blur", validateColor);
+if(imageid){
 imageid.addEventListener("blur", validateImageCount);
+}
 
 editproductForm.addEventListener("submit", function(event) {
   // Validate all fields before submitting the form
+  // event.preventDefault();
   validateProductName();
   validateDescription();
   validateRegularPrice();
@@ -172,7 +175,10 @@ editproductForm.addEventListener("submit", function(event) {
   validateMediumSizeQuantity();
   validateLargeSizeQuantity();
   validateColor();
-  validateImageCount();
+  if (imageid) {
+    validateImageCount();
+  }
+  
 
   // Check if any error message is displayed
   if (

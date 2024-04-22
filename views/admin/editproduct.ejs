@@ -290,9 +290,9 @@
          const hidden5 = document.getElementById('hiddenField5')
           const fileerrormessage= document.getElementById('imageerror')
 
-
-  document.getElementById('imageInput').addEventListener("change", handleFileSelect)
-    
+          if (document.getElementById('imageInput')) {
+        document.getElementById('imageInput').addEventListener("change", handleFileSelect)
+          }
   function handleFileSelect(event) {
     const length = parseInt(document.getElementById("lengthofimage").value);
     const addedImagesContainer = document.getElementById("addedImagesContainer");
