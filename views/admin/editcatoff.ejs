@@ -75,12 +75,12 @@
                             </div>
                             <div class="mb-3">
                               <label for="recipient-name" class="col-form-label">Starting Date (YYYY/MM/DD)</label>
-                              <input type="date" class="form-control" name="startDate" id="editstartDate" value="<%=offer.formattedStartingDate  %>">
+                              <input type="date" class="form-control" name="startDate" id="editstartDate" value="<%=offer.formattedStartingDate  %>"   min="<%= date.toISOString().split('T')[0] %>">
                               <div id="editstartdateerror"></div>
                             </div>
                             <div class="mb-3">
                               <label for="recipient-name" class="col-form-label">Ending Date (YYYY/MM/DD)</label>
-                              <input type="date" class="form-control" name="editendDate" id="end" value="<%=offer.formattedEndingDate  %>">
+                              <input type="date" class="form-control" name="editendDate" id="end" value="<%=offer.formattedEndingDate  %>" min="<%= date.toISOString().split('T')[0] %>">
                               <div id="editenddate"></div>
                             </div>
                             <div class="mb-3">

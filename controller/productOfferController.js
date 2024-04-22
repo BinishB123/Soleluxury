@@ -137,7 +137,7 @@ function formatDate(dateString) {
       const products = await productModel.find({ isBlocked: false });
       const date = new Date(); 
       const errormessage = req.flash("errormessage")
-    res.render("addProductOffer", {  products: products, date: date ,errormessage:errormessage});
+    res.render("addProductOffer", {  products: products, date: date ,errormessage:errormessage,date:date});
       
     } catch (error) {
       console.log(error.message)
@@ -155,8 +155,9 @@ function formatDate(dateString) {
          offer.formattedStartingDate = formatDate(offer.startingDate);
          offer.formattedEndingDate = formatDate(offer.endingDate);
         // console.log(offer)
+        const date = new Date()
         // console.log(products)
-      res.render("editprodoff",{offer:offer,products:products})
+      res.render("editprodoff",{offer:offer,products:products,date:date})
       
     } catch (error) {
       console.log("error in edit prod off",error.message)

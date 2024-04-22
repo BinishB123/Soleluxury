@@ -9,8 +9,8 @@ const categoryOfferPage = async(req,res,next)=>{
         
                 const offer = await categoryOfferModel.find({}).populate("categoryOffer.category")
               const category= await categoryModel.find({islisted:true})
-
-              res.render("categoryOffer",{offers:offer,category :category ,message:message,errormessage:errormessage})
+               const date = new Date()
+              res.render("categoryOffer",{offers:offer,category :category ,message:message,errormessage:errormessage,date:date})
            
     } catch (error) {
         console.error("Error in categoryofferpage:", error);
@@ -31,7 +31,7 @@ const editcategoryOffer = async (req, res, next) => {
         offer.formattedEndingDate = formatDate(offer.endingDate);
         const date = new Date();
 
-        res.render("editcatoff", { offer: offer, date: date, category: category });
+        res.render("editcatoff", { offer: offer, date: date, category: category ,date:date});
     } catch (error) {
         console.error("Error in editcategorypage:", error);
         next(error);
@@ -46,7 +46,7 @@ const AddCategoryOfferPage = async(req,res,next)=>{
         
         const category= await categoryModel.find({islisted:true})
          const date = new Date()
-        res.render("addcatoff",{category:category,date:date,errormessage:errormessage})
+        res.render("addcatoff",{category:category,date:date,errormessage:errormessage,date:date})
 
    
         
