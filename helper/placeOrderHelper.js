@@ -12,7 +12,7 @@ const placeOrder = (body, userId) => {
       // console.log("im here at place order");
       // console.log(body)
       
-      const couponId = body.data.couponId
+      const couponId = body.couponId
     
       const userCart = await cartModel.findOne({ userId: userId });
       const user = await userModel.findOne({ _id: userId });

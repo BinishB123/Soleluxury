@@ -1090,10 +1090,10 @@
     
        verifyPayment(response,order,id)
     },
-    "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
-        "name": "Gaurav Kumar", //your customer's name
+    "prefill": { 
+        "name": "Gaurav Kumar", 
         "email": "gaurav.kumar@example.com", 
-        "contact": "9000090000"  //Provide the customer's phone number for better conversion rates 
+        "contact": "9000090000"  
     },
     "notes": {
         "address": "Razorpay Corporate Office"
@@ -1121,6 +1121,12 @@ rzp1.open();
             // console.log(response)
            if (response.success) {
           window.location.reload()
+          Toastify({
+                text: "orderplaced",
+                 backgroundColor: "green",
+             duration: 6000,
+             position: "center" 
+         }).showToast();
            }else{
             Toastify({
                 text: response.message,
