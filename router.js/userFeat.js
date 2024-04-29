@@ -103,6 +103,6 @@ userRoute.get('/prodcutwithsizecartcheck',userHelper.checkingUserBlockedOrNot,ca
  userRoute.post("/add-money-to-wallet",userHelper.checkingUserBlockedOrNot,walletContoller.addMoneyWallet)
  userRoute.post('/wallet-verifypayment',userHelper.checkingUserBlockedOrNot,walletContoller.verifyPayment)
 
-
+console.log("ok")
 
 module.exports = userRoute   

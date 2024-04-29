@@ -99,10 +99,12 @@ setTimeout(() => {
         }, 5000)
 
  document.getElementById("categoryform").addEventListener("submit", function(event) {
-    event.preventDefault(); // Prevent the default form submission
+    // Prevent the default form submission
 
     if (validateAndSubmit()) {
         this.submit(); // Submit the form if validation passes
+    }else{
+        event.preventDefault(); 
     }
 });
 
