@@ -7,7 +7,7 @@ const brandSchema = mongoose.Schema({
     },
     brandImage:{
         type:Array,
-        required:true
+       
     },
     isBlocked:{
         type:Boolean,

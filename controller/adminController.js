@@ -19,18 +19,9 @@ const loginload = async (req, res, next) => {
 
 const adminlogin = async (req, res,next) => {
   try {
-    // console.log("admin login load", req.body.email);
     const admin = await Admin.findOne({ email: req.body.email });
-
     // console.log(admin);
-
     if (admin) {
-      // console.log(" /////")
-      // console.log(admin.email)
-      // console.log(admin.password)
-      // console.log('///')
-      // console.log( req.body.password)
-
       if (admin.password === req.body.password) {
         // console.log( req.body.password)
         req.session.admin = admin;

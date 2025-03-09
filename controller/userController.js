@@ -539,7 +539,7 @@ const nav = async(req,res,next)=>{
     const product =  await productModel.aggregate([
       {
           $lookup: {
-              from:"categories",
+              from:"categories",    
                localField:"category",
             foreignField:"_id",
             as:"category"

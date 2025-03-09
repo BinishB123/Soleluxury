@@ -9,9 +9,7 @@ const productOfferController = require("../controller/productOfferController")
 const categoryOfferController = require("../controller/categoryOffer")
 const salesReportController = require("../controller/salesReportController")
 const upload = require('../middleware/multer')
-const otpHelper = require('../helper/otphelper')
 const express = require("express");
-const userRoute = require("./userFeat");
 const  adminRoute = express.Router()
      
 
@@ -96,8 +94,8 @@ adminRoute.delete("/deleteCategoryoffer",adminMiddleware.adminLogged,categoryOff
 
 //Admin Salesreport
 adminRoute.get("/sales-report",adminMiddleware.adminLogged,salesReportController.salesReportPage)
- adminRoute.get("/monthlySalesReport",adminMiddleware.adminLogged,salesReportController.monthlySalesReport)
- adminRoute.get("/salesreportaccordingtotwodates",adminMiddleware.adminLogged,salesReportController.salesreportaccordingtotwodates)
+adminRoute.get("/monthlySalesReport",adminMiddleware.adminLogged,salesReportController.monthlySalesReport)
+adminRoute.get("/salesreportaccordingtotwodates",adminMiddleware.adminLogged,salesReportController.salesreportaccordingtotwodates)
 
 
 

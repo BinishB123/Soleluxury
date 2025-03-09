@@ -62,7 +62,7 @@ const categoryEditOffer = async(req,res,next)=>{
         // console.log(req.body);
         const name = req.body.editofferName.trim()
         const offerexistname = await categoryOfferModel.findOne({name:name})
-        if (offerexistname) {
+        if (offerexistname && offerexistname._id+""!==req.body.offerId) {
             const errormessage = "cannot edit given offer name exist";
             req.flash("errormessage", errormessage);
             res.redirect("/admin/categoryOffer")

@@ -53,7 +53,7 @@ const orderSchema = new mongoose.Schema({
     },
    currentstatus:{
         type:String,
-        enum:["payment pending","confirm"],
+           enum:["payment pending","confirm"],
           default:"confirm"
     },
     orderId:{

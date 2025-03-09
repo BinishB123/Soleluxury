@@ -1,91 +1,76 @@
 const order = require("../model/orderModel");
 const user = require("../model/userModel");
 const userModel = require("../model/userModel");
-const walletModel = require("../model/walletModel")
-const productModel = require("../model/productModel")
-const cartModel = require("../model/cartModel")
+const walletModel = require("../model/walletModel");
+const productModel = require("../model/productModel");
+const cartModel = require("../model/cartModel");
 const bcrypt = require("bcryptjs");
-const { ObjectId } = require('mongodb');
+const { ObjectId } = require("mongodb");
 const Razorpay = require("razorpay");
 const { name } = require("ejs");
 var instance = new Razorpay({
   key_id: process.env.key_id,
-  key_secret: process.env.key_secret ,
+  key_secret: process.env.key_secret,
 });
 
-
-const loginHome = (userData)=>{
+const loginHome = (userData) => {
   // console.log(userData)
-  return new Promise(async(resolve,reject)=>{
+  return new Promise(async (resolve, reject) => {
+    try {
+      let user = await userModel.findOne({ email: userData.email });
+      let response = {};
 
-         try{
-         
-             let user = await userModel.findOne({email:userData.email});
-              let response = {}
-                
-                 if(user){
-                  
-                   //console.log('The user is now at loginhome and and finded the user')
-                  // console.log(user.isActive)
-                   if (user.isActive) {
-                       bcrypt.compare(userData.password,user.password).then((result)=>{
-                        if(result){
-                          // console.log(result)
-                            response.user = user
-                            response.login = true;
-                            //  console.log(response)
-                            resolve(response)
-                        }else{
-                          response.loginMessage = "invalid email or password"
-                          resolve(response)
-                        }
-                      })
-                   }else{
-                      response.loginMessage ="Your are Blocked"
-                      resolve(response)
-                   }
-                     
-                 }else{
-                   response.loginMessage ="invalid username or password"
-                   resolve(response)
-                 }
-         
-         }catch(error){
-          console.log(error);
-         
-         }
-            
-     
-
-  })
-}
-
-
-
-
-
-
-
-
-
+      if (user) {
+        //console.log('The user is now at loginhome and and finded the user')
+        // console.log(user.isActive)
+        if (user.isActive) {
+          bcrypt.compare(userData.password, user.password).then((result) => {
+            if (result) {
+              // console.log(result)
+              response.user = user;
+              response.login = true;
+              //  console.log(response)
+              resolve(response);
+            } else {
+              response.loginMessage = "invalid email or password";
+              resolve(response);
+            }
+          });
+        } else {
+          response.loginMessage = "Your are Blocked";
+          resolve(response);
+        }
+      } else {
+        response.loginMessage = "invalid username or password";
+        resolve(response);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  });
+};
 
 const doSignUp = (userData, verify, emailVerify) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let u = false
+      let u = false;
       const userExist = await userModel.findOne({
-        $or: [{ email: userData.email }]
+        $or: [{ email: userData.email }],
       });
 
       const response = {};
       console.log(userData.referralcode);
 
       if (userData.referralcode) {
-        const userWithReferralcode = await userModel.findOne({ referalCode: userData.referralcode });
-        console.log(userWithReferralcode)
-        
+        const userWithReferralcode = await userModel.findOne({
+          referalCode: userData.referralcode,
+        });
+        console.log(userWithReferralcode);
+
         if (userWithReferralcode) {
-          const userHaveWallet = await walletModel.findOne({ userid: userWithReferralcode._id });
+          const userHaveWallet = await walletModel.findOne({
+            userid: userWithReferralcode._id,
+          });
           // console.log("no mach",userHaveWallet)
           if (userHaveWallet) {
             // Assuming checker object and userid are defined somewhere
@@ -103,7 +88,7 @@ const doSignUp = (userData, verify, emailVerify) => {
               }
             );
             // console(updating)
-            u = true
+            u = true;
             // console.log(u)
             // console.log("updating in if ", updating);
           } else {
@@ -118,7 +103,7 @@ const doSignUp = (userData, verify, emailVerify) => {
                 },
               ],
             });
-            u = true
+            u = true;
             console.log("creating in else", creating);
           }
         }
@@ -149,12 +134,12 @@ const doSignUp = (userData, verify, emailVerify) => {
               const createdUser = await userModel.create(newUser);
 
               console.log("User created:", createdUser);
-              console.log(u)
-              response.user = createdUser
-              response.u = u
+              console.log(u);
+              response.user = createdUser;
+              response.u = u;
               response.status = true;
               response.message = "Signed Up Successfully";
-              console.log(response)
+              console.log(response);
               resolve(response);
             } else {
               response.status = false;
@@ -183,16 +168,13 @@ const doSignUp = (userData, verify, emailVerify) => {
   });
 };
 
-
-
 const checkingUserBlockedOrNot = async (req, res, next) => {
   try {
-    
-   if(req.session.user){
-    next()
-   }else{
-    res.redirect("/login")
-   }
+    if (req.session.user) {
+      next();
+    } else {
+      res.redirect("/login");
+    }
   } catch (error) {
     console.log(error.message);
   }
@@ -200,122 +182,113 @@ const checkingUserBlockedOrNot = async (req, res, next) => {
 
 const checkUserBlockOrNo = async (req, res, next) => {
   try {
-    
-   if(req.session.user){
-    next()
-   }else{
-  
-    res.json({stay:false,url:"/login"})
-   }
+    if (req.session.user) {
+      next();
+    } else {
+      res.json({ stay: false, url: "/login" });
+    }
   } catch (error) {
     console.log(error.message);
   }
 };
 
-
-const generateRazorpay = (userId,totalAmount)=>{
-  return new Promise(async(resolve,reject)=>{
+const generateRazorpay = (userId, totalAmount) => {
+  return new Promise(async (resolve, reject) => {
     try {
       // console.log("orderid at generate razorpay",orderId)
       // console.log("totalAmount ",totalAmount)
-      instance.orders.create({
-        amount: Math.round(totalAmount*100),
-        currency: "INR",
-        receipt: userId,
-        notes: {
+      instance.orders.create(
+        {
+          amount: Math.round(totalAmount * 100),
+          currency: "INR",
+          receipt: userId,
+          notes: {
             key1: "value3",
-            key2: "value2"
-        }
-    }, function(err, order) {
-        if (err) {
+            key2: "value2",
+          },
+        },
+        function (err, order) {
+          if (err) {
             console.error(err);
             return;
-        }else{
-          const response = {
-            success:true,
-            order:order
+          } else {
+            const response = {
+              success: true,
+              order: order,
+            };
+            //  console.log("order in generateRazorpay",order)
+            resolve(response);
           }
-          //  console.log("order in generateRazorpay",order)
-          resolve(response)
         }
-        
-    });
-    
-      
+      );
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
     }
-  })
-}
-
-
+  });
+};
 
 function generateRandomString() {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
   for (let i = 0; i < 15; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      result += characters.charAt(randomIndex);
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters.charAt(randomIndex);
   }
   return result;
 }
 
-
-const productQuantityChecker = async(req,res,next)=>{
+const productQuantityChecker = async (req, res, next) => {
   try {
-   const user = req.session.user._id
-   const userCart = await cartModel.aggregate([
-   {$match: {userId:new ObjectId(user)}},
-  { $unwind:"$items"}
-  ])
-  //  console.log("usercart",userCart)
-  let f = false
-   for(let cart of userCart){
-    
-    let [product] = await productModel.aggregate([
-      { $match: { _id: new ObjectId(cart.items.productId) } },
-      { $project: { size: `$size.${cart.items.size}.quantity`,name:"$productName" } }
+    const user = req.session.user._id;
+    const userCart = await cartModel.aggregate([
+      { $match: { userId: new ObjectId(user) } },
+      { $unwind: "$items" },
     ]);
-            if(product.size<cart.items.quantity){
-              // console.log("kk");
-            return   res.json({success:false,mess:`${product.name} Quantity Exceeds ! `})
-            }else{
-               f= true
-              
-            }
-    
-   }
-
-   if(f===true){
-    return next()
-   }
-  
-   
-    
-  } catch (error) {
-    console.log(error.message)
-  }
-  
-}
-
-
-const addresChecker = async(req,res,next)=>{
-  try {
-    console.log(req.body.addressId)
-    const address = req.body.addressId
-    if(address){
-      next()
-    }else{
-      return   res.json({success:false,mess:`Add Address`})
+    //  console.log("usercart",userCart)
+    let f = false;
+    for (let cart of userCart) {
+      let [product] = await productModel.aggregate([
+        { $match: { _id: new ObjectId(cart.items.productId) } },
+        {
+          $project: {
+            size: `$size.${cart.items.size}.quantity`,
+            name: "$productName",
+          },
+        },
+      ]);
+      if (product.size < cart.items.quantity) {
+        // console.log("kk");
+        return res.json({
+          success: false,
+          mess: `${product.name} Quantity Exceeds ! `,
+        });
+      } else {
+        f = true;
+      }
     }
-    
+
+    if (f === true) {
+      return next();
+    }
   } catch (error) {
-    console.log(error.message)
+    console.log(error.message);
   }
-}
+};
 
-
-
+const addresChecker = async (req, res, next) => {
+  try {
+    console.log(req.body.addressId);
+    const address = req.body.addressId;
+    if (address) {
+      next();
+    } else {
+      return res.json({ success: false, mess: `Add Address` });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
 module.exports = {
   doSignUp,
@@ -324,5 +297,5 @@ module.exports = {
   generateRazorpay,
   productQuantityChecker,
   checkUserBlockOrNo,
-  addresChecker
+  addresChecker,
 };

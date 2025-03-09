@@ -1,20 +1,18 @@
 $('#formsubmit').click(function(event) {
-    event.preventDefault(); // Prevent the default form submission
+    event.preventDefault();
     if (validateAndSubmit()) {
-        submitFormData(); // Call function to submit form data via AJAX
+        submitFormData(); 
     }
 });
 
 function submitFormData() {
-    // Validate form fields here if needed
-
-    // Serialize form data
+  
     var formData = new FormData($('#productform')[0]);
 
-    // Submit form data via AJAX
+   
     $.ajax({
         url: '/admin/addproducts',
-        method: 'POST', // Corrected from 'type'
+        method: 'POST', 
         data: formData,
         contentType: false,
         processData: false,

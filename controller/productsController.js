@@ -47,6 +47,8 @@ const createProductPage = async(req,res,next)=>{
         if (req.session.admin) {
             const category = await categoryModel.find({islisted:true})
             const brand = await brandModel.find({isBlocked:false})
+            console.log(brand);
+            
             const errormessage = req.flash("errormessage")
             res.render('addproducts',{cat:category,brand:brand,errormessage:errormessage})
             
@@ -83,7 +85,7 @@ const addproducts = async (req, res, next) => {
             // Image validation
             for (let i = 0; i < req.files.length; i++) {
                 const file = req.files[i];
-                // Check if the file is an image
+              
                 if (!file.mimetype.startsWith('image/')) {
                     const errormessage = "Cannot add product, please upload images only";
                     return res.json({ success: false, fileerrormessage: errormessage });

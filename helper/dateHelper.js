@@ -4,10 +4,10 @@ function getWeeksOfMonth(year, month) {
   const lastDayOfMonth = new Date(year, month + 1, 0);
   
   let currentWeek = [];
-  let currentDate = new Date(firstDayOfMonth); // Create a new Date object to avoid modifying the original date
+  let currentDate = new Date(firstDayOfMonth); 
   
   while (currentDate <= lastDayOfMonth) {
-    currentWeek.push(formatDate(currentDate)); // Push the formatted date string into the current week
+    currentWeek.push(formatDate(currentDate)); 
     
     if (currentDate.getDay() === 6 || currentDate.getDate() === lastDayOfMonth.getDate()) {
       weeks.push(currentWeek);
